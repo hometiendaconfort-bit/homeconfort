@@ -5,6 +5,7 @@ import { Combos } from '../services/combos';
 import { Productos } from '../services/productos';
 import { ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-combo-detalle',
@@ -26,7 +27,8 @@ export class ComboDetalleComponent implements OnInit {
     private combos: Combos,
     private productos: Productos,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private location: Location
     
   ) {}
 
@@ -87,6 +89,10 @@ export class ComboDetalleComponent implements OnInit {
     combo.imagenActiva = imagen;
 
   }
+
+  volver() {
+  this.location.back();
+}
 
 
 

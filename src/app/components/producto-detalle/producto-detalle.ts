@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ProductosService } from '../../services/producto.service';
 import { RouterModule } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-producto-detalle',
@@ -17,7 +18,8 @@ producto: any;
 
 constructor(
 private route: ActivatedRoute,
-private productosService: ProductosService
+private productosService: ProductosService,
+private location: Location
 ) { }
 
 ngOnInit(): void {
@@ -37,6 +39,10 @@ ngOnInit(): void {
 
 cambiarImagen(p: any, img: string) {
   p.imagenActiva = img;
+}
+
+volver() {
+  this.location.back();
 }
 
 precioFinal(p: any): number {

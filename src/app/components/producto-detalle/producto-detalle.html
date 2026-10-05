@@ -6,6 +6,8 @@
 
 <!-- Miniaturas verticales -->
 <div class="miniaturas-vertical">
+
+  <button (click)="volver()">Volver</button>
         
       <img *ngFor="let img of producto.imagenes  || []"
           [src]="img"
