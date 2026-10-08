@@ -15,7 +15,7 @@
 
 
 
-<button (click)="guardarCarrucel()">Guardar imagen</button>
+<button class="guardar-boton" (click)="guardarCarrucel()">Guardar imagen</button>
 </div>
 <hr>
 
@@ -34,9 +34,9 @@
          <td class="producto-imagen">{{ carruceles.imagen }}</td> 
          <td class="acciones">
 
-           <button (click)="editar(carruceles)"> Editar </button>
+           <button class="editar-boton" (click)="editar(carruceles)"> Editar </button>
 
-            <button (click)="eliminar(carruceles.docId)"> Eliminar </button>
+            <button class="eliminar-boton" (click)="eliminar(carruceles.docId)"> Eliminar </button>
  </td> 
 </tr> 
 </tbody>

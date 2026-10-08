@@ -3,68 +3,68 @@
 <h1>Administración de Productos</h1>
 
 <div>
-  <label>ID</label><br>
+  <label>ID</label>
   <input type="number" [(ngModel)]="id">
 </div>
 
 <div>
-  <label>Nombre</label><br>
+  <label>Nombre</label>
   <input type="text" [(ngModel)]="nombre">
 </div>
 
 <div>
-  <label>Precio</label><br>
+  <label>Precio</label>
   <input type="number" [(ngModel)]="precio">
 </div>
 
 <div>
-  <label>inicial</label><br>
+  <label>inicial</label>
   <input type="number" [(ngModel)]="inicial">
 </div>
 
 <div>
-  <label>quincenal</label><br>
+  <label>quincenal</label>
   <input type="number" [(ngModel)]="quincenal">
 </div>
 
 <div>
-  <label>Categoría</label><br>
+  <label>Categoría</label>
   <input type="text" [(ngModel)]="categoria">
 </div>
 
 <div>
-  <label>Color</label><br>
+  <label>Color</label>
   <input type="text" [(ngModel)]="color">
 </div>
 
 <div>
-  <label>tipo</label><br>
+  <label>tipo</label>
   <input type="text" [(ngModel)]="tipo">
 </div>
 
 <div>
-  <label>Descuento</label><br>
+  <label>Descuento</label>
   <input type="number" [(ngModel)]="descuento">
 </div>
 
 <div >
-  <label>Imagen</label><br>
+  <label>Imagen</label>
   <input type="text" [(ngModel)]="imagen">
 </div>
 
 <div >
-  <label>Imagenes</label><br>
+  <label>Imagenes</label>
   <input type="text" [(ngModel)]="imagenes">
 </div>
 
 
 
 <div>
-  <label>Descripción</label><br>
+  <label>Descripción</label>
   <textarea [(ngModel)]="descripcion"></textarea>
 </div>
 
-<button (click)="guardarProducto()">Guardar producto</button>
+<button class="guardar-producto" (click)="guardarProducto()">Guardar producto</button>
 
 </section>
 
@@ -107,9 +107,9 @@
          <td class="descripcion">{{ producto.descripcion }}</td> 
          <td class="acciones">
 
-           <button (click)="editar(producto)"> Editar </button>
+           <button class="editar-boton" (click)="editar(producto)"> Editar </button>
 
-            <button (click)="eliminar(producto.docId)"> Eliminar </button>
+            <button class="eliminar-boton" (click)="eliminar(producto.docId)"> Eliminar </button>
  </td> 
 </tr> 
 </tbody>

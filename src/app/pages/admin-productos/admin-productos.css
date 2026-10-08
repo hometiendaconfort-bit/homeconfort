@@ -1,47 +1,78 @@
+
 .admin-productos {
-  width: 600px;
- margin: 4rem auto;
-  padding: 15px;
+  width: 450px;
+  margin: 4rem auto;
+  padding: 12px;
   box-sizing: border-box;
+
   background: #eee;
   border: 1px solid #000;
   border-radius: 10px;
 }
 
-/* Títulos */
-.admin-productos h1,
-.admin-productos h2 {
+/* Título */
+
+.admin-productos h1 {
   text-align: center;
-  margin: 5px 0 15px;
+  margin: 5px 0 12px;
+  font-size: 22px;
 }
 
 
-
+/* Campos */
+.admin-productos div {
+  margin-bottom: 4px;
+}
 
 .admin-productos label {
   display: block;
- margin-top: 10px;
-  font-size: 14px;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  font-size: 17px;
   font-weight: bold;
+  line-height: 1;
 }
 
-.admin-productos input {
+.admin-productos input,
+.admin-productos textarea {
+  display: block;
   width: 100%;
-  height: 30px;
-  padding: 5px;
   box-sizing: border-box;
+  padding: 6px;
+  margin: 2px 0 0 0;
+  font-size: 15px;
+  border: 1px solid #999;
+  border-radius: 4px;
 }
+
+
+/* Descripción */
+
+.admin-productos textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
 
 /* Botón guardar */
+
 .admin-productos button {
   width: 100%;
-  padding: 7px;
-  margin-top: 5px;
+  padding: 6px;
+  margin-top: 3px;
+
+  border: 1px solid #000;
+  cursor: pointer;
 }
 
 .admin-productos button:hover {
-  cursor: pointer;
   background: #000;
+  color: #fff;
+}
+
+.admin-productos button.guardar-producto {
+  background: #4CAF50;
   color: #fff;
 }
 
@@ -53,13 +84,20 @@
 .tabla-container {
   width: 95%;
   margin: 30px auto;
+
   overflow-x: auto;
   background: #eee;
+}
+
+.tabla-container h2 {
+  text-align: center;
+  margin: 15px 0;
 }
 
 table {
   width: 100%;
   min-width: 1200px;
+
   border-collapse: collapse;
 }
 
@@ -67,19 +105,76 @@ th,
 td {
   padding: 8px;
   border: 1px solid #ddd;
+
   white-space: nowrap;
+  text-align: left;
 }
+
+th {
+  background: #ddd;
+}
+
+
+/* =========================
+   DESCRIPCIÓN
+   ========================= */
 
 .descripcion {
-  white-space: normal;
- width: 300px;
+  width: 300px;
 
+  white-space: normal;
+  word-break: break-word;
 }
+
+
+/* =========================
+   IMÁGENES
+   ========================= */
+
+.producto-imagen {
+  max-width: 250px;
+
+  white-space: normal;
+  word-break: break-word;
+}
+
+
+/* =========================
+   ACCIONES
+   ========================= */
 
 .acciones {
   text-align: center;
   white-space: nowrap;
 }
+
+.acciones button {
+  margin: 2px;
+  padding: 5px 8px;
+
+  cursor: pointer;
+}
+
+.editar-boton {
+  background: #4CAF50;
+  color: #fff;
+
+}
+
+.editar-boton:hover {
+  background: #45a049;
+}
+
+.eliminar-boton {
+  background: #bf281d;
+  color: #fff;
+}
+
+.eliminar-boton:hover {
+  background: #a71d15;
+}
+
+
 
 
 /* =========================
@@ -90,10 +185,18 @@ td {
 
   .admin-productos {
     width: 280px;
-    height: 200px;
-    min-height: 200px;
     margin: 20px auto;
-    padding: 12px;
+    padding: 10px;
+  }
+
+  .admin-productos h1 {
+    font-size: 19px;
+  }
+
+  .tabla-container {
+    width: 95%;
+    margin: 20px auto;
   }
 
 }
+

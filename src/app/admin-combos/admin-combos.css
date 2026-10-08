@@ -1,0 +1,246 @@
+.admin-combos-contenedor {
+  width: 400px;
+  margin: 4rem auto;
+  padding: 15px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+}
+
+.admin-combos-contenedor h1 {
+  text-align: center;
+  margin: 5px 0 15px;
+  font-size: 22px;
+}
+
+
+/* =========================
+   FORMULARIO
+   ========================= */
+
+.admin-combos-contenedor form {
+  display: flex;
+  flex-direction: column;
+  
+  gap: 6px;
+  width: 300px;
+}
+
+.admin-combos-contenedor form div {
+  margin-bottom: 4px;
+}
+
+.admin-combos-contenedor label {
+  display: block;
+  
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.admin-combos-contenedor input,
+.admin-combos-contenedor select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+  margin: 2px 0 0 0;
+  font-size: 15px;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+
+.admin-combos-contenedor select {
+  height: 30px;
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #999;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.admin-combos-contenedor select option {
+  padding: 5px;
+  font-size: 14px;
+}
+
+.admin-combos-contenedor select option:disabled {
+  color: #999;
+  font-style: italic;
+}
+
+.admin-combos-contenedor select option:not(:disabled) {
+  color: #000;
+  font-style: normal;
+}
+
+
+/* =========================
+   BOTÓN GUARDAR
+   ========================= */
+
+.guardar {
+  width: 100%;
+  padding: 7px 15px;
+  margin-top: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #4CAF50;
+  color: white;
+}
+
+
+/* =========================
+   TABLA
+   ========================= */
+
+.admin-combos-contenedor-tabla {
+  width: 95%;
+  margin: 30px auto;
+  overflow-x: auto;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.admin-combos-contenedor-tabla table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background-color: #f9f9f9;
+}
+
+.admin-combos-contenedor-tabla th,
+.admin-combos-contenedor-tabla td {
+  border: 1px solid #ddd;
+  padding: 7px;
+  text-align: left;
+}
+
+.admin-combos-contenedor-tabla th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.admin-combos-contenedor-tabla tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+
+/* =========================
+   BOTONES TABLA
+   ========================= */
+
+.admin-combos-contenedor-tabla button {
+  padding: 5px 8px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+.admin-combos-contenedor-tabla button.eliminar {
+  background-color: #bf281d;
+  color: white;
+  margin: 2px;
+}
+
+.admin-combos-contenedor-tabla button.editar {
+  background-color: #4CAF50;
+  color: white;
+  margin: 2px;
+}
+
+.admin-combos-contenedor-tabla button.editar:hover {
+  background-color: #45a049;
+}
+
+.admin-combos-contenedor-tabla button.eliminar:hover {
+  background-color: #a71d15;
+}
+
+
+/* =========================
+   SELECT DE LA TABLA
+   ========================= */
+
+.admin-combos-contenedor-tabla select {
+  width: 100%;
+  padding: 5px;
+  font-size: 14px;
+}
+
+
+/* =========================
+   ACCIONES
+   ========================= */
+
+.admin-combos-contenedor-tabla .acciones,
+.acciones {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+
+/* =========================
+   CELULAR
+   ========================= */
+
+@media (max-width: 600px) {
+
+  .admin-combos-contenedor {
+    width: 90%;
+    margin: 20px auto;
+    padding: 12px;
+  }
+
+  .admin-combos-contenedor h1 {
+    font-size: 20px;
+  }
+
+  .admin-combos-contenedor form {
+    width: 100%;
+  }
+
+  .admin-combos-contenedor input,
+  .admin-combos-contenedor select {
+    font-size: 15px;
+  }
+
+  .admin-combos-contenedor-tabla {
+    width: 95%;
+    margin: 20px auto;
+    overflow-x: auto;
+  }
+
+  .admin-combos-contenedor-tabla table {
+    min-width: 700px;
+  }
+
+  .admin-combos-contenedor-tabla th,
+  .admin-combos-contenedor-tabla td {
+    padding: 6px;
+    font-size: 13px;
+  }
+
+  .admin-combos-contenedor-tabla .acciones,
+  .acciones {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .admin-combos-contenedor-tabla button {
+    width: 100%;
+  }
+}

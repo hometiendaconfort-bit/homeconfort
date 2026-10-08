@@ -17,7 +17,7 @@ export class AdminCarrucel implements OnInit {
   docIdEditando = '';
 
   id = 0;
-  imagen = '';
+  imagen = '/assets/img/';
 
   constructor(private carrucelService: CarrucelService) {}
 

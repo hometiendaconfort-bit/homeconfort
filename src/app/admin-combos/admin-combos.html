@@ -1,3 +1,5 @@
+<div class="admin-combos-contenedor">
+
 <h1>Crear combo</h1>
 
 <!-- ID -->
@@ -9,7 +11,7 @@
   placeholder="Ej: 1">
 
 
-<br><br>
+<br>
 
 
 <!-- NOMBRE -->
@@ -20,6 +22,7 @@
   [(ngModel)]="nombreCombo"
   placeholder="Ej: Combo habitación completa">
 
+<br>
 <!-- IMAGEN -->
 <label>Imagen del combo</label>
 
@@ -28,10 +31,7 @@
   [(ngModel)]="imagenCombo"
   placeholder="Ej: /assets/img/">
 
-
-
-<br><br>
-
+<br>
 
 <!-- BASE -->
 <label>Base</label>
@@ -53,7 +53,7 @@
 </select>
 
 
-<br><br>
+<br>
 
 
 <!-- COLCHÓN -->
@@ -76,7 +76,7 @@
 </select>
 
 
-<br><br>
+<br>
 
 
 <!-- ESPALDAR -->
@@ -99,7 +99,7 @@
 </select>
 
 
-<br><br>
+<br>
 
 
 <!-- PRECIO -->
@@ -111,7 +111,7 @@
   placeholder="Ej: 1299000">
 
 
-<br><br>
+<br>
 
 
 <!-- DESCRIPCIÓN -->
@@ -123,15 +123,19 @@
 </textarea>
 
 
-<br><br>
+<br>
 
 
 <!-- GUARDAR -->
-<button (click)="guardarCombo()">
+<button class="guardar" (click)="guardarCombo()">
   Guardar combo
 </button>
 
+ </div>
+
 <hr>
+
+<div class="admin-combos-contenedor-tabla"> 
 
 <h2>Combos creados</h2>
 
@@ -149,7 +153,7 @@
 
   <tbody>
 
-    <tr *ngFor="let combo of combolista">
+    <tr class="tabla" *ngFor="let combo of combolista">
 
       <td>{{ combo.id }}</td>
 
@@ -171,11 +175,11 @@
 
       <td>
 
-        <button (click)="editar(combo)">
+        <button class="editar" (click)="editar(combo)">
           Editar
         </button>
 
-        <button (click)="eliminar(combo.docId)">
+        <button class="eliminar" (click)="eliminar(combo.docId)">
           Eliminar
         </button>
 
@@ -185,3 +189,4 @@
 
   </tbody>
 </table>
+</div>

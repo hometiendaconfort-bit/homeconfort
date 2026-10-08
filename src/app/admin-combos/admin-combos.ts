@@ -21,7 +21,7 @@ espaldares: any[] = [];
 
 idCombo: number = 0;
 nombreCombo: string = '';
-imagenCombo: string = '';
+imagenCombo: string = '/assets/img/';
 baseId: string = '';
 colchonId: string = '';
 espaldarId: string = '';

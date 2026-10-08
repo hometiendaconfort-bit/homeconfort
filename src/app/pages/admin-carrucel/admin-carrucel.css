@@ -25,8 +25,7 @@
 .carrucel-container label {
   display: block;
 
-  margin-top: 10px;
-
+ margin-top: 5px;
   font-size: 14px;
   font-weight: bold;
 }
@@ -37,9 +36,7 @@
 .carrucel-container input {
   width: 100%;
   height: 30px;
-
-  padding: 5px;
-
+  
   box-sizing: border-box;
 
   border: 1px solid #ccc;
@@ -62,10 +59,36 @@
   cursor: pointer;
 }
 
+.carrucel-container button.guardar-boton {
+  background: #4CAF50;
+  color: #fff;
+}
+
 
 .carrucel-container button:hover {
   background: #000;
   color: #fff;
+}
+
+.editar-boton {
+  background-color: #4CAF50;
+  color: white;
+  padding: 5px 10px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.eliminar-boton {
+  background-color: #f44336;
+  color: white;
+  padding: 5px 10px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.acciones {
+  text-align: center;
+  white-space: nowrap;
 }
 
 
@@ -95,7 +118,6 @@ table {
 
 th,
 td {
-  padding: 8px;
 
   border: 1px solid #ddd;
 

@@ -26,7 +26,7 @@ color = '';
 tipo = '';
 descuento = 0;
 imagen = '/assets/img/';
-imagenes: string[] = [];
+imagenes: string[] = ['/assets/img/'];
 
 
 constructor(private productos: Productos) {}
