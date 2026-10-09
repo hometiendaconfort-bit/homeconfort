@@ -32,14 +32,20 @@ border-bottom: 3px solid rgb(247, 244, 244);
 }
 
 .logo {
-padding-left: 1rem;
-font-size: 28px;
-font-weight: bold;
+padding-left: 0.1rem;
+font-size: 24px;
+font-weight: 700;
 cursor: pointer;
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-color: #aea168eb;
+font-family: system-ui, -apple-system, BlinkMacSystemFont;
+color: #0b0b0b;
+}
 
-
+.logo-img{
+    margin-top: 6px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
 
 }
 .menu-btn {
@@ -48,7 +54,7 @@ font-size: 36px;
 cursor: pointer;
 border: none;
 background: none;
-margin-left: 5px;
+margin-left: 3px;
 }
 
 .bx-home-alt{

@@ -17,7 +17,7 @@ promos = [
       titulo: '¿ Necesitas Financiamiento? ',
       descripcion: 'pide ya tu credito',
       ruta: '/requisitos',
-      texto: 'solo hay cobertura en pereira, cuba, santa rosa y dosquebradas'
+      texto: ''
     }
   ]
 
