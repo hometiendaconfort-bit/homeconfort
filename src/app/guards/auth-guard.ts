@@ -9,7 +9,7 @@ export const authGuard: CanActivateFn = () => {
   return new Promise<boolean>((resolve) => {
     onAuthStateChanged(auth, (user) => {
 
-      if (user && user.uid === 'v0DpbG3vJDRVncQzxSGOz3otyMY2') {
+      if (user && user.uid === 'xNl1GFOOJYS0jnfR6jh1VQlPJxn2') {
         resolve(true);
       } else {
         router.navigate(['/login']);
