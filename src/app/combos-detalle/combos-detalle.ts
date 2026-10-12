@@ -102,7 +102,7 @@ export class ComboDetalleComponent implements OnInit {
     const mensaje =
       `Hola! Estoy interesado en el combo ${combo.nombre} con precio ${combo.precio}`;
 
-    return `https://wa.me/573046637509?text=${encodeURIComponent(mensaje)}`;
+    return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
 
   }
 

@@ -1,15 +1,15 @@
+
 /* CONTENEDOR PRINCIPAL */
 
 .detalle-container {
   max-width: 1200px;
-  margin-top: 4rem;
-  margin-left: 2rem;
-  margin-right: 2rem;
-  margin-bottom: 2rem;
+  width: 100%;
+  margin: 4rem auto 2rem;
   padding: 20px;
+  box-sizing: border-box;
 
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 50px;
 
   background: white;
@@ -23,6 +23,7 @@
 .detalle-galeria {
   display: flex;
   gap: 20px;
+  min-width: 0;
 }
 
 
@@ -30,15 +31,18 @@
 
 .miniaturas-vertical {
   width: 80px;
+  flex-shrink: 0;
 
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 12px;
 }
 
 .miniaturas-vertical img {
   width: 70px;
   height: 70px;
+  flex-shrink: 0;
 
   object-fit: cover;
 
@@ -46,8 +50,7 @@
   border-radius: 8px;
 
   cursor: pointer;
-
-  transition: 0.2s;
+  transition: border-color 0.2s ease;
 }
 
 .miniaturas-vertical img:hover {
@@ -59,16 +62,41 @@
 }
 
 
+/* BOTÓN VOLVER */
+
+.volver {
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 14px 10px;
+
+  background-color: #0d6efd;
+  color: white;
+
+  border: none;
+  border-radius: 5px;
+
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+
+  transition: background-color 0.2s ease;
+}
+
+.volver:hover {
+  background-color: #0b5ed7;
+}
+
+
 /* IMAGEN PRINCIPAL */
 
 .imagen-principal {
   flex: 1;
+  min-width: 0;
+  min-height: 450px;
 
   display: flex;
   justify-content: center;
   align-items: center;
-
-  min-height: 450px;
 }
 
 .imagen-principal img {
@@ -77,7 +105,6 @@
   height: 450px;
 
   object-fit: contain;
-
   border-radius: 10px;
 }
 
@@ -87,52 +114,80 @@
 ========================= */
 
 .detalle-info {
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
+
+  background: #dddcdc;
+  padding: 30px;
+  box-sizing: border-box;
 }
 
 .detalle-info h1 {
   font-size: 32px;
-  margin-bottom: 15px;
-}
-
-.detalle-info > p {
-  font-size: 17px;
-  line-height: 1.6;
+  line-height: 1.3;
+  margin: 0 0 15px;
+  overflow-wrap: anywhere;
 }
 
 
 /* DESCRIPCIÓN */
 
 .descripcion {
-  margin-top: 20px;
+  margin: 10px 0 0;
 
   color: #555;
+  font-size: 17px;
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 
-/* PRECIO */
+/* =========================
+   PRECIOS DE CONTADO Y CRÉDITO
+========================= */
 
 .precios {
-  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  margin-top: 25px;
 }
 
-.precio-final {
+.precios > div {
+  padding: 15px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+
+.precios p {
+  margin: 5px 0;
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+
+/* PRECIO FINAL */
+
+.precios .precio-final {
+  color: #111;
   font-size: 30px;
   font-weight: bold;
-  margin: 0;
+  line-height: 1.3;
+  margin: 5px 0 10px;
 }
 
 
-/* PRECIO ANTERIOR */
+/* PRECIO ORIGINAL TACHADO */
 
 .precio-tachado {
   text-decoration: line-through;
-
   color: #888;
-
   font-size: 18px;
   margin: 0;
 }
@@ -150,7 +205,6 @@
   color: white;
 
   border-radius: 5px;
-
   font-weight: bold;
 }
 
@@ -160,9 +214,10 @@
 ========================= */
 
 .btn-whatsapp {
-  display: inline-block;
-
+  display: block;
   width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
 
   margin-top: 25px;
   padding: 14px 25px;
@@ -171,17 +226,51 @@
   color: white;
 
   text-decoration: none;
+  text-align: center;
 
   border-radius: 8px;
 
   font-size: 17px;
   font-weight: bold;
 
-  transition: 0.2s;
+  transition: background-color 0.2s ease;
 }
 
 .btn-whatsapp:hover {
-  transform: scale(1.03);
+  background: #1fbd5b;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 950px) {
+
+  .detalle-container {
+    gap: 25px;
+    padding: 15px;
+  }
+
+  .detalle-info {
+    padding: 20px;
+  }
+
+  .detalle-info h1 {
+    font-size: 28px;
+  }
+
+  .imagen-principal {
+    min-height: 350px;
+  }
+
+  .imagen-principal img {
+    height: 350px;
+  }
+
+  .precios .precio-final {
+    font-size: 27px;
+  }
 }
 
 
@@ -192,67 +281,129 @@
 @media (max-width: 768px) {
 
   .detalle-container {
-    grid-template-columns: 1fr;
-
+    grid-template-columns: minmax(0, 1fr);
     gap: 25px;
 
+    width: 100%;
     margin: 20px auto;
-    padding: 15px;
+    padding: 12px;
   }
-
 
   .detalle-galeria {
     flex-direction: column-reverse;
+    gap: 15px;
   }
 
 
-  /* Miniaturas horizontales */
+  /* MINIATURAS HORIZONTALES */
 
   .miniaturas-vertical {
     width: 100%;
 
     flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
 
     overflow-x: auto;
+    overflow-y: hidden;
 
-    justify-content: center;
+    padding: 5px 2px 10px;
+    box-sizing: border-box;
   }
 
   .miniaturas-vertical img {
-    flex-shrink: 0;
-
     width: 65px;
     height: 65px;
+    flex-shrink: 0;
+  }
+
+  .volver {
+    width: auto;
+    min-width: 80px;
+    flex-shrink: 0;
+
+    margin: 0;
+    padding: 12px;
   }
 
 
-  /* Imagen principal */
+  /* IMAGEN PRINCIPAL */
 
   .imagen-principal {
-    min-height: 300px;
+    width: 100%;
+    min-height: 280px;
   }
 
   .imagen-principal img {
-    height: 300px;
+    width: 100%;
+    height: 280px;
   }
 
 
-  /* Información */
+  /* INFORMACIÓN */
+
+  .detalle-info {
+    padding: 20px 15px;
+  }
 
   .detalle-info h1 {
     font-size: 26px;
   }
 
-  .precio-final {
+  .descripcion {
+    font-size: 16px;
+  }
+
+
+  /* PRECIOS */
+
+  .precios {
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .precios > div {
+    padding: 12px;
+  }
+
+  .precios p {
+    font-size: 15px;
+  }
+
+  .precios .precio-final {
     font-size: 26px;
   }
 
+
+  /* WHATSAPP */
+
   .btn-whatsapp {
     width: 100%;
+    padding: 14px 12px;
+    font-size: 16px;
+  }
+}
 
-    text-align: center;
 
-    box-sizing: border-box;
+/* CELULARES PEQUEÑOS */
+
+@media (max-width: 380px) {
+
+  .detalle-container {
+    padding: 8px;
+  }
+
+  .detalle-info {
+    padding: 15px 12px;
+  }
+
+  .detalle-info h1 {
+    font-size: 23px;
+  }
+
+  .precios .precio-final {
+    font-size: 23px;
   }
 
 }
+

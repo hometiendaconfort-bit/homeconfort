@@ -1,192 +1,279 @@
 <div class="admin-combos-contenedor">
 
-<h1>Crear combo</h1>
+  <h1>{{ comboEditando ? 'Editar combo' : 'Crear combo' }}</h1>
 
-<!-- ID -->
-<label>ID del combo</label>
+  <!-- ID DEL COMBO -->
 
-<input
-  type="number"
-  [(ngModel)]="idCombo"
-  placeholder="Ej: 1">
+  <label>ID del combo</label>
 
+  <input
+    type="number"
+    [(ngModel)]="idCombo"
+    placeholder="Ej: 1">
 
-<br>
+  <br>
 
+  <!-- NOMBRE -->
 
-<!-- NOMBRE -->
-<label>Nombre del combo</label>
+  <label>Nombre del combo</label>
 
-<input
-  type="text"
-  [(ngModel)]="nombreCombo"
-  placeholder="Ej: Combo habitación completa">
+  <input
+    type="text"
+    [(ngModel)]="nombreCombo"
+    placeholder="Ej: Combo habitación completa">
 
-<br>
-<!-- IMAGEN -->
-<label>Imagen del combo</label>
+  <br>
 
-<input
-  type="text"
-  [(ngModel)]="imagenCombo"
-  placeholder="Ej: /assets/img/">
+  <!-- IMAGEN -->
 
-<br>
+  <label>Imagen del combo</label>
 
-<!-- BASE -->
-<label>Base</label>
+  <input
+    type="text"
+    [(ngModel)]="imagenCombo"
+    placeholder="Ej: /assets/img/">
 
-<select [(ngModel)]="baseId">
+  <br>
 
-  <option value="">
-    Seleccionar base
-  </option>
+  <!-- BASE -->
 
-  <option
-    *ngFor="let producto of bases"
-    [value]="producto.docId">
+  <label>Base</label>
 
-    {{ producto.nombre }}
+  <select [(ngModel)]="baseId">
+    <option value="">Seleccionar base</option>
 
-  </option>
+    <option
+      *ngFor="let producto of bases"
+      [value]="producto.docId">
+      {{ producto.nombre }}
+    </option>
+  </select>
 
-</select>
+  <br>
 
+  <!-- COLCHÓN -->
 
-<br>
+  <label>Colchón</label>
 
+  <select [(ngModel)]="colchonId">
+    <option value="">Seleccionar colchón</option>
 
-<!-- COLCHÓN -->
-<label>Colchón</label>
+    <option
+      *ngFor="let producto of colchones"
+      [value]="producto.docId">
+      {{ producto.nombre }}
+    </option>
+  </select>
 
-<select [(ngModel)]="colchonId">
+  <br>
 
-  <option value="">
-    Seleccionar colchón
-  </option>
+  <!-- ESPALDAR -->
 
-  <option
-    *ngFor="let producto of colchones"
-    [value]="producto.docId">
+  <label>Espaldar</label>
 
-    {{ producto.nombre }}
+  <select [(ngModel)]="espaldarId">
+    <option value="">Sin espaldar</option>
 
-  </option>
+    <option
+      *ngFor="let producto of espaldares"
+      [value]="producto.docId">
+      {{ producto.nombre }}
+    </option>
+  </select>
 
-</select>
+  <hr>
 
+  <!-- MODALIDADES DE VENTA -->
 
-<br>
+  <h3>Modalidades de venta</h3>
 
+  <label class="modalidad">
+    <input
+      type="checkbox"
+      [(ngModel)]="vendeContado">
+    Vender de contado
+  </label>
 
-<!-- ESPALDAR -->
-<label>ESPALDAR</label>
+  <label class="modalidad">
+    <input
+      type="checkbox"
+      [(ngModel)]="vendeCredito">
+    Vender a crédito
+  </label>
 
-<select [(ngModel)]="espaldarId">
+  <hr>
 
-  <option value="">
-    Sin espaldar
-  </option>
+  <!-- PRECIO DE CONTADO -->
 
-  <option
-    *ngFor="let producto of espaldares"
-    [value]="producto.docId">
+  <div *ngIf="vendeContado">
 
-    {{ producto.nombre }}
+    <h3>Precio de contado</h3>
 
-  </option>
+    <label>Precio del combo de contado</label>
 
-</select>
+    <input
+      type="number"
+      [(ngModel)]="precioContado"
+      placeholder="Ej: 1299000">
 
+  </div>
 
-<br>
+  <br>
 
+  <!-- PRECIO DE CRÉDITO -->
 
-<!-- PRECIO -->
-<label>Precio del combo</label>
+  <div *ngIf="vendeCredito">
 
-<input
-  type="number"
-  [(ngModel)]="precioCombo"
-  placeholder="Ej: 1299000">
+    <h3>Precio a crédito</h3>
 
+    <label>Precio total a crédito</label>
 
-<br>
+    <input
+      type="number"
+      [(ngModel)]="precioCredito"
+      placeholder="Ej: 1590000">
 
+    <br>
 
-<!-- DESCRIPCIÓN -->
-<label>Descripción</label>
+    <label>Cuota inicial</label>
 
-<textarea
-  [(ngModel)]="descripcionCombo"
-  placeholder="Descripción del combo">
-</textarea>
+    <input
+      type="number"
+      [(ngModel)]="inicial"
+      placeholder="Ej: 150000">
 
+    <br>
 
-<br>
+    <label>Cuota quincenal</label>
 
+    <input
+      type="number"
+      [(ngModel)]="quincenal"
+      placeholder="Ej: 80000">
 
-<!-- GUARDAR -->
-<button class="guardar" (click)="guardarCombo()">
-  Guardar combo
-</button>
+  </div>
 
- </div>
+  <hr>
+
+  <!-- DESCRIPCIÓN -->
+
+  <label>Descripción del combo</label>
+
+  <textarea
+    [(ngModel)]="descripcionCombo"
+    placeholder="Descripción del combo">
+  </textarea>
+
+  <br>
+
+  <!-- GUARDAR O ACTUALIZAR -->
+
+  <button
+    class="guardar"
+    (click)="guardarCombo()">
+    {{ comboEditando ? 'Actualizar combo' : 'Guardar combo' }}
+  </button>
+
+  <button
+    *ngIf="comboEditando"
+    type="button"
+    (click)="limpiarFormulario()">
+    Cancelar edición
+  </button>
+
+</div>
 
 <hr>
 
-<div class="admin-combos-contenedor-tabla"> 
+<!-- TABLA DE COMBOS -->
 
-<h2>Combos creados</h2>
+<div class="admin-combos-contenedor-tabla">
 
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Nombre</th>
-      <th>Imagen</th>
-      <th>Precio</th>
-      <th>Descripción</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
+  <h2>Combos creados</h2>
 
-  <tbody>
+  <table>
 
-    <tr class="tabla" *ngFor="let combo of combolista">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Imagen</th>
+        <th>Contado</th>
+        <th>Crédito</th>
+        <th>Inicial</th>
+        <th>Quincenal</th>
+        <th>Descripción</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
 
-      <td>{{ combo.id }}</td>
+    <tbody>
 
-      <td>{{ combo.nombre }}</td>
+      <tr
+        class="tabla"
+        *ngFor="let combo of combolista">
 
-      <td>
-        <img
-          [src]="combo.imagen"
-          [alt]="combo.nombre"
-          class="combo-imagen">
+        <td>{{ combo.id }}</td>
 
-      </td>
+        <td>{{ combo.nombre }}</td>
 
-      <td>
-        {{ combo.precio | currency:'COP' }}
-      </td>
+        <td>
+          <img
+            [src]="combo.imagen"
+            [alt]="combo.nombre"
+            class="combo-imagen">
+        </td>
 
-      <td>{{ combo.descripcion }}</td>
+        <td>
+          <span *ngIf="combo.vendeContado">
+            {{ (combo.precioContado ?? combo.precio) | currency:'COP':'symbol':'1.0-0' }}
+          </span>
+          <span *ngIf="!combo.vendeContado">—</span>
+        </td>
 
-      <td>
+        <td>
+          <span *ngIf="combo.vendeCredito">
+            {{ (combo.precioCredito ?? combo.precio) | currency:'COP':'symbol':'1.0-0' }}
+          </span>
+          <span *ngIf="!combo.vendeCredito">—</span>
+        </td>
 
-        <button class="editar" (click)="editar(combo)">
-          Editar
-        </button>
+        <td>
+          <span *ngIf="combo.vendeCredito && combo.inicial != null">
+            {{ combo.inicial | currency:'COP':'symbol':'1.0-0' }}
+          </span>
+          <span *ngIf="!combo.vendeCredito">—</span>
+        </td>
 
-        <button class="eliminar" (click)="eliminar(combo.docId)">
-          Eliminar
-        </button>
+        <td>
+          <span *ngIf="combo.vendeCredito && combo.quincenal != null">
+            {{ combo.quincenal | currency:'COP':'symbol':'1.0-0' }}
+          </span>
+          <span *ngIf="!combo.vendeCredito">—</span>
+        </td>
 
-      </td>
+        <td>{{ combo.descripcion }}</td>
 
-    </tr>
+        <td>
 
-  </tbody>
-</table>
+          <button
+            class="editar"
+            (click)="editar(combo)">
+            Editar
+          </button>
+
+          <button
+            class="eliminar"
+            (click)="eliminar(combo.docId)">
+            Eliminar
+          </button>
+
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
 </div>

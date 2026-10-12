@@ -50,24 +50,24 @@ margin-left:auto;
 .promo-contenido a{
     white-space: nowrap;
     width:auto;
-    min-width:110px;
-    padding:6px 10px;
+    min-width:100px;
+    padding:3px 7px;
     background-color: #a80c11;
     color: #fff;
     text-decoration: none;
-    border-radius: 12px;
+    cursor: pointer;
 }
 
 /* Efecto que hace al pasar el mouse por el botón */
 
 .promo-contenido a:hover {
- background-color: #474194; /* oscurezco un poco el botón */
+ background-color: #8e1414; /* oscurezco un poco el botón */
 }
 
 
 /* Estilos para pantallas pequeñas (móviles) responsive */
 
-@media(max-width:780px){
+@media(max-width:600px){
 
 .promo-bar-superior-segundo {    
  height: 60px;   /* reduzco un poco la altura en móviles */
@@ -79,8 +79,8 @@ margin-left:auto;
  align-items: center;
  text-align: center;
  justify-content: center;
- height: 34px;
- width: 150px;
+ height: 20px;
+ width: 40px;
  padding: 1px 1px;       /* reduzco el espacio interno en móviles */
  font-size: 16px;         /* reduzco el tamaño del texto en móviles */
 }
@@ -112,13 +112,13 @@ margin-left:auto;
 }
 
 .promo-contenido span{
-    font-size:15px;
+    font-size:13px;
 }
 
 .promo-contenido a{
     min-width:110px;
     width:auto;
-    font-size:17px;
+    font-size:15px;
     padding:6px 10px;
 }
 

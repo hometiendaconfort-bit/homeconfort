@@ -7,98 +7,39 @@ import { db } from '../config/firebase';
 })
 export class Productos {
 
-async agregarProducto( 
-  id: number,
-  nombre: string,
-  precio: number,
-  inicial: number,
-  quincenal: number,
-  categoria: string,
-  descripcion: string,
-  color: string,
-  tipo: string,
-  descuento: number,
-  imagen: string,
-  imagenes: string[]
-) {
+   async agregarProducto(producto: any) {
 
- const productosRef = collection(db, 'productos');
+    const productosRef = collection(db, 'productos');
 
- await addDoc(productosRef, {
-    id,
-    nombre,
-    precio,
-    inicial,
-    quincenal,
-    categoria,
-    descripcion,
-    color,
-    tipo,
-    descuento,
-    imagen,
-    imagenes
-  });
+    await addDoc(productosRef, {
+      ...producto
+    });
+  }
 
-  alert('Producto guardado');
+  async obtenerProductos() {
 
+    const productosRef = collection(db, 'productos');
+    const snapshot = await getDocs(productosRef);
+
+    return snapshot.docs.map(documento => ({
+      docId: documento.id,
+      ...documento.data()
+    }));
+  }
+
+  async eliminarProducto(docId: string) {
+
+    const productoRef = doc(db, 'productos', docId);
+
+    await deleteDoc(productoRef);
+  }
+
+  async editarProducto(docId: string, producto: any) {
+
+    const productoRef = doc(db, 'productos', docId);
+
+    await updateDoc(productoRef, {
+      ...producto
+    });
+  } 
 }
-
-async obtenerProductos() {
-
-  const productosRef = collection(db, 'productos');
-
-  const snapshot = await getDocs(productosRef);
-
-  return snapshot.docs.map(doc => ({
-    docId: doc.id,
-    ...doc.data()
-  }));
-
-}
-
-async eliminarProducto(docId: string) {
-
-  const productoRef = doc(db, 'productos', docId);
-
-  await deleteDoc(productoRef);
-
-}
-
-async editarProducto(
-  docId: string,
-  id: number,
-  nombre: string,
-  precio: number,
-  inicial: number,
-  quincenal: number,
-  categoria: string,
-  descripcion: string,
-  color: string,
-  tipo: string,
-  descuento: number,
-  imagen: string,
-  imagenes: string[]
-) {
-
-  const productoRef = doc(db, 'productos', docId);
-
-  await updateDoc(productoRef, {
-    id,
-    nombre,
-    precio,
-    inicial,
-    quincenal,
-    categoria,
-    descripcion,
-    color,
-    tipo,
-    descuento,
-    imagen,
-    imagenes
-  });
-
-}
-
-}
-  
-

@@ -1,42 +1,30 @@
 
-<div class="combos-container">
+<span class="titulo-combos">{{ descripcion }}</span>
 
-  <!-- TARJETA DEL COMBO -->
+<div class="combos-container ">
 
-  <div
-    class="combo-card"
-    *ngFor="let combo of comboLista"
-   
-  >
+  
+
+  <div class="combo-card" *ngFor="let combo of comboLista" [id]="'producto-' + combo.docId">
 
     <!-- IMAGEN PRINCIPAL -->
-
     <div class="combo-imagen">
-
       <img
         [src]="combo.imagenActiva || combo.imagen"
         [alt]="combo.nombre"
         class="imagen-principal"
       >
-
     </div>
 
-
     <!-- MINIATURAS -->
-
     <div
       class="combo-productos"
       (click)="$event.stopPropagation()"
     >
 
-
-      <!-- MINIATURA DEL COMBO -->
-
+      <!-- COMBO -->
       <div class="producto-mini">
-
-        <h4 class="producto-titulo">
-          Combo
-        </h4>
+        <h4 class="producto-titulo">Combo</h4>
 
         <img
           [src]="combo.imagen"
@@ -44,20 +32,14 @@
           class="miniatura"
           (click)="combo.imagenActiva = combo.imagen"
         >
-
       </div>
 
-
       <!-- BASE -->
-
       <div
         class="producto-mini"
         *ngIf="combo.baseId && obtenerProducto(combo.baseId) as base"
       >
-
-        <h4 class="producto-titulo">
-          Base
-        </h4>
+        <h4 class="producto-titulo">Base</h4>
 
         <img
           [src]="base.imagen"
@@ -65,20 +47,14 @@
           class="miniatura"
           (click)="combo.imagenActiva = base.imagen"
         >
-
       </div>
 
-
       <!-- COLCHÓN -->
-
       <div
         class="producto-mini"
         *ngIf="combo.colchonId && obtenerProducto(combo.colchonId) as colchon"
       >
-
-        <h4 class="producto-titulo">
-          Colchón
-        </h4>
+        <h4 class="producto-titulo">Colchón</h4>
 
         <img
           [src]="colchon.imagen"
@@ -86,20 +62,14 @@
           class="miniatura"
           (click)="combo.imagenActiva = colchon.imagen"
         >
-
       </div>
 
-
       <!-- ESPALDAR -->
-
       <div
         class="producto-mini"
         *ngIf="combo.espaldarId && obtenerProducto(combo.espaldarId) as espaldar"
       >
-
-        <h4 class="producto-titulo">
-          Espaldar
-        </h4>
+        <h4 class="producto-titulo">Espaldar</h4>
 
         <img
           [src]="espaldar.imagen"
@@ -107,49 +77,77 @@
           class="miniatura"
           (click)="combo.imagenActiva = espaldar.imagen"
         >
-
       </div>
 
     </div>
 
-
-    <!-- INFORMACIÓN -->
-
+    <!-- INFORMACIÓN DEL COMBO -->
     <div class="combo-info">
 
-      <h3>
-        {{ combo.nombre }}
-      </h3>
+      <h3>{{ combo.nombre }}</h3>
 
       <p class="descripcion">
         {{ combo.descripcion }}
       </p>
 
-      <p class="precio">
-        {{ combo.precio | currency:'COP' }}
+      <!-- PRECIO DE CONTADO -->
+      <ng-container *ngIf="combo.vendeContado">
+        <p class="precio">
+          Contado:
+          {{ (combo.precioContado ?? combo.precio) | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+      </ng-container>
+
+      <!-- PRECIO A CRÉDITO -->
+      <ng-container *ngIf="combo.vendeCredito">
+        <p class="precio">
+          Crédito:
+          {{ (combo.precioCredito ?? combo.precio) | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+
+        <p *ngIf="combo.inicial != null">
+          Inicial:
+          {{ combo.inicial | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+
+        <p *ngIf="combo.quincenal != null">
+          Cuota quincenal:
+          {{ combo.quincenal | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+      </ng-container>
+
+      <!-- COMPATIBILIDAD CON COMBOS ANTIGUOS -->
+      <p
+        class="precio"
+        *ngIf="combo.vendeContado == null && combo.vendeCredito == null"
+      >
+        {{ combo.precio | currency:'COP':'symbol':'1.0-0' }}
       </p>
 
-     <button
-  (click)="$event.stopPropagation(); verDetalleCombo(combo.docId)"
-  class="btn-detalle">
-  Ver Detalle
-</button>
+      <!-- BOTONES -->
+      <div class="combo-botones">
 
+        <button
+          (click)="$event.stopPropagation(); verDetalleCombo(combo.docId)"
+          class="btn-detalle"
+        >
+          Ver Detalle
+        </button>
 
-      <!-- WHATSAPP -->
+        <a
+          [href]="obtenerLinkWhatsApp(combo)"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-whatsapp"
+          (click)="$event.stopPropagation()"
+        >
+          Comprar por WhatsApp
+        </a>
 
-      <a
-        [href]="obtenerLinkWhatsApp(combo)"
-        target="_blank"
-        class="btn-whatsapp"
-        (click)="$event.stopPropagation()"
-      >
-        Comprar por WhatsApp
-      </a>
+      </div>
 
     </div>
 
   </div>
 
 </div>
-

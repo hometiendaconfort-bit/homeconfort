@@ -14,6 +14,7 @@ export class ProductosService {
 
   private url = 'http://localhost:3000/productos';
   private cache: any[] | null = null;
+  productoParaVolver: number | null = null;
 
   constructor(private http: HttpClient) {}
 

@@ -1,64 +1,96 @@
+
 /* Estilos generales del footer */
 .footer {
- background-color: #111;      
- color: #fff;                
- padding: 40px 20px 20px;     
- font-family: Arial, sans-serif;
+  border-top: 2px solid #f5f4f4;
+  background-image: url('/assets/img/fondo5.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #fff;
+  
+  padding: 40px 20px 20px;
+  font-family: Arial, sans-serif;
+  margin-bottom: 0;
+  box-sizing: border-box;
 }
 
 /* Contenedor principal del footer */
 .footer-contenedor {
- display: flex;               
- flex-wrap: wrap;             
- justify-content: space-between; 
- gap: 20px;                  
- max-width: 1200px;          
- margin: auto;                
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 /* Cada sección del footer */
 .footer-section {
- flex: 1 1 200px;             
+  flex: 1 1 400px;
+  min-width: 0;
 }
 
 /* Títulos del footer */
 .footer-section h3,
 .footer-section h4 {
- margin-bottom: 10px;         
- color: #f5b301;             
+  margin: 0 0 10px;
+  color: #f5b301;
 }
 
 /* Texto y listas del footer */
 .footer-section p,
 .footer-section li {
- font-size: 14px;            
- line-height: 1.6; 
-}          
+  font-size: 14px;
+  line-height: 1.6;
+}
 
 /* Lista de enlaces */
 .footer-section ul {
- list-style: none;             
- padding: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 /* Enlaces del footer */
 .footer-section ul li a {
- color: #ccc;                  
- text-decoration: none;       
- transition: color 0.3s;      
+  color: #ccc;
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
 /* Hover de los enlaces */
 .footer-section ul li a:hover {
- color: #f5b301;              
+  color: #f5b301;
 }
 
 /* Parte inferior del footer */
 .footer-bottom {
- text-align: center;          
- border-top: 1px solid #333; 
- margin-top: 20px;             
- padding-top: 10px;          
- font-size: 13px;           
- color: #aaa;                 
+  text-align: center;
+  border-top: 1px solid #333;
+  margin-top: 20px;
+  padding-top: 10px;
+  font-size: 13px;
+  color: #aaa;
 }
+
+/* Adaptación para celulares */
+@media (max-width: 600px) {
+  .footer {
+    padding: 30px 15px 15px;
+  }
+
+  .footer-contenedor {
+    justify-content: flex-start;
+    gap: 25px;
+  }
+
+  .footer-section {
+    flex: 1 1 100%;
+  }
+
+  .footer-bottom {
+    font-size: 12px;
+  }
+}
+

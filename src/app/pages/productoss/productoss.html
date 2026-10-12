@@ -1,9 +1,14 @@
+
 <div class="principal">
+
   <h2>Productos</h2>
 
-  <!-- Filtros -->
+  <!-- FILTROS -->
   <div class="filtros">
-    <button routerLink="/" class="btn-home">← Inicio</button>
+
+    <button routerLink="/" class="btn-home">
+      ← Inicio
+    </button>
 
     <button
       (click)="filtrar('todos', colorActual)"
@@ -30,105 +35,232 @@
     </button>
 
     <button
-      *ngFor="let c of colores"
-      (click)="filtrar(tipoActual, c)"
-      [class.activo]="colorActual === c">
-      {{ c }}
+      *ngFor="let color of colores"
+      (click)="filtrar(tipoActual, color)"
+      [class.activo]="colorActual === color">
+      {{ color }}
     </button>
+
   </div>
 
-  <!-- Productos -->
-  <ng-container *ngIf="productosFiltrados$ | async as productosFiltrados; else cargando">
 
-    <p *ngIf="productosFiltrados.length === 0">
-      No hay productos para esta categoría/tipo/color
-    </p>
+  <!-- PRODUCTOS -->
+  <div class="productos-contenedor">
 
-    <div class="grid" *ngIf="productosFiltrados.length > 0">
+    <ng-container
+      *ngIf="productosFiltrados$ | async as productosFiltrados">
 
       <div
-        class="card"
-        *ngFor="let p of productosFiltrados; trackBy: productosId">
-         
+        class="producto"
+        *ngFor="let p of productosFiltrados; trackBy: productosId"
+        [id]="'producto-' + p.id">
 
-        <!-- Imagen principal -->
-        <div class="imagen-principal-contenedor">
-          <img
-            [src]="p.imagenActiva"
-            [alt]="p.nombre"
-            class="imagen-principal"
-            loading="lazy"
-            decoding="async"
-            (click)="verDetalle(p.id)">
-        </div>
-
-        <h6>Disponible en el color de tu preferencia.</h6>
-
-        <!-- Miniaturas -->
-        <div
-          class="miniaturas"
-          *ngIf="p.imagenes?.length"
-          (click)="verDetalle(p.id)">
+        <!-- IMAGEN DEL PRODUCTO -->
+        <div class="producto-imagen">
 
           <img
-            *ngFor="let img of p.imagenes"
-            [src]="img"
-            [alt]="p.nombre"
-            loading="lazy"
-            decoding="async"
-            (click)="cambiarImagen(p, img)"
-            [class.activa]="img === p.imagenActiva">
+            [src]="p.imagenActiva || p.imagen"
+            [alt]="p.nombre">
+
+          <!-- MINIATURAS -->
+          <div
+            class="miniaturas"
+            *ngIf="p.imagenes && p.imagenes.length > 1">
+
+            <img
+              *ngFor="let img of p.imagenes"
+              [src]="img"
+              [alt]="p.nombre"
+              (click)="cambiarImagen(p, img)">
+
+          </div>
 
         </div>
 
-        <h3>{{ p.nombre }}</h3>
 
-        <!-- Precio original -->
-        <p *ngIf="p.oferta" class="tachado">
-          {{ p.precio | currency:'COP' }}
-        </p>
+        <!-- INFORMACIÓN DEL PRODUCTO -->
+        <div class="producto-info">
 
-        <!-- Precio final -->
-        <p class="precio-final">
-          {{ precioFinal(p) | currency:'COP' }}
-        </p>
+          <h3>{{ p.nombre }}</h3>
 
-        <!-- Crédito -->
-        <div *ngIf="p.tipo === 'credito'">
-          <p>Inicial: {{ p.inicial | currency:'COP' }}</p>
-          <p>Cuota quincenal: {{ p.quincenal | currency:'COP' }}</p>
-          <p *ngIf="p.cuotasMensuales">
-            Cuotas mensuales: {{ p.cuotasMensuales }}
+          <p *ngIf="p.categoria">
+            Categoría: {{ p.categoria }}
           </p>
+
+          <p *ngIf="p.color">
+            Color: {{ p.color }}
+          </p>
+
+          <p *ngIf="p.descripcion">
+            {{ p.descripcion }}
+          </p>
+
+
+          <!-- =========================
+               PRECIO DE CONTADO
+          ========================== -->
+          <div
+            *ngIf="tipoActual === 'contado' && p.vendeContado">
+
+            <!-- PRECIO ORIGINAL TACHADO -->
+            <p
+              *ngIf="
+                (p.descuento > 0 || p.oferta) &&
+                precioFinal(p, 'contado') <
+                (p.precioContado ?? p.precio)
+              "
+              class="precio-anterior">
+
+              {{ (p.precioContado ?? p.precio)
+                | currency:'COP':'symbol-narrow':'1.0-0' }}
+
+            </p>
+
+            <!-- PRECIO CON DESCUENTO -->
+            <p class="precio">
+              {{ precioFinal(p, 'contado')
+                | currency:'COP':'symbol-narrow':'1.0-0' }}
+            </p>
+
+            <p>Pago de contado</p>
+
+          </div>
+
+
+          <!-- =========================
+               PRECIO A CRÉDITO
+          ========================== -->
+          <div
+            *ngIf="tipoActual === 'credito' && p.vendeCredito">
+
+            <p class="precio">
+              Precio a crédito:
+              {{ precioFinal(p, 'credito')
+                | currency:'COP':'symbol-narrow':'1.0-0' }}
+            </p>
+
+            <!-- INICIAL -->
+            <p *ngIf="p.inicial != null">
+              Inicial:
+              {{ p.inicial
+                | currency:'COP':'symbol-narrow':'1.0-0' }}
+            </p>
+
+            <!-- CUOTA QUINCENAL -->
+            <p *ngIf="p.quincenal != null">
+              Cuota quincenal:
+              {{ p.quincenal
+                | currency:'COP':'symbol-narrow':'1.0-0' }}
+            </p>
+
+            <p>Pago a crédito</p>
+
+          </div>
+
+
+          <!-- =========================
+               TODAS LAS MODALIDADES
+          ========================== -->
+          <div *ngIf="tipoActual === 'todos'">
+
+            <!-- CONTADO -->
+            <div *ngIf="p.vendeContado">
+
+              <!-- PRECIO ORIGINAL TACHADO -->
+              <p
+                *ngIf="
+                  (p.descuento > 0 || p.oferta) &&
+                  precioFinal(p, 'contado') <
+                  (p.precioContado ?? p.precio)
+                "
+                class="precio-anterior">
+
+                {{ (p.precioContado ?? p.precio)
+                  | currency:'COP':'symbol-narrow':'1.0-0' }}
+
+              </p>
+
+              <!-- PRECIO CON DESCUENTO -->
+              <p class="precio">
+                Contado:
+                {{ precioFinal(p, 'contado')
+                  | currency:'COP':'symbol-narrow':'1.0-0' }}
+              </p>
+
+            </div>
+
+
+            <!-- CRÉDITO SIN DESCUENTO -->
+            <div *ngIf="p.vendeCredito">
+
+              <p class="precio">
+                Crédito:
+                {{ precioFinal(p, 'credito')
+                  | currency:'COP':'symbol-narrow':'1.0-0' }}
+              </p>
+
+              <!-- INICIAL -->
+              <p *ngIf="p.inicial != null">
+                Inicial:
+                {{ p.inicial
+                  | currency:'COP':'symbol-narrow':'1.0-0' }}
+              </p>
+
+              <!-- CUOTA QUINCENAL -->
+              <p *ngIf="p.quincenal != null">
+                Cuota quincenal:
+                {{ p.quincenal
+                  | currency:'COP':'symbol-narrow':'1.0-0' }}
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <!-- DESCUENTO -->
+          <p
+            class="descuento"
+            *ngIf="p.descuento > 0">
+
+            Descuento: {{ p.descuento }}%
+
+          </p>
+
+
+          <!-- BOTÓN VER DETALLE -->
+          <button
+            class="btn-detalle"
+            (click)="verDetalle(p.id)">
+
+            Ver detalle
+
+          </button>
+
+
+          <!-- BOTÓN WHATSAPP -->
+          <a
+            class="btn-whatsapp"
+            [href]="obtenerLinkWhatsApp(p)"
+            target="_blank"
+            rel="noopener noreferrer">
+
+            Consultar por WhatsApp
+
+          </a>
+
         </div>
-
-        <span>{{ p.tipo }}</span>
-
-        <span *ngIf="p.oferta" class="descuento">
-          -{{ p.descuento }}%
-        </span>
-
-        <button
-          (click)="verDetalle(p.id)"
-          class="btn-detalle">
-          Ver Detalle
-        </button>
-
-        <a
-          [href]="obtenerLinkWhatsApp(p)"
-          target="_blank"
-          class="btn-whatsapp">
-          Comprar por WhatsApp
-        </a>
 
       </div>
 
-    </div>
 
-  </ng-container>
+      <!-- CUANDO NO HAY RESULTADOS -->
+      <p *ngIf="productosFiltrados.length === 0">
+        No se encontraron productos.
+      </p>
 
-  <ng-template #cargando>
-    <p>Cargando productos...</p>
-  </ng-template>
+    </ng-container>
+
+  </div>
 
 </div>

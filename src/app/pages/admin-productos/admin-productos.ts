@@ -11,151 +11,193 @@ import { CommonModule } from '@angular/common';
   styleUrl: './admin-productos.css',
 })
 export class AdminProductos implements OnInit {
+ productoss: any[] = [];
+  docIdEditando = '';
 
-productoss: any[] = [];
-docIdEditando = '';
+  id = 0;
+  nombre = '';
 
-id = 0;
-nombre = '';
-precio = 0;
-inicial = 0;
-quincenal = 0;
-categoria = '';
-descripcion = '';
-color = '';
-tipo = '';
-descuento = 0;
-imagen = '/assets/img/';
-imagenes: string[] = ['/assets/img/'];
+  precioContado = 0;
+  precioCredito = 0;
 
+  vendeContado = true;
+  vendeCredito = false;
 
-constructor(private productos: Productos) {}
+  inicial = 0;
+  quincenal = 0;
 
-async ngOnInit() {
-  await this.cargarProductos();
-}
+  categoria = '';
+  descripcion = '';
+  color = '';
+  descuento = 0;
 
+  imagen = '/assets/img/';
+  imagenesTexto = '';
 
-async guardarProducto() {
+  constructor(private productos: Productos) {}
 
-  try {
+  async ngOnInit() {
+    await this.cargarProductos();
+  }
 
-    if (this.docIdEditando) {
+  async guardarProducto() {
 
-      await this.productos.editarProducto(
-        this.docIdEditando,
-        this.id,
-        this.nombre,
-        this.precio,
-        this.inicial,
-        this.quincenal,
-        this.categoria,
-        this.descripcion,
-        this.color,
-        this.tipo,
-        this.descuento,
-        this.imagen,
-        this.imagenes
-      );
+    try {
 
-      alert('Producto actualizado correctamente');
+      if (!this.vendeContado && !this.vendeCredito) {
+        alert('Selecciona al menos una modalidad de venta');
+        return;
+      }
 
-    } else {
+      if (this.vendeContado && this.precioContado <= 0) {
+        alert('Ingresa un precio de contado válido');
+        return;
+      }
 
-      await this.productos.agregarProducto(
-        this.id,
-        this.nombre,
-        this.precio,
-        this.inicial,
-        this.quincenal,
-        this.categoria,
-        this.descripcion,
-        this.color,
-        this.tipo,
-        this.descuento,
-        this.imagen,
-        this.imagenes
-      );
+      if (this.vendeCredito && this.precioCredito <= 0) {
+        alert('Ingresa un precio a crédito válido');
+        return;
+      }
 
-      alert('Producto guardado correctamente');
+      const imagenes = this.imagenesTexto
+        .split(',')
+        .map(img => img.trim())
+        .filter(img => img !== '');
 
+      const tipo = this.vendeContado && this.vendeCredito
+        ? 'ambos'
+        : this.vendeContado
+          ? 'contado'
+          : 'credito';
+
+      // Mantengo precio para compatibilidad con productos anteriores.
+      const precio = this.vendeContado
+        ? this.precioContado
+        : this.precioCredito;
+
+      const producto = {
+        id: this.id,
+        nombre: this.nombre,
+        precio,
+        precioContado: this.vendeContado ? this.precioContado : null,
+        precioCredito: this.vendeCredito ? this.precioCredito : null,
+        vendeContado: this.vendeContado,
+        vendeCredito: this.vendeCredito,
+        inicial: this.vendeCredito ? this.inicial : 0,
+        quincenal: this.vendeCredito ? this.quincenal : 0,
+        categoria: this.categoria,
+        descripcion: this.descripcion,
+        color: this.color,
+        tipo,
+        descuento: this.descuento,
+        imagen: this.imagen,
+        imagenes
+      };
+
+      if (this.docIdEditando) {
+
+        await this.productos.editarProducto(
+          this.docIdEditando,
+          producto
+        );
+
+        alert('Producto actualizado correctamente');
+
+      } else {
+
+        await this.productos.agregarProducto(producto);
+
+        alert('Producto guardado correctamente');
+      }
+
+      await this.cargarProductos();
+      this.limpiarFormulario();
+
+    } catch (error) {
+
+      console.error(error);
+      alert('Error al guardar el producto');
+    }
+  }
+
+  async cargarProductos() {
+
+    this.productoss = await this.productos.obtenerProductos();
+  }
+
+  async eliminar(docId: string) {
+
+    const confirmar = confirm('¿Deseas eliminar este producto?');
+
+    if (!confirmar) {
+      return;
     }
 
+    await this.productos.eliminarProducto(docId);
     await this.cargarProductos();
-
-    this.limpiarFormulario();
-
-  } catch (error) {
-
-    console.error(error);
-    alert('Error al guardar el producto');
-
   }
 
-}
+  editar(producto: any) {
 
-async cargarProductos() {
+    this.docIdEditando = producto.docId;
 
-  this.productoss = await this.productos.obtenerProductos();
+    this.id = producto.id;
+    this.nombre = producto.nombre;
 
-}
+    // Detectar productos antiguos que solo tienen precio y tipo.
+    this.vendeContado = producto.vendeContado ??
+      (producto.tipo === 'contado' || producto.tipo === 'ambos');
 
-async eliminar(docId: string) {
+    this.vendeCredito = producto.vendeCredito ??
+      (producto.tipo === 'credito' || producto.tipo === 'ambos');
 
-  const confirmar = confirm('¿Deseas eliminar este producto?');
+    this.precioContado = producto.precioContado ??
+      (producto.tipo !== 'credito' ? producto.precio : 0);
 
-  if (!confirmar) {
-    return;
+    this.precioCredito = producto.precioCredito ??
+      (producto.tipo !== 'contado' ? producto.precio : 0);
+
+    this.inicial = producto.inicial ?? 0;
+    this.quincenal = producto.quincenal ?? 0;
+
+    this.categoria = producto.categoria ?? '';
+    this.descripcion = producto.descripcion ?? '';
+    this.color = producto.color ?? '';
+    this.descuento = producto.descuento ?? 0;
+
+    this.imagen = producto.imagen ?? '/assets/img/';
+
+    this.imagenesTexto = Array.isArray(producto.imagenes)
+      ? producto.imagenes.join(', ')
+      : '';
+
+    document.getElementById('admin-productos')?.scrollIntoView({
+      behavior: 'smooth'
+    });
   }
 
-  await this.productos.eliminarProducto(docId);
+  limpiarFormulario() {
 
-  await this.cargarProductos();
+    this.docIdEditando = '';
 
+    this.id = 0;
+    this.nombre = '';
+
+    this.precioContado = 0;
+    this.precioCredito = 0;
+
+    this.vendeContado = true;
+    this.vendeCredito = false;
+
+    this.inicial = 0;
+    this.quincenal = 0;
+
+    this.categoria = '';
+    this.descripcion = '';
+    this.color = '';
+    this.descuento = 0;
+
+    this.imagen = '/assets/img/';
+    this.imagenesTexto = '';
+  }
 }
-
-editar(producto: any) {
-
-  this.docIdEditando = producto.docId;
-
-  this.id = producto.id;
-  this.nombre = producto.nombre;
-  this.precio = producto.precio;
-  this.inicial= producto.inicial;
-  this.quincenal= producto.quincenal;
-  this.categoria = producto.categoria;
-  this.descripcion = producto.descripcion || '';
-  this.color = producto.color;
-  this.tipo = producto.tipo;
-  this.descuento = producto.descuento;
-  this.imagen = producto.imagen;
-  this.imagenes = producto.imagenes || [];
-
-
-   document.getElementById('admin-productos')?.scrollIntoView({
-    behavior: 'smooth'
-  });
-
-}
-
-limpiarFormulario() {
-
-  this.docIdEditando = '';
-
-  this.id = 0;
-  this.nombre = '';
-  this.precio = 0;
-  this.inicial = 0;
-  this.quincenal = 0;
-  this.categoria = '';
-  this.descripcion = '';
-  this.color = '';
-  this.tipo = '';
-  this.descuento = 0;
-  this.imagen = '/assets/img/';
-  this.imagenes = [];
-
-}
-
-}
-

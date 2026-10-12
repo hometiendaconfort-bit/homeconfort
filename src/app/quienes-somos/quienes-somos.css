@@ -4,7 +4,8 @@
   padding: 50px 2rem 60px;
   background: #f8f9fb;
   box-sizing: border-box;
-
+ 
+ border-bottom: #f5f4f4  2px solid;
   mask-image: linear-gradient(
     to bottom,
     transparent 0%,
@@ -151,9 +152,9 @@
   margin-top: 30px;
   padding: 13px 22px;
 
-  border-radius: 8px;
+  border-radius: 6px;
 
-  background: #0e2316;
+  background: #1d6e40;
   color: white;
 
   text-decoration: none;
@@ -168,13 +169,13 @@
 
 
 .btn-whatsapp span {
-  color: #25d366;
+  color: #e2eae5;
   font-size: 20px;
 }
 
 
 .btn-whatsapp:hover {
-  background: #1c3523;
+  background: #347747;
   transform: translateY(-2px);
 }
 
@@ -189,7 +190,7 @@
 
   overflow: hidden;
 
-  border-radius: 15px;
+  border-radius: 10px;
 }
 
 
@@ -218,7 +219,7 @@
   max-width: 1380px;
 
   margin: 35px auto 0;
-  padding: 30px 25px;
+  padding: 25px 25px;
 
   background: white;
 
@@ -293,8 +294,8 @@
 .estadisticas {
   max-width: 1380px;
   margin: 25px auto 0;
-  padding: 28px 45px;
-background: #030303;
+  padding: 20px 45px;
+background: #0c0c0c;
   border-radius: 15px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);

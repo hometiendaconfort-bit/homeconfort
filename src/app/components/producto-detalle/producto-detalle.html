@@ -1,62 +1,128 @@
+
 <div class="detalle-container" *ngIf="producto">
 
+  <!-- SECCIÓN IMAGEN + MINIATURAS -->
+  <div class="detalle-galeria">
 
-<!-- SECCIÓN IMAGEN + MINIATURAS -->
-<div class="detalle-galeria">
+    <div class="miniaturas-vertical">
 
-<!-- Miniaturas verticales -->
-<div class="miniaturas-vertical">
+      <button class="volver" (click)="volver()">
+        Volver
+      </button>
 
-  <button (click)="volver()">Volver</button>
-        
-      <img *ngFor="let img of producto.imagenes  || []"
-          [src]="img"
-          loading="lazy"
-          (click)="cambiarImagen(producto, img)"
-          [class.activa]="img === producto.imagenActiva">
+      <img
+        *ngFor="let img of producto.imagenes || []"
+        [src]="img"
+        [alt]="producto.nombre"
+        loading="lazy"
+        (click)="cambiarImagen(producto, img)"
+        [class.activa]="img === producto.imagenActiva"
+      >
+
     </div>
 
-   <!-- Imagen principal -->
     <div class="imagen-principal">
-      <img [src]="producto.imagenActiva || producto.imagen"
-      loading="lazy"
-      alt="{{ producto.nombre }}">
+      <img
+        [src]="producto.imagenActiva || producto.imagen"
+        [alt]="producto.nombre"
+        loading="lazy"
+      >
     </div>
 
   </div>
 
-  <!-- INFORMACIÓN -->
+  <!-- INFORMACIÓN DEL PRODUCTO -->
   <div class="detalle-info">
 
     <h1>{{ producto.nombre }}</h1>
 
-    <p>{{producto.texto}}</p>
+    <p *ngIf="producto.texto">
+      {{ producto.texto }}
+    </p>
 
-    <div class="precios">
-      <p *ngIf="producto.oferta" class="precio-tachado">
-        {{ producto.precio | currency:'COP':'symbol':'1.0-0' }}
-      </p>
-
-      <p class="precio-final">
-        {{ precioFinal(producto) | currency:'COP':'symbol':'1.0-0' }}
-      </p>
-
-      <span *ngIf="producto.oferta" class="descuento">
-        -{{ producto.descuento }}%
-      </span>
-    </div>
-
+     <!-- DESCRIPCIÓN -->
     <p class="descripcion">
       {{ producto.descripcion }}
     </p>
 
-    <a [href]="obtenerLinkWhatsApp(producto)"
-       target="_blank"
-       class="btn-whatsapp">
-       Comprar por WhatsApp
+    <div class="precios">
+
+      <!-- VENTA DE CONTADO -->
+      <div
+        *ngIf="producto.vendeContado ?? (producto.tipo === 'contado' || producto.tipo === 'ambos')"
+      >
+
+        <h3>Precio de contado</h3>
+
+        <!-- PRECIO ORIGINAL TACHADO -->
+        <p
+          *ngIf="(producto.descuento ?? 0) > 0"
+          class="precio-tachado"
+        >
+          {{
+            (producto.precioContado ?? producto.precio)
+              | currency:'COP':'symbol':'1.0-0'
+          }}
+        </p>
+
+        <!-- PRECIO FINAL CON DESCUENTO -->
+        <p class="precio-final">
+          {{
+            precioFinal(producto, 'contado')
+              | currency:'COP':'symbol':'1.0-0'
+          }}
+        </p>
+
+        <!-- PORCENTAJE DE DESCUENTO -->
+        <span
+          *ngIf="(producto.descuento ?? 0) > 0"
+          class="descuento"
+        >
+          -{{ producto.descuento }}%
+        </span>
+
+      </div>
+
+      <!-- VENTA A CRÉDITO -->
+      <div
+        *ngIf="producto.vendeCredito ?? (producto.tipo === 'credito' || producto.tipo === 'ambos')"
+      >
+
+        <h3>Precio a crédito</h3>
+
+        <p class="precio-final">
+          {{
+            precioFinal(producto, 'credito')
+              | currency:'COP':'symbol':'1.0-0'
+          }}
+        </p>
+
+        <p *ngIf="producto.inicial != null">
+          <strong>Cuota inicial:</strong>
+          {{ producto.inicial | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+
+        <p *ngIf="producto.quincenal != null">
+          <strong>Pago quincenal:</strong>
+          {{ producto.quincenal | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+
+      </div>
+
+    </div>
+
+   
+
+    <!-- BOTÓN DE WHATSAPP -->
+    <a
+      [href]="obtenerLinkWhatsApp(producto)"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="btn-whatsapp"
+    >
+      Comprar por WhatsApp
     </a>
 
   </div>
 
 </div>
-

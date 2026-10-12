@@ -1,64 +1,84 @@
 
+.titulo-combos {
+display: block;
+  text-align: center;
+  
+  background-color: #f0f0f0;
+  padding: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
 .combos-container {
   display: flex;
   flex-wrap: nowrap;
-  gap: 17px;
+  gap: 15px;
   width: 100%;
   padding: 15px;
   box-sizing: border-box;
-
   overflow-x: auto;
   overflow-y: hidden;
-
   scroll-behavior: smooth;
-
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #e0e0e0;
+  border-bottom: 2.5px solid rgba(181, 178, 178, 0.87);
+  align-items: stretch;
 }
 
 .combos-container::-webkit-scrollbar {
-  display: none;
+ height: 8px;
 }
 
+.combos-container::-webkit-scrollbar-track {
+  background: #e0e0e0;
+  border-radius: 10px;
+}
+
+.combos-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.combos-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* TARJETA */
 .combo-card {
-  width: 170px;
-  height: 290px;
-  padding: 0;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 28px;
+  width: 260px;
+  min-width: 260px;
+  height: 450px;
+  flex: 0 0 260px;
+  padding: 6px;
+  background: #c2c0c0;
+  border: 2px solid #f8f5f5;
+  border-radius: 20px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   cursor: pointer;
-   flex: 0 0 170px;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
 
 .combo-card:hover {
   transform: translateY(-2px);
-
-  box-shadow:
-    0 3px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
-
-/* =========================
-   IMAGEN PRINCIPAL
-========================= */
-
+/* IMAGEN PRINCIPAL */
 .combo-imagen {
   width: 100%;
   height: 130px;
+  flex-shrink: 0;
   margin: 0;
   padding: 0;
   display: block;
   overflow: hidden;
+  border-radius: 10px;
 }
-
 
 .imagen-principal {
   width: 100%;
@@ -67,35 +87,31 @@
   object-fit: cover;
 }
 
-
-/*miniaturas*/
-
+/* MINIATURAS */
 .combo-productos {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 5px;
-  margin-top: 6px;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+  margin-bottom: 3px;
+  flex-shrink: 0;
 }
-
 
 .producto-mini {
   width: 50px;
+  min-width: 0;
   text-align: center;
 }
 
 .producto-titulo {
   margin: 0 0 3px;
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 600;
   color: #333;
 }
-
-
-/* =========================
-   MINIATURAS
-========================= */
 
 .miniatura {
   width: 35px;
@@ -106,124 +122,199 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
-  transition:
-    transform 0.15s ease,
-    border-color 0.15s ease;
+  transition: transform 0.15s ease, border-color 0.15s ease;
 }
-
 
 .miniatura:hover {
   transform: scale(1.08);
   border-color: #333;
 }
 
-
+/* INFORMACIÓN */
 .combo-info {
   width: 100%;
-  margin-top: auto;
-  padding: 5px 7px;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 5px;
+  padding: 7px 5px;
   box-sizing: border-box;
   border-top: 1px solid #eee;
   text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: normal;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
 }
 
-/*nombre del combo*/
-
 .combo-info h3 {
+  width: 100%;
   margin: 1px 0 3px;
   font-size: 15px;
   font-weight: 600;
-  font-family: 'Arial', sans-serif;
+  font-family: Arial, sans-serif;
+  overflow-wrap: anywhere;
 }
 
-
-/* =========================
-   DESCRIPCIÓN
-========================= */
-
 .descripcion {
-  margin: 2px 0;
-  font-size: 8px;
+  width: 100%;
+  margin: 2px 0 5px;
+  font-size: 11px;
+  font-weight: normal;
   color: #666;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-
 .precio {
-  margin: 4px 0;
+  width: 100%;
+  margin: 2px 0;
   font-size: 13px;
   font-weight: bold;
+  color: #1b7a3c;
+  overflow-wrap: anywhere;
+}
+
+.combo-info p:not(.precio):not(.descripcion) {
+  width: 100%;
+  margin: 2px 0;
+  font-size: 11px;
+  font-weight: normal;
+  overflow-wrap: anywhere;
+}
+
+/* BOTONES ABAJO */
+.combo-botones {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.btn-detalle,
+.btn-whatsapp {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0;
+  padding: 6px 10px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn-detalle {
+  background-color: #007bff;
+  padding: 9px 30px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.btn-detalle:hover {
+  background-color: #0056b3;
 }
 
 .btn-whatsapp {
-  display: inline-block;
-  padding: 4px 7px;
   background-color: #25D366;
   color: #fff;
-  margin-top: 2px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-size: 10px;
-  cursor: pointer;
+  padding: 9px 10px;
+  overflow-wrap: anywhere;
   transition: opacity 0.2s ease;
 }
-
 
 .btn-whatsapp:hover {
   opacity: 0.85;
 }
 
-
-/* =========================
-   TABLET
-========================= */
-
+/* TABLET */
 @media (max-width: 750px) {
-
   .combos-container {
-    flex-direction: row;
-    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+     scrollbar-width: none;
   }
-
 
   .combo-card {
-    width: 170px;
+    flex: 0 0 220px;
+    width: 220px;
+    min-width: 220px;
   }
-
 }
 
-
-/* =========================
-   CELULAR
-========================= */
+/* CELULAR */
 @media (max-width: 500px) {
-
   .combos-container {
-    grid-template-columns: repeat(4, 120px);
-    gap: 6px;
+    gap: 8px;
     padding: 6px;
+     scrollbar-width: none;
   }
 
   .combo-card {
-    width: 110px;
-    height: 260px;
+    flex: 0 0 190px;
+    width: 190px;
+    min-width: 190px;
+    height: 370px;
+    padding: 6px;
+    border-radius: 14px;
   }
 
   .combo-imagen {
-    height: 110px;
+    height: 100px;
   }
 
-  .miniatura {
-    width: 25px;
-    height: 25px;
+  .combo-productos {
+    gap: 3px;
   }
 
   .producto-mini {
-    width: 40px;
+    width: 38px;
   }
 
-}
+  .producto-titulo {
+    font-size: 10px;
+  }
 
+  .miniatura {
+    width: 27px;
+    height: 27px;
+  }
+
+  .combo-info {
+    padding: 6px 3px;
+  }
+
+  .combo-info h3 {
+    font-size: 13px;
+  }
+
+  .descripcion {
+    font-size: 10px;
+  }
+
+  .precio {
+    font-size: 12px;
+  }
+
+  .combo-info p:not(.precio):not(.descripcion) {
+    font-size: 10px;
+  }
+
+  .btn-detalle,
+  .btn-whatsapp {
+    padding: 6px 5px;
+    font-size: 11px;
+  }
+}

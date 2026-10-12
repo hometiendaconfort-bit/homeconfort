@@ -1,3 +1,4 @@
+
 <div class="detalle-container" *ngIf="combo">
 
   <!-- GALERÍA -->
@@ -6,7 +7,9 @@
     <!-- MINIATURAS -->
     <div class="miniaturas-vertical">
 
-    <button (click)="volver()">Volver</button>
+      <button class="volver" (click)="volver()">
+        Volver
+      </button>
 
       <!-- IMAGEN DEL COMBO -->
       <img
@@ -15,7 +18,6 @@
         (click)="cambiarImagen(combo, combo.imagen)"
         [class.activa]="combo.imagen === combo.imagenActiva"
       >
-
 
       <!-- IMAGEN DE LA BASE -->
       <img
@@ -26,7 +28,6 @@
         [class.activa]="base.imagen === combo.imagenActiva"
       >
 
-
       <!-- IMAGEN DEL COLCHÓN -->
       <img
         *ngIf="combo.colchonId && obtenerProducto(combo.colchonId) as colchon"
@@ -35,7 +36,6 @@
         (click)="cambiarImagen(combo, colchon.imagen)"
         [class.activa]="colchon.imagen === combo.imagenActiva"
       >
-
 
       <!-- IMAGEN DEL ESPALDAR -->
       <img
@@ -48,9 +48,7 @@
 
     </div>
 
-
     <!-- IMAGEN PRINCIPAL -->
-
     <div class="imagen-principal">
 
       <img
@@ -62,36 +60,87 @@
 
   </div>
 
-
-  <!-- INFORMACIÓN -->
-
+  <!-- INFORMACIÓN DEL COMBO -->
   <div class="detalle-info">
 
     <h1>{{ combo.nombre }}</h1>
 
+    <!-- DESCRIPCIÓN -->
     <p class="descripcion">
       {{ combo.descripcion }}
     </p>
 
-
-    <!-- PRECIO DEL COMBO -->
-
+    <!-- PRECIOS DEL COMBO -->
     <div class="precios">
 
-      <p class="precio-final">
-        {{ combo.precio | currency:'COP':'symbol':'1.0-0' }}
-      </p>
+      <!-- PRECIO DE CONTADO -->
+      <div *ngIf="combo.vendeContado">
+
+        <p>Precio de contado:</p>
+
+        <!-- PRECIO ORIGINAL -->
+        <p
+          class="precio-anterior"
+          *ngIf="combo.descuento > 0"
+        >
+          {{
+            combo.precioContado
+              | currency:'COP':'symbol':'1.0-0'
+          }}
+        </p>
+
+        <!-- PRECIO CON DESCUENTO -->
+        <p class="precio-final">
+          {{
+            (
+              combo.descuento > 0
+                ? combo.precioContado -
+                  (combo.precioContado * combo.descuento / 100)
+                : combo.precioContado
+            ) | currency:'COP':'symbol':'1.0-0'
+          }}
+        </p>
+
+        <!-- PORCENTAJE DE DESCUENTO -->
+        <p
+          *ngIf="combo.descuento > 0"
+          class="descuento"
+        >
+          Descuento: {{ combo.descuento }}%
+        </p>
+
+      </div>
+
+      <!-- PRECIO A CRÉDITO -->
+      <div *ngIf="combo.vendeCredito">
+
+        <p>Precio a crédito:</p>
+
+        <p class="precio-final">
+          {{ combo.precioCredito | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+
+        <!-- CUOTA INICIAL -->
+        <p *ngIf="combo.inicial != null">
+          Cuota inicial:
+          {{ combo.inicial | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+
+        <!-- PAGO QUINCENAL -->
+        <p *ngIf="combo.quincenal != null">
+          Pago quincenal:
+          {{ combo.quincenal | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+
+      </div>
 
     </div>
 
-
-
-
     <!-- WHATSAPP -->
-
     <a
       [href]="obtenerLinkWhatsApp(combo)"
       target="_blank"
+      rel="noopener noreferrer"
       class="btn-whatsapp"
     >
       Comprar por WhatsApp

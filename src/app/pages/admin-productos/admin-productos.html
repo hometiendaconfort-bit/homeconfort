@@ -1,70 +1,135 @@
+
 <section class="admin-productos" id="admin-productos">
 
-<h1>Administración de Productos</h1>
+  <h1>Administración de Productos</h1>
 
+  <div>
+    <label>ID</label>
+    <input type="number" [(ngModel)]="id">
+  </div>
+
+  <div>
+    <label>Nombre</label>
+    <input type="text" [(ngModel)]="nombre">
+  </div>
+
+  <div>
+    <label>Formas de venta</label>
+
+    <label>
+      <input
+        type="checkbox"
+        [(ngModel)]="vendeContado"
+        name="vendeContado">
+      Contado
+    </label>
+
+    <label>
+      <input
+        type="checkbox"
+        [(ngModel)]="vendeCredito"
+        name="vendeCredito">
+      Crédito
+    </label>
+  </div>
+
+  <div *ngIf="vendeContado">
+    <label>Precio de contado</label>
+    <input
+      type="number"
+      [(ngModel)]="precioContado"
+      name="precioContado">
+  </div>
+
+  <div *ngIf="vendeCredito">
+    <label>Precio a crédito</label>
+    <input
+      type="number"
+      [(ngModel)]="precioCredito"
+      name="precioCredito">
+  </div>
+
+  <div *ngIf="vendeCredito">
+    <label>Inicial</label>
+    <input
+      type="number"
+      [(ngModel)]="inicial"
+      name="inicial">
+  </div>
+
+  <div *ngIf="vendeCredito">
+    <label>Cuota quincenal</label>
+    <input
+      type="number"
+      [(ngModel)]="quincenal"
+      name="quincenal">
+  </div>
+
+  
 <div>
-  <label>ID</label>
-  <input type="number" [(ngModel)]="id">
-</div>
+  <label for="categoria">Categoría</label>
 
-<div>
-  <label>Nombre</label>
-  <input type="text" [(ngModel)]="nombre">
-</div>
-
-<div>
-  <label>Precio</label>
-  <input type="number" [(ngModel)]="precio">
-</div>
-
-<div>
-  <label>inicial</label>
-  <input type="number" [(ngModel)]="inicial">
-</div>
-
-<div>
-  <label>quincenal</label>
-  <input type="number" [(ngModel)]="quincenal">
-</div>
-
-<div>
-  <label>Categoría</label>
-  <input type="text" [(ngModel)]="categoria">
-</div>
-
-<div>
-  <label>Color</label>
-  <input type="text" [(ngModel)]="color">
-</div>
-
-<div>
-  <label>tipo</label>
-  <input type="text" [(ngModel)]="tipo">
-</div>
-
-<div>
-  <label>Descuento</label>
-  <input type="number" [(ngModel)]="descuento">
-</div>
-
-<div >
-  <label>Imagen</label>
-  <input type="text" [(ngModel)]="imagen">
-</div>
-
-<div >
-  <label>Imagenes</label>
-  <input type="text" [(ngModel)]="imagenes">
+  <select
+    id="categoria"
+    name="categoria"
+    [(ngModel)]="categoria"
+  >
+    <option value="">Selecciona una categoría</option>
+    <option value="camas">colchon</option>
+    <option value="colchones">espaldar</option>
+    <option value="bases">basecama</option>
+    <option value="espaldares">armario</option>
+    <option value="salas">comedor</option>
+    <option value="comedores">Comedores</option>
+    <option value="armarios">painador</option>
+    <option value="peinadores">sala</option>
+    <option value="nocheros">lujo</option>
+    <option value="accesorios">Accesorios</option>
+  </select>
 </div>
 
 
+  <div>
+    <label>Color</label>
+    <input type="text" [(ngModel)]="color">
+  </div>
 
-<div>
-  <label>Descripción</label>
-  <textarea [(ngModel)]="descripcion"></textarea>
-</div>
+  <div>
+    <label>Descuento (%)</label>
+    <input type="number" [(ngModel)]="descuento">
+  </div>
 
-<button class="guardar-producto" (click)="guardarProducto()">Guardar producto</button>
+  <div>
+    <label>Imagen principal</label>
+    <input type="text" [(ngModel)]="imagen">
+  </div>
+
+  <div>
+    <label>Imágenes adicionales</label>
+    <input
+      type="text"
+      [(ngModel)]="imagenesTexto"
+      placeholder="/assets/img/1.jpg, /assets/img/2.jpg">
+    <small>Separa las direcciones con comas.</small>
+  </div>
+
+  <div>
+    <label>Descripción</label>
+    <textarea [(ngModel)]="descripcion"></textarea>
+  </div>
+
+  <button
+    class="guardar-producto"
+    (click)="guardarProducto()">
+    {{ docIdEditando ? 'Actualizar producto' : 'Guardar producto' }}
+  </button>
+
+  <button
+    *ngIf="docIdEditando"
+    type="button"
+    (click)="limpiarFormulario()">
+    Cancelar edición
+  </button>
 
 </section>
 
@@ -72,46 +137,81 @@
 
 <div class="tabla-container">
 
-<h2>Lista de productos</h2>
+  <h2>Lista de productos</h2>
 
-<table>
-   <thead>
-     <tr> 
-      <th>ID</th>
-       <th>Nombre</th> 
-       <th>Precio</th> 
-       <th>inicial</th>
-       <th>quincenal</th>
-       <th>Color</th> 
-       <th>Tipo</th>
-       <th>Descuento</th> 
-       <th>Imagen</th> 
-       <th>Imágenes</th> 
-       <th>Descripción</th> 
-       <th>Acciones</th> 
-      </tr> 
-    
-    </thead> 
-    <tbody> 
-      <tr *ngFor="let producto of productoss"> 
-        <td>{{ producto.id }}</td> 
-        <td>{{ producto.nombre }}</td> 
-        <td>{{ producto.precio }}</td>
-        <td>{{ producto.inicial }}</td>
-        <td>{{ producto.quincenal}}</td>
-         <td>{{ producto.color }}</td> 
-         <td>{{ producto.tipo }}</td>
-         <td>{{ producto.descuento }}</td> 
-         <td class="producto-imagen">{{ producto.imagen }}</td> 
-         <td class="producto-imagen">{{ producto.imagenes }}</td> 
-         <td class="descripcion">{{ producto.descripcion }}</td> 
-         <td class="acciones">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Categoría</th>
+        <th>Contado</th>
+        <th>Crédito</th>
+        <th>Inicial</th>
+        <th>Quincenal</th>
+        <th>Color</th>
+        <th>Modalidad</th>
+        <th>Descuento</th>
+        <th>Imagen</th>
+        <th>Imágenes</th>
+        <th>Descripción</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
 
-           <button class="editar-boton" (click)="editar(producto)"> Editar </button>
+    <tbody>
+      <tr *ngFor="let producto of productoss">
 
-            <button class="eliminar-boton" (click)="eliminar(producto.docId)"> Eliminar </button>
- </td> 
-</tr> 
-</tbody>
- </table>
- </div>
+        <td>{{ producto.id }}</td>
+        <td>{{ producto.nombre }}</td>
+        <td>{{ producto.categoria }}</td>
+
+        <td>
+          {{ producto.precioContado ??
+             (producto.tipo !== 'credito' ? producto.precio : null)
+             | currency:'COP' }}
+        </td>
+
+        <td>
+          {{ producto.precioCredito ??
+             (producto.tipo !== 'contado' ? producto.precio : null)
+             | currency:'COP' }}
+        </td>
+
+        <td>{{ producto.inicial | currency:'COP' }}</td>
+        <td>{{ producto.quincenal | currency:'COP' }}</td>
+        <td>{{ producto.color }}</td>
+        <td>{{ producto.tipo }}</td>
+        <td>{{ producto.descuento }}%</td>
+
+        <td class="producto-imagen">
+          {{ producto.imagen }}
+        </td>
+
+        <td class="producto-imagen">
+          {{ producto.imagenes }}
+        </td>
+
+        <td class="descripcion">
+          {{ producto.descripcion }}
+        </td>
+
+        <td class="acciones">
+          <button
+            class="editar-boton"
+            (click)="editar(producto)">
+            Editar
+          </button>
+
+          <button
+            class="eliminar-boton"
+            (click)="eliminar(producto.docId)">
+            Eliminar
+          </button>
+        </td>
+
+      </tr>
+    </tbody>
+  </table>
+
+</div>
