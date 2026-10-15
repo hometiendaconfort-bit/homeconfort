@@ -1,195 +1,351 @@
 
-* {    
- margin: 0;
+/* ESTILOS GENERALES */
+* {
+  margin: 0;
+  box-sizing: border-box;
 }
 
 body {
- width: 100%;
- font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  width: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Espacio principal 
-donde se encuenta el carrucel y los links */
-
+/* CONTENEDOR GENERAL */
 .contenedor-general {
- margin-top: 6.3rem;   
- display: grid;
- grid-template-columns: 2fr 1.3fr ;
- gap: 20px;
- max-width: 100%;
- padding: 0 12px;
- border-bottom: 2.5px solid rgba(255, 255, 255, 0.87); 
- background-image: url(/assets/img/fondo5.jpg);
+  display: grid;
+  margin-top: 6rem;
+  gap: 12px;
+  padding: 4px 7px;
+  grid-template-columns: 3fr 1fr;
+  max-width: 100%;
+  border-bottom: 2.5px solid rgba(255, 255, 255, 0.87);
+  background-image: url('/assets/img/fondo5.jpg');
 }
 
-/* Espacio del carrucel */
-
+/* CONTENEDOR DEL CARRUSEL */
 .carrucel-contenedor {
- width: 100%;    
- overflow: hidden;
- 
- position:relative;
- padding-top: 1.5rem;
- padding-bottom: 1.5rem;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
 }
 
 .carrucel-inicio {
- width: 100%;
+  width: 100%;
 }
 
 .carrucel-imagen {
- width: 100%;
- max-height: 380px;    
- margin: 0 auto;  
- flex-shrink: 0;   
- flex-shrink: initial;    
- 
+  display: block;
+  width: 100%;
+  max-height: 400px;
+  margin: 0 auto;
+  object-fit: fill;
 }
 
-/*  Son las flechas del carrucel */
-
+/* FLECHAS DEL CARRUSEL */
 .nav-carrucel {
- position: absolute;
- top: 50%;
- transform: translateY(-50%);
- background: rgba(255, 255, 255, 0.2);
- backdrop-filter: blur(14px);
- -webkit-backdrop-filter: blur(14px);
- 
- border: none;
- color: #000;
- font-size: 26px;
- padding: 3px 9px;
- cursor: pointer;
- z-index: 10;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: none;
+  color: #000;
+  font-size: 24px;
+  padding: 2px 7px;
+  cursor: pointer;
+  z-index: 10;
 }
 
-.anterior { 
- left: 10px; 
+.anterior {
+  left: 10px;
 }
 
-.siguiente { 
- right: 10px; 
+.siguiente {
+  right: 10px;
 }
 
-/* Espacio de los links al lado o debajo del carrusel */
-
+/* CONTENEDOR DE CATEGORÍAS EN COMPUTADOR */
 .links-carrucel {
   display: grid;
-  margin-top: 2.5rem;
-  margin-right: 1rem;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  text-decoration: none;
+  padding-top: 2rem;
+  grid-template-columns: repeat(3, minmax(0, 130px));
+  justify-content: center;
+  justify-items: stretch;
+  align-content: start;
+  gap: 10px;
+  margin: 8px;
 }
 
-/* Tarjeta individual */
-
+/* TARJETAS CUADRADAS */
 .link-tarjeta {
-  
-  margin-top: 10px;
- background: #faf8f8;
- padding: 10px;
- border: 1px solid rgba(0, 0, 0, 0.2);
- text-align: center;
- color: #000;
- text-decoration: none;
- outline: none !important;
- 
- transition: transform 0.2s ease, box-shadow 0.2s ease;
- box-shadow: 0px 5px 15px rgba(12, 12, 12, 0.384);
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  box-sizing: border-box;
+  background: #faf8f8;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  text-align: center;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Imagen dentro de la tarjeta */
-
+/* IMAGEN DE LA TARJETA */
 .link-tarjeta img {
- width: 100%;
- height: 70px;
- object-fit: cover;
- border-radius: 8px;
-
+  display: block;
+  width: 85%;
+  height: 75%;
+  margin: 0 auto;
+  object-fit: contain;
 }
 
-/* Texto de la tarjeta */
-
+/* NOMBRE PEGADO ABAJO */
 .link-tarjeta span {
- display: block;
- margin-top: 6px;
- font-size: 13px;
- font-weight: 500;
- font-family: Arial, Helvetica, sans-serif;
- text-decoration: none;
- color: #000;
- text-decoration: none !important;
-background: white;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 4px 2px;
+  box-sizing: border-box;
+  background: white;
+  color: #000;
+  font-size: 11px;
+  line-height: 1.1;
+  font-weight: 500;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
 }
 
-.link-tarjeta a  {
- text-decoration: none !important;
- color: #000;
-}
-
-/* Efecto hover de la tarjeta */
-.link-tarjeta:hover {
-  transform: translateY(-3px);
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.63);
+/* QUITAR SUBRAYADO DE LOS ENLACES */
+.links-carrucel a {
+  display: block;
   text-decoration: none;
+  color: #000;
 }
 
-/* Responsive*/
+/* EFECTO AL PASAR EL CURSOR */
+.link-tarjeta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+
+/* TABLET Y PANTALLAS MEDIANAS */
 @media (max-width: 900px) {
+  .contenedor-general {
+    grid-template-columns: 1fr;
+  }
 
-.contenedor-general{
-  grid-template-columns: 1fr
-}
-.carrucel-general {
-grid-template-columns: 1fr;
-}
+  .carrucel-contenedor {
+    width: 100%;
+  }
 
-  /* No se pone height fijo para mantener proporción */
-  .carousel-contenedor {
-    aspect-ratio: 16 / 10;
+  .carrucel-imagen {
+    width: 100%;
+    max-height: 320px;
+  }
+
+  .links-carrucel {
+    grid-template-columns: repeat(4, minmax(0, 90px));
+    justify-content: center;
+    gap: 6px;
+    margin: 8px;
   }
 }
 
-/*Movil*/
+
+/* RESPONSIVE PARA CELULARES */
+@media (max-width: 600px) {
+
+  .contenedor-general {
+    margin-top: 5rem;
+    margin-bottom: 0;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 4px 5px 0;
+  }
+
+  /* CONTENEDOR DEL CARRUSEL */
+  .carrucel-contenedor {
+    padding: 0.5rem 0;
+    width: 100%;
+  }
+
+  .carrucel-imagen {
+    display: block;
+    width: 100%;
+    max-height: 250px;
+    object-fit: fill;
+  }
+
+  /* FLECHAS */
+  .nav-carrucel {
+    font-size: 20px;
+    padding: 2px 5px;
+    border-radius: 4px;
+  }
+
+  .anterior {
+    left: 4px;
+  }
+
+  .siguiente {
+    right: 4px;
+  }
+
+  /* CATEGORÍAS: 3 COLUMNAS */
+  .links-carrucel {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-content: stretch;
+    align-content: start;
+    gap: 6px;
+    width: 100%;
+    margin: 0;
+    margin-bottom: 1.5rem;
+    padding: 6px 2px 6px;
+    box-sizing: border-box;
+    border-top: 2px solid #faf8f8;
+     border-bottom: 2px solid #faf8f8 ;
+  }
+
+  /* TARJETAS COMPACTAS */
+  .link-tarjeta {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 0.65;
+    min-width: 0;
+    padding: 1px;
+    box-sizing: border-box;
+    background: #faf8f8;
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+    text-align: center;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  /* IMAGEN */
+  .link-tarjeta img {
+    display: block;
+    width: 85%;
+    height: 72%;
+    margin: 0 auto;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+
+  /* NOMBRE PEGADO ABAJO */
+  .link-tarjeta span {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 3px 1px;
+    box-sizing: border-box;
+    background: white;
+    color: #000;
+    font-size: 10px;
+    line-height: 1.1;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  /* QUITAR SUBRAYADO */
+  .links-carrucel a {
+    display: block;
+    min-width: 0;
+    color: #000;
+    text-decoration: none;
+  }
+
+  /* SIN EFECTO DE MOVIMIENTO EN CELULAR */
+  .link-tarjeta:hover {
+    transform: none;
+  }
+}
+/* CELULARES */
 @media (max-width: 480px) {
-.contenedor-general {
- margin-top: 7rem;
- grid-template-columns: 1fr;
- gap: 0px;
- padding: 0 5px;
+  .contenedor-general {
+    margin-top: 5rem;
+    
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 4px 4px 0;
+  }
 
-}
+  .carrucel-contenedor {
+    padding-top: 0.5rem;
+    
+  }
 
-.carousel-imagen {
- width: 100%;
- max-height: 250px;      
- border-radius: 2rem;
-}
+  .carrucel-imagen {
+    width: 100%;
+    max-height: 250px;
+    object-fit: fill;
+  }
 
+  /* FLECHAS */
+  .nav-carrucel {
+    font-size: 20px;
+    padding: 2px 5px;
+    border-radius: 4px;
+  }
 
-.links-carrucel {
- grid-template-columns: repeat(4, 1fr);
- gap: 5px;
- margin-top: 0.1rem;
- margin-right: 0;
- margin-bottom: 1rem;
- text-decoration: none;
-}
+  .anterior {
+    left: 4px;
+  }
 
-.link-tarjeta {
- padding: 2px;
-}
+  .siguiente {
+    right: 4px;
+  }
 
-.link-tarjeta img {
- height: 60px;
-}
+  /* CATEGORÍAS OCUPAN EL ANCHO DISPONIBLE */
+  .links-carrucel {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-content: stretch;
+    gap: 8px;
+    width: 100%;
+    margin: 0;
+    margin-bottom: 2rem;
+    padding: 8px 4px 8px;
+    border-top: 2px solid #faf8f8;
+    border-bottom: 2px solid #faf8f8 ;
+  }
 
-.link-tarjeta span {
- font-size: 11px;
- line-height: 1.2;
- text-decoration: none;
-}
+  /* TARJETAS CUADRADAS */
+  .link-tarjeta {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 0.75;
+    min-width: 0;
+    padding: 2px;
+    margin-bottom: 0px;
+    border-radius: 5px;
+    border: 1px solid rgb(244, 239, 239);
+    box-shadow: 0 2px 5px rgba(12, 12, 12, 0.2);
+  }
 
+  .link-tarjeta img {
+    width: 85%;
+    height: 75%;
+    border-radius: 4px;
+  }
+
+  .link-tarjeta span {
+    padding: 3px 1px;
+    font-size: 10px;
+    line-height: 1.1;
+  }
+
+  .link-tarjeta:hover {
+    transform: none;
+  }
 }
