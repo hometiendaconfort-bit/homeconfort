@@ -19,6 +19,9 @@ export class Productoss implements OnInit {
   colores: string[] = [];
   slug: string | null = null;
 
+  // GUARDO LA MODALIDAD SELECCIONADA PARA CADA PRODUCTO
+  modalidadProducto: { [id: string]: 'contado' | 'credito' } = {};
+
   tipoSeleccionado$ = new BehaviorSubject<string>('todos');
   colorSeleccionado$ = new BehaviorSubject<string>('todos');
 
@@ -38,6 +41,7 @@ export class Productoss implements OnInit {
 
     this.slug = this.route.snapshot.paramMap.get('slug');
 
+    // LEER EL FILTRO DE MODALIDAD DESDE LA URL
     this.route.queryParams.subscribe(params => {
       const tipo = params['tipo'];
 
@@ -51,13 +55,15 @@ export class Productoss implements OnInit {
     });
 
     this.productosService.getProductos().subscribe({
+
       next: data => {
 
-        // Adaptar productos nuevos y antiguos.
+        // ADAPTO PRODUCTOS NUEVOS Y ANTIGUOS DE FIREBASE
         this.productos = data.map(p => {
 
           const vendeContado = p.vendeContado ??
-            (p.tipo === 'contado' || p.tipo === 'ambos');
+            (p.tipo === 'contado' || p.tipo === 'ambos' ||
+             (!p.tipo && p.precio != null));
 
           const vendeCredito = p.vendeCredito ??
             (p.tipo === 'credito' || p.tipo === 'ambos');
@@ -85,17 +91,31 @@ export class Productoss implements OnInit {
           };
         });
 
-        // Obtener los colores disponibles.
+        // INICIAR EN CREDITO SI ESTA DISPONIBLE
+        this.productos.forEach(p => {
+
+          const id = String(p.id);
+
+          if (p.vendeCredito) {
+            this.modalidadProducto[id] = 'credito';
+          } else if (p.vendeContado) {
+            this.modalidadProducto[id] = 'contado';
+          }
+
+        });
+
+        // OBTENER LOS COLORES DISPONIBLES
         this.colores = Array.from(
           new Set(this.productos.map(p => p.color))
         ).filter(c => c);
 
-        // Filtrar productos por búsqueda, modalidad y color.
+        // FILTRAR POR BUSQUEDA, MODALIDAD Y COLOR
         this.productosFiltrados$ = combineLatest([
           this.searchService.search$,
           this.tipoSeleccionado$,
           this.colorSeleccionado$
         ]).pipe(
+
           map(([textoBusqueda, tipo, color]) => {
 
             const txt = (textoBusqueda || '').toLowerCase().trim();
@@ -126,21 +146,24 @@ export class Productoss implements OnInit {
               );
 
               return categoriaOk && tipoOk && colorOk && textoOk;
+
             });
           })
         );
 
-        // Restaurar el scroll hasta el producto.
+        // RESTAURAR EL SCROLL HASTA EL PRODUCTO SELECCIONADO
         setTimeout(() => {
           this.restaurarProducto();
         }, 100);
+
       },
 
       error: err => console.error('Error cargando productos', err)
+
     });
   }
 
-  // Filtrar por modalidad y color.
+  // FILTRAR PRODUCTOS POR MODALIDAD Y COLOR
   filtrar(tipo: string, color: string): void {
 
     this.tipoSeleccionado$.next(tipo);
@@ -150,33 +173,60 @@ export class Productoss implements OnInit {
     this.colorActual = color;
   }
 
-  // Cambiar la imagen principal del producto.
+  // CAMBIAR LA MODALIDAD DEL PRODUCTO
+  seleccionarModalidad(
+    p: any,
+    modalidad: 'contado' | 'credito'
+  ): void {
+
+    const id = String(p.id);
+
+    if (modalidad === 'contado' && p.vendeContado) {
+      this.modalidadProducto[id] = 'contado';
+    }
+
+    if (modalidad === 'credito' && p.vendeCredito) {
+      this.modalidadProducto[id] = 'credito';
+    }
+  }
+
+  // OBTENER LA MODALIDAD SELECCIONADA
+  obtenerModalidad(p: any): 'contado' | 'credito' {
+
+    const id = String(p.id);
+
+    return this.modalidadProducto[id] ??
+      (p.vendeCredito ? 'credito' : 'contado');
+  }
+
+  // CAMBIAR LA IMAGEN PRINCIPAL DEL PRODUCTO
   cambiarImagen(p: any, img: string): void {
     p.imagenActiva = img;
   }
 
-  // Aplicar descuento únicamente al precio de contado.
+  // OBTENER EL PRECIO ORIGINAL ANTES DEL DESCUENTO
+  precioOriginal(p: any): number {
+    return Number(p.precioContado ?? p.precio ?? 0);
+  }
+
+  // CALCULAR EL PRECIO SEGUN LA MODALIDAD
+  // EL DESCUENTO SOLO SE APLICA A CONTADO
   precioFinal(p: any, modalidad?: string): number {
 
     const modo = modalidad && modalidad !== 'todos'
       ? modalidad
-      : p.vendeContado
-        ? 'contado'
-        : 'credito';
+      : this.obtenerModalidad(p);
 
-    // Obtener el precio de la modalidad seleccionada.
     const precio = modo === 'credito'
       ? p.precioCredito
       : p.precioContado;
 
     const precioBase = Number(precio ?? p.precio ?? 0);
 
-    // El precio a crédito no recibe descuento.
     if (modo === 'credito') {
       return precioBase;
     }
 
-    // El descuento se aplica solamente al contado.
     const descuento = Number(p.descuento ?? 0);
 
     return p.oferta || descuento > 0
@@ -184,35 +234,58 @@ export class Productoss implements OnInit {
       : precioBase;
   }
 
-  // Crear enlace de WhatsApp con la modalidad seleccionada.
+  // GENERAR EL MENSAJE DE WHATSAPP CON LA MODALIDAD ELEGIDA
   obtenerLinkWhatsApp(p: any): string {
 
-    const modalidad = this.tipoActual === 'todos'
-      ? (p.vendeContado ? 'contado' : 'credito')
-      : this.tipoActual;
-
+    const modalidad = this.obtenerModalidad(p);
     const precio = this.precioFinal(p, modalidad);
 
-    const mensaje =
-      `Hola! Estoy interesado en ${p.nombre}. ` +
-      `Forma de pago: ${modalidad}. ` +
-      `Precio: ${precio}.`;
+    const precioTexto = precio.toLocaleString('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0
+    });
+
+    let mensaje =
+      `Hola, estoy interesado en ${p.nombre}. ` +
+      `Quiero comprarlo ${modalidad === 'contado' ? 'de contado' : 'a crédito'}. ` +
+      `Precio: ${precioTexto}.`;
+
+    // INCLUIR LOS VALORES DE FINANCIACION SI ES CREDITO
+    if (modalidad === 'credito') {
+
+      if (p.inicial != null) {
+        mensaje += ` Inicial: ${Number(p.inicial).toLocaleString('es-CO', {
+          style: 'currency',
+          currency: 'COP',
+          maximumFractionDigits: 0
+        })}.`;
+      }
+
+      if (p.quincenal != null) {
+        mensaje += ` Cuota quincenal: ${Number(p.quincenal).toLocaleString('es-CO', {
+          style: 'currency',
+          currency: 'COP',
+          maximumFractionDigits: 0
+        })}.`;
+      }
+    }
 
     return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
   }
 
-  // Ir al detalle del producto y guardar su ID para volver.
+  // IR AL DETALLE Y GUARDAR EL ID PARA VOLVER AL MISMO PRODUCTO
   verDetalle(id: number): void {
     this.productosService.productoParaVolver = id;
     this.router.navigate(['/productos', id]);
   }
 
-  // Identificar cada producto en la lista.
+  // IDENTIFICAR CADA PRODUCTO EN LA LISTA
   productosId(_index: number, item: any): number {
     return item.id;
   }
 
-  // Restaurar el scroll hasta el producto seleccionado.
+  // RESTAURAR EL SCROLL HASTA EL PRODUCTO SELECCIONADO
   restaurarProducto(): void {
 
     const id = this.productosService.productoParaVolver;

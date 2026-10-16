@@ -1,11 +1,13 @@
 
 <span class="titulo-combos">{{ descripcion }}</span>
 
-<div class="combos-container ">
+<div class="combos-container">
 
-  
-
-  <div class="combo-card" *ngFor="let combo of comboLista" [id]="'producto-' + combo.docId">
+  <div
+    class="combo-card"
+    *ngFor="let combo of comboLista"
+    [id]="'producto-' + combo.docId"
+  >
 
     <!-- IMAGEN PRINCIPAL -->
     <div class="combo-imagen">
@@ -49,7 +51,7 @@
         >
       </div>
 
-      <!-- COLCHÓN -->
+      <!-- COLCHON -->
       <div
         class="producto-mini"
         *ngIf="combo.colchonId && obtenerProducto(combo.colchonId) as colchon"
@@ -81,7 +83,7 @@
 
     </div>
 
-    <!-- INFORMACIÓN DEL COMBO -->
+    <!-- INFORMACION DEL COMBO -->
     <div class="combo-info">
 
       <h3>{{ combo.nombre }}</h3>
@@ -90,19 +92,56 @@
         {{ combo.descripcion }}
       </p>
 
+      <!-- SELECTOR CUANDO EXISTEN LAS DOS MODALIDADES -->
+      <div
+        class="selector-modalidad"
+        *ngIf="combo.vendeContado && combo.vendeCredito"
+        (click)="$event.stopPropagation()"
+      >
+
+        <label
+          [class.seleccionada]="obtenerModalidad(combo) === 'contado'"
+        >
+          <input
+            type="radio"
+            [name]="'modalidad-' + (combo.docId ?? combo.id)"
+            [checked]="obtenerModalidad(combo) === 'contado'"
+            (change)="seleccionarModalidad(combo, 'contado')"
+          >
+          Contado
+        </label>
+
+        <label
+          [class.seleccionada]="obtenerModalidad(combo) === 'credito'"
+        >
+          <input
+            type="radio"
+            [name]="'modalidad-' + (combo.docId ?? combo.id)"
+            [checked]="obtenerModalidad(combo) === 'credito'"
+            (change)="seleccionarModalidad(combo, 'credito')"
+          >
+          Crédito
+        </label>
+
+      </div>
+
       <!-- PRECIO DE CONTADO -->
-      <ng-container *ngIf="combo.vendeContado">
+      <ng-container
+        *ngIf="obtenerModalidad(combo) === 'contado' && combo.vendeContado"
+      >
         <p class="precio">
-          Contado:
-          {{ (combo.precioContado ?? combo.precio) | currency:'COP':'symbol':'1.0-0' }}
+          Precio de contado:
+          {{ precioFinal(combo, 'contado') | currency:'COP':'symbol':'1.0-0' }}
         </p>
       </ng-container>
 
-      <!-- PRECIO A CRÉDITO -->
-      <ng-container *ngIf="combo.vendeCredito">
+      <!-- PRECIO A CREDITO -->
+      <ng-container
+        *ngIf="obtenerModalidad(combo) === 'credito' && combo.vendeCredito"
+      >
         <p class="precio">
-          Crédito:
-          {{ (combo.precioCredito ?? combo.precio) | currency:'COP':'symbol':'1.0-0' }}
+          Precio a crédito:
+          {{ precioFinal(combo, 'credito') | currency:'COP':'symbol':'1.0-0' }}
         </p>
 
         <p *ngIf="combo.inicial != null">
@@ -116,10 +155,10 @@
         </p>
       </ng-container>
 
-      <!-- COMPATIBILIDAD CON COMBOS ANTIGUOS -->
+      <!-- COMPATIBILIDAD CON COMBOS ANTIGUOS SIN MODALIDAD DEFINIDA -->
       <p
         class="precio"
-        *ngIf="combo.vendeContado == null && combo.vendeCredito == null"
+        *ngIf="!combo.vendeContado && !combo.vendeCredito"
       >
         {{ combo.precio | currency:'COP':'symbol':'1.0-0' }}
       </p>

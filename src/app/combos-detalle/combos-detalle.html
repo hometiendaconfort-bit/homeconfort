@@ -7,7 +7,7 @@
     <!-- MINIATURAS -->
     <div class="miniaturas-vertical">
 
-      <button class="volver" (click)="volver()">
+      <button type="button" class="volver" (click)="volver()">
         Volver
       </button>
 
@@ -50,12 +50,10 @@
 
     <!-- IMAGEN PRINCIPAL -->
     <div class="imagen-principal">
-
       <img
         [src]="combo.imagenActiva || combo.imagen"
         [alt]="combo.nombre"
       >
-
     </div>
 
   </div>
@@ -70,26 +68,50 @@
       {{ combo.descripcion }}
     </p>
 
-    <!-- PRECIOS DEL COMBO -->
+    <!-- SELECTOR CONTADO Y CRÉDITO -->
+    <div
+      class="selector-modalidad"
+      *ngIf="combo.vendeContado && combo.vendeCredito"
+    >
+
+      <button
+        type="button"
+        [class.activo]="modalidad === 'contado'"
+        (click)="seleccionarModalidad('contado')"
+      >
+        Contado
+      </button>
+
+      <button
+        type="button"
+        [class.activo]="modalidad === 'credito'"
+        (click)="seleccionarModalidad('credito')"
+      >
+        Crédito
+      </button>
+
+    </div>
+
+    <!-- PRECIOS -->
     <div class="precios">
 
       <!-- PRECIO DE CONTADO -->
-      <div *ngIf="combo.vendeContado">
+      <div
+        class="precio-modalidad"
+        [class.invisible]="modalidad !== 'contado'"
+      >
 
         <p>Precio de contado:</p>
 
-        <!-- PRECIO ORIGINAL -->
+        <!-- PRECIO ANTERIOR -->
         <p
           class="precio-anterior"
           *ngIf="combo.descuento > 0"
         >
-          {{
-            combo.precioContado
-              | currency:'COP':'symbol':'1.0-0'
-          }}
+          {{ combo.precioContado | currency:'COP':'symbol':'1.0-0' }}
         </p>
 
-        <!-- PRECIO CON DESCUENTO -->
+        <!-- PRECIO FINAL -->
         <p class="precio-final">
           {{
             (
@@ -101,7 +123,7 @@
           }}
         </p>
 
-        <!-- PORCENTAJE DE DESCUENTO -->
+        <!-- DESCUENTO -->
         <p
           *ngIf="combo.descuento > 0"
           class="descuento"
@@ -112,7 +134,10 @@
       </div>
 
       <!-- PRECIO A CRÉDITO -->
-      <div *ngIf="combo.vendeCredito">
+      <div
+        class="precio-modalidad"
+        [class.invisible]="modalidad !== 'credito'"
+      >
 
         <p>Precio a crédito:</p>
 

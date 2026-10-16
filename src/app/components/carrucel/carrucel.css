@@ -42,6 +42,7 @@ body {
   max-height: 400px;
   margin: 0 auto;
   object-fit: fill;
+ 
 }
 
 /* FLECHAS DEL CARRUSEL */
@@ -102,6 +103,7 @@ body {
   height: 75%;
   margin: 0 auto;
   object-fit: contain;
+   border-radius: 120%;
 }
 
 /* NOMBRE PEGADO ABAJO */

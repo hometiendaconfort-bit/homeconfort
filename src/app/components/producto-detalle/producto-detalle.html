@@ -1,7 +1,6 @@
-
 <div class="detalle-container" *ngIf="producto">
 
-  <!-- SECCIÓN IMAGEN + MINIATURAS -->
+  <!-- GALERÍA DE IMÁGENES -->
   <div class="detalle-galeria">
 
     <div class="miniaturas-vertical">
@@ -21,6 +20,7 @@
 
     </div>
 
+    <!-- IMAGEN PRINCIPAL -->
     <div class="imagen-principal">
       <img
         [src]="producto.imagenActiva || producto.imagen"
@@ -40,32 +40,31 @@
       {{ producto.texto }}
     </p>
 
-     <!-- DESCRIPCIÓN -->
+    <!-- DESCRIPCIÓN -->
     <p class="descripcion">
       {{ producto.descripcion }}
     </p>
 
+    <!-- PRECIOS -->
     <div class="precios">
 
-      <!-- VENTA DE CONTADO -->
-      <div
-        *ngIf="producto.vendeContado ?? (producto.tipo === 'contado' || producto.tipo === 'ambos')"
-      >
+      <!-- CONTADO -->
+      <div *ngIf="producto.vendeContado">
 
         <h3>Precio de contado</h3>
 
-        <!-- PRECIO ORIGINAL TACHADO -->
+        <!-- PRECIO ORIGINAL -->
         <p
-          *ngIf="(producto.descuento ?? 0) > 0"
+          *ngIf="producto.descuento > 0"
           class="precio-tachado"
         >
           {{
-            (producto.precioContado ?? producto.precio)
+            precioOriginal(producto)
               | currency:'COP':'symbol':'1.0-0'
           }}
         </p>
 
-        <!-- PRECIO FINAL CON DESCUENTO -->
+        <!-- PRECIO FINAL -->
         <p class="precio-final">
           {{
             precioFinal(producto, 'contado')
@@ -73,9 +72,9 @@
           }}
         </p>
 
-        <!-- PORCENTAJE DE DESCUENTO -->
+        <!-- DESCUENTO -->
         <span
-          *ngIf="(producto.descuento ?? 0) > 0"
+          *ngIf="producto.descuento > 0"
           class="descuento"
         >
           -{{ producto.descuento }}%
@@ -83,10 +82,8 @@
 
       </div>
 
-      <!-- VENTA A CRÉDITO -->
-      <div
-        *ngIf="producto.vendeCredito ?? (producto.tipo === 'credito' || producto.tipo === 'ambos')"
-      >
+      <!-- CRÉDITO -->
+      <div *ngIf="producto.vendeCredito">
 
         <h3>Precio a crédito</h3>
 
@@ -99,19 +96,61 @@
 
         <p *ngIf="producto.inicial != null">
           <strong>Cuota inicial:</strong>
-          {{ producto.inicial | currency:'COP':'symbol':'1.0-0' }}
+          {{
+            producto.inicial
+              | currency:'COP':'symbol':'1.0-0'
+          }}
         </p>
 
         <p *ngIf="producto.quincenal != null">
           <strong>Pago quincenal:</strong>
-          {{ producto.quincenal | currency:'COP':'symbol':'1.0-0' }}
+          {{
+            producto.quincenal
+              | currency:'COP':'symbol':'1.0-0'
+          }}
         </p>
 
       </div>
 
     </div>
 
-   
+    <!-- ELEGIR MODALIDAD -->
+    <div
+      class="selector-modalidad"
+      *ngIf="producto.vendeContado && producto.vendeCredito"
+    >
+
+      <p>¿Cómo deseas comprar?</p>
+
+      <label
+        [class.seleccionada]="modalidadSeleccionada === 'contado'"
+      >
+        <input
+          type="radio"
+          name="modalidadDetalle"
+          value="contado"
+          [checked]="modalidadSeleccionada === 'contado'"
+          (change)="seleccionarModalidad('contado')"
+        >
+
+        <span>De contado</span>
+      </label>
+
+      <label
+        [class.seleccionada]="modalidadSeleccionada === 'credito'"
+      >
+        <input
+          type="radio"
+          name="modalidadDetalle"
+          value="credito"
+          [checked]="modalidadSeleccionada === 'credito'"
+          (change)="seleccionarModalidad('credito')"
+        >
+
+        <span>A crédito</span>
+      </label>
+
+    </div>
 
     <!-- BOTÓN DE WHATSAPP -->
     <a
@@ -120,7 +159,7 @@
       rel="noopener noreferrer"
       class="btn-whatsapp"
     >
-      Comprar por WhatsApp
+      Consultar por WhatsApp
     </a>
 
   </div>

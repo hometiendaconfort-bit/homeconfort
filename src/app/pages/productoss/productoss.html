@@ -43,7 +43,6 @@
 
   </div>
 
-
   <!-- PRODUCTOS -->
   <div class="productos-contenedor">
 
@@ -77,8 +76,7 @@
 
         </div>
 
-
-        <!-- INFORMACIÓN DEL PRODUCTO -->
+        <!-- INFORMACION DEL PRODUCTO -->
         <div class="producto-info">
 
           <h3>{{ p.nombre }}</h3>
@@ -95,140 +93,98 @@
             {{ p.descripcion }}
           </p>
 
-
-          <!-- =========================
-               PRECIO DE CONTADO
-          ========================== -->
+          <!-- SELECTOR DE MODALIDAD -->
           <div
-            *ngIf="tipoActual === 'contado' && p.vendeContado">
+            class="selector-modalidad"
+            *ngIf="p.vendeContado && p.vendeCredito">
 
-            <!-- PRECIO ORIGINAL TACHADO -->
-            <p
-              *ngIf="
-                (p.descuento > 0 || p.oferta) &&
-                precioFinal(p, 'contado') <
-                (p.precioContado ?? p.precio)
-              "
-              class="precio-anterior">
+            <label
+              [class.seleccionada]="obtenerModalidad(p) === 'credito'">
 
-              {{ (p.precioContado ?? p.precio)
-                | currency:'COP':'symbol-narrow':'1.0-0' }}
+              <input
+                type="radio"
+                [name]="'modalidad-' + p.id"
+                value="credito"
+                [checked]="obtenerModalidad(p) === 'credito'"
+                (change)="seleccionarModalidad(p, 'credito')">
 
-            </p>
+              Crédito
 
-            <!-- PRECIO CON DESCUENTO -->
-            <p class="precio">
-              {{ precioFinal(p, 'contado')
-                | currency:'COP':'symbol-narrow':'1.0-0' }}
-            </p>
+            </label>
 
-            <p>Pago de contado</p>
+            <label
+              [class.seleccionada]="obtenerModalidad(p) === 'contado'">
+
+              <input
+                type="radio"
+                [name]="'modalidad-' + p.id"
+                value="contado"
+                [checked]="obtenerModalidad(p) === 'contado'"
+                (change)="seleccionarModalidad(p, 'contado')">
+
+              Contado
+
+            </label>
 
           </div>
 
-
-          <!-- =========================
-               PRECIO A CRÉDITO
-          ========================== -->
-          <div
-            *ngIf="tipoActual === 'credito' && p.vendeCredito">
+          <!-- PRECIO DE CREDITO -->
+          <ng-container
+            *ngIf="obtenerModalidad(p) === 'credito' && p.vendeCredito">
 
             <p class="precio">
-              Precio a crédito:
+              Crédito:
               {{ precioFinal(p, 'credito')
                 | currency:'COP':'symbol-narrow':'1.0-0' }}
             </p>
 
-            <!-- INICIAL -->
             <p *ngIf="p.inicial != null">
               Inicial:
               {{ p.inicial
                 | currency:'COP':'symbol-narrow':'1.0-0' }}
             </p>
 
-            <!-- CUOTA QUINCENAL -->
             <p *ngIf="p.quincenal != null">
               Cuota quincenal:
               {{ p.quincenal
                 | currency:'COP':'symbol-narrow':'1.0-0' }}
             </p>
 
-            <p>Pago a crédito</p>
+          </ng-container>
 
-          </div>
+          <!-- PRECIO DE CONTADO -->
+          <ng-container
+            *ngIf="obtenerModalidad(p) === 'contado' && p.vendeContado">
 
+            <p
+              class="precio-anterior"
+              *ngIf="
+                (p.descuento > 0 || p.oferta) &&
+                precioFinal(p, 'contado') < precioOriginal(p)
+              ">
 
-          <!-- =========================
-               TODAS LAS MODALIDADES
-          ========================== -->
-          <div *ngIf="tipoActual === 'todos'">
+              {{ precioOriginal(p)
+                | currency:'COP':'symbol-narrow':'1.0-0' }}
 
-            <!-- CONTADO -->
-            <div *ngIf="p.vendeContado">
+            </p>
 
-              <!-- PRECIO ORIGINAL TACHADO -->
-              <p
-                *ngIf="
-                  (p.descuento > 0 || p.oferta) &&
-                  precioFinal(p, 'contado') <
-                  (p.precioContado ?? p.precio)
-                "
-                class="precio-anterior">
+            <p class="precio">
+              Contado:
+              {{ precioFinal(p, 'contado')
+                | currency:'COP':'symbol-narrow':'1.0-0' }}
+            </p>
 
-                {{ (p.precioContado ?? p.precio)
-                  | currency:'COP':'symbol-narrow':'1.0-0' }}
+            <p
+              class="descuento"
+              *ngIf="p.descuento > 0">
 
-              </p>
+              Descuento: {{ p.descuento }}%
 
-              <!-- PRECIO CON DESCUENTO -->
-              <p class="precio">
-                Contado:
-                {{ precioFinal(p, 'contado')
-                  | currency:'COP':'symbol-narrow':'1.0-0' }}
-              </p>
+            </p>
 
-            </div>
+          </ng-container>
 
-
-            <!-- CRÉDITO SIN DESCUENTO -->
-            <div *ngIf="p.vendeCredito">
-
-              <p class="precio">
-                Crédito:
-                {{ precioFinal(p, 'credito')
-                  | currency:'COP':'symbol-narrow':'1.0-0' }}
-              </p>
-
-              <!-- INICIAL -->
-              <p *ngIf="p.inicial != null">
-                Inicial:
-                {{ p.inicial
-                  | currency:'COP':'symbol-narrow':'1.0-0' }}
-              </p>
-
-              <!-- CUOTA QUINCENAL -->
-              <p *ngIf="p.quincenal != null">
-                Cuota quincenal:
-                {{ p.quincenal
-                  | currency:'COP':'symbol-narrow':'1.0-0' }}
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <!-- DESCUENTO -->
-          <p
-            class="descuento"
-            *ngIf="p.descuento > 0">
-
-            Descuento: {{ p.descuento }}%
-
-          </p>
-
-
-          <!-- BOTÓN VER DETALLE -->
+          <!-- VER DETALLE -->
           <button
             class="btn-detalle"
             (click)="verDetalle(p.id)">
@@ -237,8 +193,7 @@
 
           </button>
 
-
-          <!-- BOTÓN WHATSAPP -->
+          <!-- WHATSAPP -->
           <a
             class="btn-whatsapp"
             [href]="obtenerLinkWhatsApp(p)"
@@ -252,7 +207,6 @@
         </div>
 
       </div>
-
 
       <!-- CUANDO NO HAY RESULTADOS -->
       <p *ngIf="productosFiltrados.length === 0">
