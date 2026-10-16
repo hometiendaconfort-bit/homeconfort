@@ -6,13 +6,7 @@
   box-sizing: border-box;
  
  border-bottom: #f5f4f4  2px solid;
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    black 2%,
-    black 98%,
-    transparent 100%
-  );
+
 
 }
 
@@ -401,6 +395,8 @@ background: #0c0c0c;
 @media (max-width: 650px) {
 
   .quienes-section {
+    
+   
     padding: 35px 18px 45px;
   }
 
