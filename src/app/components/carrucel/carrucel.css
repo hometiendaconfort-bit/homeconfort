@@ -99,11 +99,12 @@ body {
 /* IMAGEN DE LA TARJETA */
 .link-tarjeta img {
   display: block;
-  width: 85%;
+  width: 100%;
   height: 75%;
-  margin: 0 auto;
-  object-fit: contain;
-   border-radius: 120%;
+  margin: 0px auto;
+  object-fit: fill;
+ 
+  
 }
 
 /* NOMBRE PEGADO ABAJO */

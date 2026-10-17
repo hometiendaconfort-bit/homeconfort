@@ -16,15 +16,15 @@ export class Carrucel implements OnInit {
   posicionActual = 0;
 
   links = [
-    { nombre: 'Colchones',  img: '/assets/img/colchonInicio.jpg',   ruta: '/categoria/colchon' },
-    { nombre: 'Espaldares', img: '/assets/img/espaldarInicio.jpg',  ruta: '/categoria/espaldar' },
-    { nombre: 'Base cama',  img: '/assets/img/basecamaInicio.jpg',  ruta: '/categoria/basecama' },
-    { nombre: 'Armarios',   img: '/assets/img/armarioInicio.jpg',   ruta: '/categoria/armario' },
-    { nombre: 'Comedores',  img: '/assets/img/comedoresInicio.jpg', ruta: '/categoria/comedor' },
-    { nombre: 'Peinadores', img: '/assets/img/peinadorInicio.jpg',  ruta: '/categoria/peinador' },
-    { nombre: 'Salas',      img: '/assets/img/salasInicio.jpg',     ruta: '/categoria/sala' },
-    { nombre: 'Cama lujo',  img: '/assets/img/camalujoInicio1.jpg', ruta: '/categoria/lujo' },
-    { nombre: 'accesorio',  img: '/assets/img/accesorio.png', ruta: '/categoria/accesorios' }
+    { nombre: 'Colchones',  img: '/assets/img/colchonlogolink.jpg',   ruta: '/categoria/colchon' },
+    { nombre: 'Espaldares', img: '/assets/img/espaldarlogolink1.jpg',  ruta: '/categoria/espaldar' },
+    { nombre: 'Base camas',  img: '/assets/img/basecamalogolink.png',  ruta: '/categoria/basecama' },
+    { nombre: 'Armarios',   img: '/assets/img/armariologolink.jpg',   ruta: '/categoria/armario' },
+    { nombre: 'Comedores',  img: '/assets/img/comedorlogolink.jpg', ruta: '/categoria/comedor' },
+    { nombre: 'Peinadores', img: '/assets/img/peinadorlogolink.jpg',  ruta: '/categoria/peinador' },
+    { nombre: 'Salas',      img: '/assets/img/mueblelogolink.jpg',     ruta: '/categoria/sala' },
+    { nombre: 'Camas de lujo',  img: '/assets/img/camalujologolink.jpg', ruta: '/categoria/lujo' },
+    { nombre: 'accesorios',  img: '/assets/img/accesorio.png', ruta: '/categoria/accesorios' }
   ];
 
   constructor(
