@@ -77,6 +77,11 @@ export const routes: Routes = [
 
   },
 
+   {
+  path: 'combos/:id',
+  component: CombosComponent
+},
+
   {
   path: 'combo-detalle/:id',
   component: ComboDetalleComponent

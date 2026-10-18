@@ -14,8 +14,8 @@ h6 {
 /* CONTENEDOR PRINCIPAL */
 .principal {
   width: 100%;
-  margin: 3.8rem 0 2rem;
-  padding: 0 16px;
+  margin-top: 6rem;
+ 
 }
 
 .principal h2 {
@@ -23,14 +23,10 @@ h6 {
   justify-content: center;
   align-items: center;
   text-align: center;
+ 
   margin-bottom: 22px;
-  padding: 12px;
+  width: 100%;
   background: #fff;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, .35);
-  border-radius: 15px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, .15);
   color: #222;
 }
 
@@ -79,6 +75,7 @@ h6 {
   gap: 16px;
   width: 100%;
   align-items: stretch;
+  padding: 10px 10px 0;
 }
 
 .producto {
@@ -448,7 +445,7 @@ h6 {
 /* CELULAR */
 @media (max-width: 480px) {
   .principal {
-    margin-top: 3.8rem;
+    margin-top: 7.8rem;
     margin-bottom: 1.5rem;
     padding: 0 7px;
   }

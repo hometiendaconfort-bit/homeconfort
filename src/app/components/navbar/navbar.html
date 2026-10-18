@@ -1,84 +1,56 @@
 <header class="header">
-<div class="nav-container">
-
-    <button class="menu-btn" (click)="toggleSidebar()">
-      <i class="bx bx-menu"></i>
-    </button>
-     <a routerLink="/login" class="logos">
-      <img src="assets/img/logo2.jpeg" alt="Logo-de-mi-tienda" class="logo-img">
-
-     </a>
-      <span class="logo" routerLink="/login">CONFORT_HOME & P</span>
-
-    <nav class="nav">
-      <a routerLink="/">
-        <i  class='bx bx-home-alt'></i>
+  <div class="nav-container">
+    <!-- Izquierda: Menu + Logo -->
+    <div class="nav-left">
+      <button class="menu-btn" (click)="toggleSidebar()">
+        <i class="bx bx-menu"></i>
+      </button>
+      <a routerLink="/login" class="logos">
+        <img src="assets/img/logo2.jpeg" alt="Logo CONFORT HOME" class="logo-img">
+        <span class="logo">CONFORT<br>HOME & P</span>
       </a>
+    </div>
 
-      <a href="https://w.app/confort_home" target="_blank">
-        <i class='bx bxl-whatsapp'></i> 
-      </a>
+    <!-- Centro: Buscador arriba -->
+    <div class="nav-center">
+      <a routerLink="/home" class="nav-link-desktop">Inicio</a>
+      <a routerLink="/home" class="nav-link-desktop">combos</a>
+     <a routerLink="/productoss" class="nav-link-desktop">productos</a>
 
-      <a href="https://www.instagram.com/conforthoome?vrfl=dTZqbmsxamswazBs" target="_blank" class="btn-instagram">
-        <i class='bx bxl-instagram'></i>
-      </a>
-    
-      <a href="https://www.facebook.com/share/19YUBPHafb/?mibextid=wwXIfr" target="_blank" class="btn-facebook">
-      <i class='bx bxl-facebook'></i>
-      </a>
-    </nav>
-</div>
-</header>
+    </div>
 
-<!-- Sidebar -->
-<aside class="barraLateral" [class.cerrada]="!sidebarOpen">
-  <nav>
-    <a routerLink="/home" routerLinkActive="seleccionado" class="home">
-      <img src="assets/img/home.svg">
-      <span>Inicio</span>
-    </a>
-
-    <a routerLink="" routerLinkActive="seleccionado">
-      <img src="assets/img/file.svg">
-      <span>sistecredito</span>
-    </a>
-
-    <a routerLink="" routerLinkActive="seleccionado">
-      <img src="assets/img/wallet.svg">
-      <span>addi</span>
-    </a>
-  </nav>
-</aside>
-
-
-<div class="bottom-bar">
-
-    <!-- Botón izquierdo -->
-
-  <div class="floating-btn left">
-      <a routerLink="/" routerLinkActive="activo" class="nav-link">
-      <i class='bx bx-home'></i>
-      </a>
-  
-      <a routerLink="/productoss" routerLinkActive="activo" class="nav-link">
-        <i class='bx bx-store'></i> 
-      </a>
-  </div>
-
-  <div class="buscador">
-      <div class="left-icon">
+     <div class="buscador-top">
         <i class="bx bx-search"></i>
+        <input type="text"
+               placeholder="Buscar colchón, manilla, base cama..."
+               (input)="buscar($any($event.target).value)">
+       
       </div>
 
-<input type="text"
-        placeholder="Buscar productos..."
-        (input)="buscar($any($event.target).value)">
+      
 
-    <div class="right-icon">
-      <i class="icon-mic"></i>
+    <!-- Derecha: Iconos limpios -->
+    <div class="nav-right">
+      <a routerLink="/"><i class="bx bxs-home"></i></a>
+      <a href="https://www.instagram.com/conforthoome" target="_blank"><i class='bx bxl-instagram'></i></a>
+      <a href="https://w.app/confort_home" target="_blank"><i class='bx bxl-whatsapp'></i></a>
+      <a href="https://www.facebook.com/people/Confort-HOME/100084116541948/" target="_blank"><i class='bx bxl-facebook'></i></a>
     </div>
   </div>
-</div>
 
+  <!-- Buscador para celular -->
+  <div class="buscador-mobile">
+    <i class="bx bx-search"></i>
+    <input type="text"
+           placeholder="Buscar colchón, manilla, base cama..."
+           (input)="buscar($any($event.target).value)">
 
+           <a routerLink="/productoss"><i class="bx bx-store"></i></a>
+           
+  </div>
 
+  <!-- Barra financiación -->
+  <div class="finance-bar">
+    <a routerLink="requisitos">¿Necesitas Financiación? Solicita tu crédito aquí <i class='bx bx-chevron-right'></i></a>
+  </div>
+</header>
