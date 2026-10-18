@@ -14,7 +14,7 @@ h6 {
 /* CONTENEDOR PRINCIPAL */
 .principal {
   width: 100%;
-  margin-top: 6rem;
+ 
  
 }
 
@@ -33,6 +33,7 @@ h6 {
 /* FILTROS */
 .filtros {
   display: flex;
+  margin: 5rem;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
@@ -344,7 +345,7 @@ h6 {
 /* TABLET */
 @media (min-width: 481px) and (max-width: 768px) {
   .principal {
-    padding: 0 10px;
+    padding: 0;
   }
 
   .productos-contenedor {
@@ -445,9 +446,9 @@ h6 {
 /* CELULAR */
 @media (max-width: 480px) {
   .principal {
-    margin-top: 7.8rem;
+  margin-top: 4rem;
     margin-bottom: 1.5rem;
-    padding: 0 7px;
+    
   }
 
   .principal h2 {

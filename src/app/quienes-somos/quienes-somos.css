@@ -449,12 +449,9 @@ background: #0c0c0c;
 
 
   .estadisticas {
-    grid-template-columns: 1fr;
+  display: none !important;
+ }
 
-    padding: 28px 25px;
-
-    gap: 25px;
-  }
 
 
   .estadistica {

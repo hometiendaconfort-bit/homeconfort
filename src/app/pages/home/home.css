@@ -1,1 +1,11 @@
 
+.home{
+    margin-top: 5rem;
+}
+
+@media (max-width: 480px) {
+
+    .home{
+        margin-top: 9rem;
+    }
+}

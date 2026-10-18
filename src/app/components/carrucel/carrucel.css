@@ -1,4 +1,3 @@
-
 /* ESTILOS GENERALES */
 * {
   margin: 0;
@@ -13,7 +12,6 @@ body {
 /* CONTENEDOR GENERAL */
 .contenedor-general {
   display: grid;
-  margin-top: 5.5rem;
   gap: 12px;
   padding: 4px 7px;
   grid-template-columns: 3fr 1fr;
@@ -214,8 +212,7 @@ body {
     margin-bottom: 1.5rem;
     padding: 6px 2px 6px;
     box-sizing: border-box;
-    border-top: 2px solid #faf8f8;
-     border-bottom: 2px solid #faf8f8 ;
+   
   }
 
   /* TARJETAS COMPACTAS */
@@ -278,8 +275,7 @@ body {
 /* CELULARES */
 @media (max-width: 480px) {
   .contenedor-general {
-    margin-top: 8.3rem;
-    
+   
     grid-template-columns: 1fr;
     gap: 0;
     padding: 4px 4px 0;
@@ -318,10 +314,9 @@ body {
     gap: 8px;
     width: 100%;
     margin: 0;
-    margin-bottom: 2rem;
+    margin-bottom: 0.8rem;
     padding: 8px 4px 8px;
-    border-top: 2px solid #faf8f8;
-    border-bottom: 2px solid #faf8f8 ;
+    
   }
 
   /* TARJETAS CUADRADAS */
