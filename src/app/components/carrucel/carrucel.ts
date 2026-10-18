@@ -24,7 +24,7 @@ export class Carrucel implements OnInit {
     { nombre: 'Peinadores', img: '/assets/img/peinadorlogolink.jpg',  ruta: '/categoria/peinador' },
     { nombre: 'Salas',      img: '/assets/img/mueblelogolink.jpg',     ruta: '/categoria/sala' },
     { nombre: 'Camas de lujo',  img: '/assets/img/camalujologolink.jpg', ruta: '/categoria/lujo' },
-    { nombre: 'accesorios',  img: '/assets/img/accesorio.png', ruta: '/categoria/accesorios' }
+    { nombre: 'accesorios',  img: '/assets/img/accesoriologolink.jpg', ruta: '/categoria/accesorios' }
   ];
 
   constructor(
