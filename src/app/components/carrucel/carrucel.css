@@ -337,9 +337,10 @@ body {
   }
 
   .link-tarjeta img {
-    width: 85%;
+    width: 100%;
     height: 75%;
     border-radius: 4px;
+    object-fit: fill;
   }
 
   .link-tarjeta span {
