@@ -42,6 +42,7 @@ body {
   max-height: 400px;
   margin: 0 auto;
   object-fit: fill;
+  border-radius: 6px;
  
 }
 
