@@ -13,7 +13,7 @@ export class QuienesSomos {
 subtitulo="QUIENES SOMOS";
 tituloA = "Más que dormir";
 tituloB= "creamos buenos descansos";
-descripcion= "Somos una tienda de muebles para el hogar que ofrece camas, colchones, bases, espaldares, nocheros, peinadores, salas, comedores y accesorios. Brindamos atención en Pereira y Dosquebradas, Risaralda, con productos de calidad, precios justos y opciones de pago según disponibilidad. También ofrecemos envíos nacionales para determinados productos. Contáctanos por WhatsApp para conocer nuestro catálogo, consultar precios y verificar las opciones de entrega."
+descripcion= "Somos una tienda de muebles para el hogar que ofrece camas, colchones, bases, espaldares, nocheros, peinadores, salas, comedores y accesorios. Brindamos atención en Pereira y Dosquebradas, Risaralda, con productos de calidad, precios justos y opciones de pago según disponibilidad. También ofrecemos envíos nacionales para determinados productos. hacemos envios contra entrega"
 ;
 
 

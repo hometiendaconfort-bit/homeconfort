@@ -1,12 +1,12 @@
+
 <div class="admin-combos-contenedor">
 
   <h1>{{ comboEditando ? 'Editar combo' : 'Crear combo' }}</h1>
 
   <!-- ID DEL COMBO -->
-
-  <label>ID del combo</label>
-
+  <label for="idCombo">ID del combo</label>
   <input
+    id="idCombo"
     type="number"
     [(ngModel)]="idCombo"
     placeholder="Ej: 1">
@@ -14,10 +14,9 @@
   <br>
 
   <!-- NOMBRE -->
-
-  <label>Nombre del combo</label>
-
+  <label for="nombreCombo">Nombre del combo</label>
   <input
+    id="nombreCombo"
     type="text"
     [(ngModel)]="nombreCombo"
     placeholder="Ej: Combo habitación completa">
@@ -25,21 +24,18 @@
   <br>
 
   <!-- IMAGEN -->
-
-  <label>Imagen del combo</label>
-
+  <label for="imagenCombo">Imagen del combo</label>
   <input
+    id="imagenCombo"
     type="text"
     [(ngModel)]="imagenCombo"
-    placeholder="Ej: /assets/img/">
+    placeholder="Ej: /assets/img/camacolchon.jpg">
 
   <br>
 
   <!-- BASE -->
-
-  <label>Base</label>
-
-  <select [(ngModel)]="baseId">
+  <label for="baseId">Base</label>
+  <select id="baseId" [(ngModel)]="baseId">
     <option value="">Seleccionar base</option>
 
     <option
@@ -52,10 +48,8 @@
   <br>
 
   <!-- COLCHÓN -->
-
-  <label>Colchón</label>
-
-  <select [(ngModel)]="colchonId">
+  <label for="colchonId">Colchón</label>
+  <select id="colchonId" [(ngModel)]="colchonId">
     <option value="">Seleccionar colchón</option>
 
     <option
@@ -68,10 +62,8 @@
   <br>
 
   <!-- ESPALDAR -->
-
-  <label>Espaldar</label>
-
-  <select [(ngModel)]="espaldarId">
+  <label for="espaldarId">Espaldar</label>
+  <select id="espaldarId" [(ngModel)]="espaldarId">
     <option value="">Sin espaldar</option>
 
     <option
@@ -84,7 +76,6 @@
   <hr>
 
   <!-- MODALIDADES DE VENTA -->
-
   <h3>Modalidades de venta</h3>
 
   <label class="modalidad">
@@ -104,62 +95,55 @@
   <hr>
 
   <!-- PRECIO DE CONTADO -->
-
   <div *ngIf="vendeContado">
-
     <h3>Precio de contado</h3>
 
-    <label>Precio del combo de contado</label>
-
+    <label for="precioContado">Precio del combo de contado</label>
     <input
+      id="precioContado"
       type="number"
       [(ngModel)]="precioContado"
       placeholder="Ej: 1299000">
-
   </div>
 
   <br>
 
   <!-- PRECIO DE CRÉDITO -->
-
   <div *ngIf="vendeCredito">
-
     <h3>Precio a crédito</h3>
 
-    <label>Precio total a crédito</label>
-
+    <label for="precioCredito">Precio total a crédito</label>
     <input
+      id="precioCredito"
       type="number"
       [(ngModel)]="precioCredito"
       placeholder="Ej: 1590000">
 
     <br>
 
-    <label>Cuota inicial</label>
-
+    <label for="inicial">Cuota inicial</label>
     <input
+      id="inicial"
       type="number"
       [(ngModel)]="inicial"
       placeholder="Ej: 150000">
 
     <br>
 
-    <label>Cuota quincenal</label>
-
+    <label for="quincenal">Cuota quincenal</label>
     <input
+      id="quincenal"
       type="number"
       [(ngModel)]="quincenal"
       placeholder="Ej: 80000">
-
   </div>
 
   <hr>
 
   <!-- DESCRIPCIÓN -->
-
-  <label>Descripción del combo</label>
-
+  <label for="descripcionCombo">Descripción del combo</label>
   <textarea
+    id="descripcionCombo"
     [(ngModel)]="descripcionCombo"
     placeholder="Descripción del combo">
   </textarea>
@@ -167,8 +151,8 @@
   <br>
 
   <!-- GUARDAR O ACTUALIZAR -->
-
   <button
+    type="button"
     class="guardar"
     (click)="guardarCombo()">
     {{ comboEditando ? 'Actualizar combo' : 'Guardar combo' }}
@@ -186,13 +170,11 @@
 <hr>
 
 <!-- TABLA DE COMBOS -->
-
 <div class="admin-combos-contenedor-tabla">
 
   <h2>Combos creados</h2>
 
   <table>
-
     <thead>
       <tr>
         <th>ID</th>
@@ -208,10 +190,7 @@
     </thead>
 
     <tbody>
-
-      <tr
-        class="tabla"
-        *ngFor="let combo of combolista">
+      <tr *ngFor="let combo of combolista">
 
         <td>{{ combo.id }}</td>
 
@@ -255,25 +234,27 @@
         <td>{{ combo.descripcion }}</td>
 
         <td>
-
           <button
+            type="button"
             class="editar"
             (click)="editar(combo)">
             Editar
           </button>
 
           <button
+            type="button"
             class="eliminar"
             (click)="eliminar(combo.docId)">
             Eliminar
           </button>
-
         </td>
 
       </tr>
 
+      <tr *ngIf="combolista.length === 0">
+        <td colspan="9">No hay combos registrados.</td>
+      </tr>
     </tbody>
-
   </table>
 
 </div>

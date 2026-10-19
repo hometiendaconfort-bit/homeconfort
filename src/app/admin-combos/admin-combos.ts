@@ -1,7 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Productos } from '../services/productos';
 import { FormsModule } from '@angular/forms';
+import { Productos } from '../services/productos';
 import { Combos } from '../services/combos';
 
 @Component({
@@ -28,20 +29,23 @@ export class AdminCombos implements OnInit {
   colchonId: string = '';
   espaldarId: string = '';
 
-  // PRECIOS Y MODALIDADES DEL COMBO
+  // MODALIDADES DE VENTA
   vendeContado: boolean = true;
   vendeCredito: boolean = false;
 
+  // PRECIOS
   precioContado: number | null = 0;
   precioCredito: number | null = 0;
 
   inicial: number | null = 0;
   quincenal: number | null = 0;
 
-  // MANTENGO EL PRECIO ANTIGUO PARA COMPATIBILIDAD
+  // PRECIO ANTIGUO PARA COMPATIBILIDAD
   precioCombo: number = 0;
 
   descripcionCombo: string = '';
+
+  // ID DEL DOCUMENTO QUE SE ESTÁ EDITANDO
   docIdEditando: string = '';
 
   get comboEditando(): boolean {
@@ -50,16 +54,15 @@ export class AdminCombos implements OnInit {
 
   constructor(
     private productos: Productos,
-    private combos: Combos,
-    private cdr: ChangeDetectorRef
+    private combos: Combos
   ) {}
 
-  async ngOnInit() {
-
+  async ngOnInit(): Promise<void> {
     try {
-
+      // CARGAR PRODUCTOS
       this.productoss = await this.productos.obtenerProductos();
 
+      // SEPARAR PRODUCTOS POR CATEGORÍA
       this.bases = this.productoss.filter(
         producto => producto.categoria === 'basecama'
       );
@@ -74,22 +77,17 @@ export class AdminCombos implements OnInit {
 
       console.log('Productos para combos:', this.productoss);
 
+      // CARGAR COMBOS
       await this.cargarCombos();
 
-      this.cdr.detectChanges();
-
     } catch (error) {
-
-      console.error('Error cargando productos:', error);
-
+      console.error('Error cargando productos o combos:', error);
     }
-
   }
 
-  async guardarCombo() {
-
+  // GUARDAR O ACTUALIZAR COMBO
+  async guardarCombo(): Promise<void> {
     try {
-
       if (!this.nombreCombo.trim()) {
         alert('Escribe el nombre del combo');
         return;
@@ -118,19 +116,24 @@ export class AdminCombos implements OnInit {
 
       if (
         this.vendeCredito &&
-        (this.inicial == null || this.quincenal == null)
+        (
+          this.inicial == null ||
+          this.quincenal == null ||
+          this.inicial < 0 ||
+          this.quincenal <= 0
+        )
       ) {
-        alert('Ingresa la inicial y la cuota quincenal');
+        alert('Ingresa una inicial válida y una cuota quincenal mayor que cero');
         return;
       }
 
-      // CONSERVO EL PRECIO ANTIGUO PARA LOS COMBOS EXISTENTES
+      // CONSERVAR COMPATIBILIDAD CON COMBOS ANTIGUOS
       this.precioCombo = this.vendeContado
         ? this.precioContado!
         : this.precioCredito!;
 
       if (this.docIdEditando) {
-
+        // ACTUALIZAR COMBO EXISTENTE
         await this.combos.editarCombo(
           this.docIdEditando,
           this.idCombo,
@@ -152,7 +155,7 @@ export class AdminCombos implements OnInit {
         alert('Combo actualizado');
 
       } else {
-
+        // CREAR COMBO NUEVO
         await this.combos.agregarCombo(
           this.idCombo,
           this.nombreCombo,
@@ -171,7 +174,6 @@ export class AdminCombos implements OnInit {
         );
 
         alert('Combo guardado');
-
       }
 
       await this.cargarCombos();
@@ -179,73 +181,77 @@ export class AdminCombos implements OnInit {
       this.limpiarFormulario();
 
     } catch (error) {
-
       console.error('Error guardando combo:', error);
       alert('No se pudo guardar el combo. Revisa la consola.');
-
     }
-
   }
 
-  async cargarCombos() {
-
+  // CARGAR COMBOS Y ADAPTAR LOS ANTIGUOS
+  async cargarCombos(): Promise<void> {
     const combos = await this.combos.obtenerCombo();
 
-    // ADAPTO LOS COMBOS ANTIGUOS Y LOS NUEVOS
     this.combolista = combos.map((combo: any) => {
-
       const vendeContado =
         combo.vendeContado ??
-        (combo.tipo === 'contado' ||
-         combo.tipo === 'ambos' ||
-         combo.tipo == null);
+        (
+          combo.tipo === 'contado' ||
+          combo.tipo === 'ambos' ||
+          combo.tipo == null
+        );
 
       const vendeCredito =
         combo.vendeCredito ??
-        (combo.tipo === 'credito' ||
-         combo.tipo === 'ambos');
+        (
+          combo.tipo === 'credito' ||
+          combo.tipo === 'ambos'
+        );
 
       return {
         ...combo,
         vendeContado,
         vendeCredito,
+
         precioContado:
           combo.precioContado ??
           (combo.tipo !== 'credito' ? combo.precio : null),
+
         precioCredito:
           combo.precioCredito ??
           (combo.tipo !== 'contado' ? combo.precio : null)
       };
-
     });
-
-    this.cdr.detectChanges();
-
   }
 
-  editar(combo: any) {
-
+  // CARGAR DATOS PARA EDITAR
+  editar(combo: any): void {
     this.docIdEditando = combo.docId;
 
-    this.idCombo = combo.id;
-    this.nombreCombo = combo.nombre;
-    this.imagenCombo = combo.imagen;
+    this.idCombo = combo.id ?? 0;
+    this.nombreCombo = combo.nombre ?? '';
+    this.imagenCombo = combo.imagen ?? '/assets/img/';
 
     this.baseId = combo.baseId ?? '';
     this.colchonId = combo.colchonId ?? '';
     this.espaldarId = combo.espaldarId ?? '';
 
-    this.vendeContado = combo.vendeContado ??
+    this.vendeContado =
+      combo.vendeContado ??
       (combo.tipo === 'credito' ? false : true);
 
-    this.vendeCredito = combo.vendeCredito ??
-      (combo.tipo === 'credito' || combo.tipo === 'ambos');
+    this.vendeCredito =
+      combo.vendeCredito ??
+      (
+        combo.tipo === 'credito' ||
+        combo.tipo === 'ambos'
+      );
 
-    this.precioContado = combo.precioContado ??
-      (combo.tipo !== 'credito' ? combo.precio : null);
+    this.precioContado =
+      combo.precioContado ??
+      (combo.tipo !== 'credito' ? combo.precio ?? 0 : 0);
 
-    this.precioCredito = combo.precioCredito ??
-      (combo.tipo !== 'contado' ? combo.precio : null);
+    this.precioCredito =
+      combo.precioCredito ??
+      (combo.tipo !== 'contado' ? combo.precio ?? 0 : 0);
 
     this.inicial = combo.inicial ?? 0;
     this.quincenal = combo.quincenal ?? 0;
@@ -253,10 +259,11 @@ export class AdminCombos implements OnInit {
     this.precioCombo = combo.precio ?? 0;
     this.descripcionCombo = combo.descripcion ?? '';
 
+    // NO ES NECESARIO LLAMAR A detectChanges()
   }
 
-  limpiarFormulario() {
-
+  // LIMPIAR FORMULARIO Y SALIR DE EDICIÓN
+  limpiarFormulario(): void {
     this.docIdEditando = '';
 
     this.idCombo = 0;
@@ -278,32 +285,29 @@ export class AdminCombos implements OnInit {
 
     this.precioCombo = 0;
     this.descripcionCombo = '';
-
   }
 
-  async eliminar(docId: string) {
-
-    const confirmar = confirm(
-      '¿Deseas eliminar este combo?'
-    );
+  // ELIMINAR COMBO
+  async eliminar(docId: string): Promise<void> {
+    const confirmar = confirm('¿Deseas eliminar este combo?');
 
     if (!confirmar) {
       return;
     }
 
     try {
-
       await this.combos.eliminarCombo(docId);
 
       await this.cargarCombos();
 
-    } catch (error) {
+      // SI SE ELIMINA EL COMBO QUE SE EDITABA, LIMPIAR
+      if (this.docIdEditando === docId) {
+        this.limpiarFormulario();
+      }
 
+    } catch (error) {
       console.error('Error eliminando combo:', error);
       alert('No se pudo eliminar el combo');
-
     }
-
   }
-
 }

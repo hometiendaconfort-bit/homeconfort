@@ -228,6 +228,10 @@
     0 5px 25px rgba(0, 0, 0, 0.06);
 }
 
+ .estadisticas {
+  display: none !important;
+ }
+
 
 .caracteristica {
   display: flex;
