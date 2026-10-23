@@ -5,7 +5,8 @@
 .admin-productos {
   width: 400px;
   max-width: 100%;
-  margin: 4rem auto;
+  margin-top: 7rem !important;
+  margin: auto;
   padding: 15px;
   box-sizing: border-box;
   display: flex;
@@ -198,6 +199,23 @@
   object-fit: contain;
 }
 
+.imagenes-adicionales {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+  align-items: center;
+  min-width: max-content;
+}
+
+.imagen-admin {
+  width: 80px;
+  height: 70px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 6px;
+}
+
 /* =========================
    ACCIONES
    ========================= */
@@ -253,7 +271,67 @@
   .admin-productos {
     width: calc(100% - 24px);
     max-width: 400px;
+    margin-top: 10rem !important;
     margin: 20px auto;
+    padding: 12px;
+  }
+
+  .admin-productos h1 {
+    font-size: 20px;
+  }
+
+  .admin-productos h3 {
+    font-size: 15px;
+  }
+
+  .admin-productos label {
+    font-size: 13px;
+  }
+
+  .admin-productos input:not([type="checkbox"]),
+  .admin-productos select,
+  .admin-productos textarea {
+    font-size: 14px;
+  }
+
+  .tabla-container {
+    width: calc(100% - 16px);
+    margin: 20px auto;
+    overflow-x: auto;
+  }
+
+  .tabla-container table {
+    min-width: 950px;
+  }
+
+  .tabla-container th,
+  .tabla-container td {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .tabla-container img {
+    max-width: 70px;
+    max-height: 60px;
+  }
+
+  .acciones {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .acciones button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .admin-productos {
+    width: calc(100% - 24px);
+    max-width: 400px;
+    margin-top: 10rem !important;
+    margin: auto;
     padding: 12px;
   }
 

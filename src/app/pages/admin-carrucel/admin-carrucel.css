@@ -1,6 +1,7 @@
 .carrucel-container {
   width: 300px;
-  margin: 4rem auto;
+  margin-top: 7rem !important;
+  margin: auto;
   padding: 15px;
 
   box-sizing: border-box;
@@ -124,6 +125,35 @@ td {
   white-space: nowrap;
 }
 
+.id{
+  display:flex;
+  justify-content: center;
+  text-align: center;
+ height:auto;
+}
+
+/* Imágenes del carrusel en la tabla */
+
+.imagen-admin {
+  width: 120px;
+  height: 75px;
+  object-fit: contain;
+  display: block;
+  margin: 5px auto;
+  border-radius: 6px;
+}
+
+/* Columna de imágenes */
+
+.producto-imagen {
+  min-width: 130px;
+  text-align: center;
+  padding: 5px;
+  white-space: nowrap;
+}
+
+
+
 
 .acciones {
   text-align: center;
@@ -142,7 +172,7 @@ td {
     width: 280px;
 
     max-width: 80%;
-
+ margin-top: 10rem !important;
     margin: 20px auto;
 
     padding: 12px;

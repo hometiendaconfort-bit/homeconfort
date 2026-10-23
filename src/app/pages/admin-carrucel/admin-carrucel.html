@@ -30,8 +30,14 @@
     </thead> 
     <tbody> 
       <tr *ngFor="let carruceles of carrucel"> 
-        <td>{{ carruceles.id }}</td> 
-         <td class="producto-imagen">{{ carruceles.imagen }}</td> 
+        <td class="id">{{ carruceles.id }}</td> 
+         
+        <td class="producto-imagen">
+  <img
+    [src]="carruceles.imagen"
+    alt="Imagen del carrusel"
+    class="imagen-admin">
+</td>
          <td class="acciones">
 
            <button class="editar-boton" (click)="editar(carruceles)"> Editar </button>

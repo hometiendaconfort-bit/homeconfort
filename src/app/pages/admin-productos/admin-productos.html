@@ -184,12 +184,22 @@
         <td>{{ producto.descuento }}%</td>
 
         <td class="producto-imagen">
-          {{ producto.imagen }}
-        </td>
+  <img
+    *ngIf="producto.imagen"
+    [src]="producto.imagen"
+    [alt]="producto.nombre"
+    class="imagen-admin">
+</td>
 
-        <td class="producto-imagen">
-          {{ producto.imagenes }}
-        </td>
+<td class="producto-imagen">
+  <div class="imagenes-adicionales">
+    <img
+      *ngFor="let imagen of producto.imagenes"
+      [src]="imagen"
+      [alt]="producto.nombre"
+      class="imagen-admin">
+  </div>
+</td>
 
         <td class="descripcion">
           {{ producto.descripcion }}
