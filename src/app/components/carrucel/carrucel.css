@@ -321,7 +321,7 @@ body {
   .links-carrucel {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     justify-content: stretch;
-    gap: 8px;
+    gap: 3px;
     width: 100%;
     margin: 0;
     margin-bottom: 0.8rem;
