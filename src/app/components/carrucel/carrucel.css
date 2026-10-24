@@ -277,7 +277,7 @@ body {
 /* CELULARES */
 @media (max-width: 480px) {
   .contenedor-general {
-   
+   margin-top: 1rem;
     grid-template-columns: 1fr;
     gap: 0;
     padding:0;
