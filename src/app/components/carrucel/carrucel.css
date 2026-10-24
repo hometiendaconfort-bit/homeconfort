@@ -298,7 +298,8 @@ body {
     width: 100%;
     max-height: 250px;
     object-fit: fill;
-    border: #faf8f8 3px solid;
+    border: #faf8f8 4px solid;
+    
   }
 
   /* FLECHAS */
@@ -325,7 +326,7 @@ body {
     margin: 0;
     margin-bottom: 0.8rem;
     padding: 8px 4px 8px;
-    background: #faf8f8;
+    
   }
 
   /* TARJETAS CUADRADAS */
