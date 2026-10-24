@@ -2,11 +2,12 @@
 /* CONTENEDOR PRINCIPAL */
 .principal {
   width: 100%;
-  margin-top: 4rem;
+  margin-top: 6rem;
   max-width: 1600px;
   margin: 0 auto;
   padding: 16px;
   box-sizing: border-box;
+  border-top: white 2px solid;
 }
 
 .principal h2 {
@@ -14,6 +15,7 @@
   font-size: 22px;
   margin: 10px 0 18px;
   color: #222;
+  background: white;
 }
 
 /* FILTROS */
@@ -300,7 +302,8 @@
 @media (max-width: 480px) {
   .principal {
     padding: 10px 8px;
-    margin-top: 3.3rem;
+    margin-top: 6rem;
+    
   }
 
   .principal h2 {

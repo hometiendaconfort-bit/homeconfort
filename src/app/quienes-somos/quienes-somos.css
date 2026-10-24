@@ -468,3 +468,14 @@ background: #0c0c0c;
   }
 
 }
+
+@media (max-width: 480px) {
+
+  .quienes-section {
+    
+   
+
+    border: #f8f9fb 3px solid;
+  }
+
+    }
