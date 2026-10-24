@@ -18,28 +18,28 @@ descripcion= "Somos una tienda de muebles para el hogar que ofrece camas, colcho
 
 
 tituloABeneficio="Calidad Garantizada";
-subtituloABeneficio="productos seleccionados con los Mejores Materiales";
+subtituloABeneficio="productos seleccionados con los mejores materiales";
 
 tituloBBeneficio="Envíos Rápidos y Seguros";
-subtituloBBeneficio=" Llevamos Tu Pedido Hasta La Puerta De Tu Hogar.";
+subtituloBBeneficio=" Llevamos tu pedido hasta La puerta de tu hogar.";
 
 tituloCBeneficio="Atención Personalizada";
-subtituloCBeneficio="Te Asesoramos Para que Elijas Lo Mejor Para Ti.";
+subtituloCBeneficio="Te asesoramos para que elijas lo mejor para ti.";
 
-textoWhatsapp="Escríbenos por WhatsApp";
+textoWhatsapp="Escríbenos por whatsApp";
 
 
 tituloACaracteristica="Experiencia";
-subtituloACaracteristica="Más de 3 años Ayudando a Nuestros Clientes a Descansar Mejor.";
+subtituloACaracteristica="Más de 5 años Ayudando a Nuestros Clientes a Descansar Mejor.";
 
 tituloBCaracteristica="Compromiso";
-subtituloBCaracteristica="Nos Comprometemos con tu Bienestar y Satisfacción Total.";
+subtituloBCaracteristica="Nos Comprometemos con tu bienestar y satisfacción total.";
 
 tituloCCaracteristica="Variedad";
-subtituloCCaracteristica=" Encuentra Todo lo que Necesitas Para tu Descanso en un solo Lugar.";
+subtituloCCaracteristica=" Encuentra todo lo que necesitas para tu descanso en un solo lugar.";
 
 tituloDCaracteristica="Precios Justos";
-subtituloDCaracteristica="Calidad Premium al Mejor Precio del Mercado.";
+subtituloDCaracteristica="Calidad premium al mejor precio del mercado.";
 
 
 tituloAEstadistica="+500";
@@ -59,7 +59,7 @@ subtituloDEstadistica="Orgullosamente locales";
 
 
 
-numeroWhatsApp = '573046637509';
+numeroWhatsApp = '573137110232';
 
 abrirWhatsApp(): void {
   const mensaje = 'Hola, estoy interesado en sus productos.';
