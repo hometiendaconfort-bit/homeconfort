@@ -30,10 +30,10 @@ textoWhatsapp="Escríbenos por whatsApp";
 
 
 tituloACaracteristica="Experiencia";
-subtituloACaracteristica="Más de 5 años Ayudando a Nuestros Clientes a Descansar Mejor.";
+subtituloACaracteristica="Más de 5 años ayudando a nuestros Clientes a descansar mejor.";
 
 tituloBCaracteristica="Compromiso";
-subtituloBCaracteristica="Nos Comprometemos con tu bienestar y satisfacción total.";
+subtituloBCaracteristica="Nos comprometemos con tu bienestar y satisfacción total.";
 
 tituloCCaracteristica="Variedad";
 subtituloCCaracteristica=" Encuentra todo lo que necesitas para tu descanso en un solo lugar.";
