@@ -280,18 +280,25 @@ body {
    
     grid-template-columns: 1fr;
     gap: 0;
-    padding: 4px 4px 0;
+    padding:0;
   }
 
   .carrucel-contenedor {
-    padding-top: 0.5rem;
-    
+    padding-top: 0;
+    padding: 0;
+    margin: 0;
   }
+
+.carrucel-inicio{
+  width: 100%;
+  background: #faf8f8;
+}
 
   .carrucel-imagen {
     width: 100%;
     max-height: 250px;
     object-fit: fill;
+    border: #faf8f8 3px solid;
   }
 
   /* FLECHAS */
@@ -318,7 +325,7 @@ body {
     margin: 0;
     margin-bottom: 0.8rem;
     padding: 8px 4px 8px;
-    
+    background: #faf8f8;
   }
 
   /* TARJETAS CUADRADAS */

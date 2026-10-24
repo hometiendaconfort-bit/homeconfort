@@ -13,7 +13,7 @@ export class QuienesSomos {
 subtitulo="QUIENES SOMOS";
 tituloA = "Más que CONFORT,";
 tituloB= "Te damos descanso";
-descripcion= "Somos una tienda de muebles para el hogar que ofrece camas, colchones, bases, espaldares, nocheros, peinadores, salas, comedores y accesorios. Brindamos atención en Pereira y Dosquebradas, Risaralda, con productos de calidad, precios justos y opciones de pago según disponibilidad. También ofrecemos envíos nacionales para determinados productos. hacemos envios contra entrega"
+descripcion= "Somos una tienda de muebles para el hogar que ofrece camas, colchones, bases, espaldares, nocheros, peinadores, salas, comedores y accesorios. Brindamos atención en Pereira,Dosquebradas,Armenia,Manizales , Risaralda, con productos de calidad, precios justos y opciones de pago según disponibilidad. También ofrecemos envíos nacionales para determinados productos. hacemos envios contra entrega"
 ;
 
 
