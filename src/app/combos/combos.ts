@@ -15,7 +15,7 @@ export class CombosComponent implements OnInit {
 
   comboLista: any[] = [];
   productosLista: any[] = [];
-  descripcion: string = 'combos a credito y contado';
+  descripcion: string = 'Combos a Credito y Contado';
 
   // GUARDO LA MODALIDAD SELECCIONADA PARA CADA COMBO
   modalidadCombo: { [docId: string]: 'contado' | 'credito' } = {};

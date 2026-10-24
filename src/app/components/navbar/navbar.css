@@ -206,15 +206,21 @@ body {
    BARRA DE FINANCIACIÓN
 ========================= */
 .finance-bar {
-  background-image: url('/assets/img/fondo5.jpg');
-  color: #FFFFFF;
+ 
+  color: #faf9f9;
   text-align: center;
   padding: 8px;
-  font-size: 14px;
+    text-decoration: none;
+  font-size: 16px;
+  font-weight: 400;
+  color: #040404;
+  object-fit:contain;
+  background-image: url(/assets/img/fondo4.jpeg);
+  border-bottom: #F9F5F0 4px solid;
 }
 
 .finance-bar a {
-  color: #FFFFFF;
+  color: #353434;
   text-decoration: none;
 }
 

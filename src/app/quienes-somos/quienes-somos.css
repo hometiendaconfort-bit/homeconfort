@@ -50,13 +50,13 @@
   line-height: 1.15;
   font-weight: 700;
 
- color: #0d0d0d;
+ color: #464545;
 }
 
 
 .quienes-info h1 span {
   display: block;
-  color: #0a0909;
+  color: #464545;
 }
 
 
@@ -68,7 +68,7 @@
   font-size: 16px;
   line-height: 1.65;
 
-  color: #0c0c0c;
+   color: #464545;
 }
 
 
@@ -120,7 +120,7 @@
   font-size: 14px;
   font-weight: 700;
 
-  color: #0c0c0c;
+   color: #464545;
 }
 
 
@@ -130,7 +130,7 @@
   font-size: 13px;
   line-height: 1.5;
 
-  color: #41464e;
+  color: #464545;
 }
 
 
@@ -251,7 +251,7 @@
   font-size: 34px;
   line-height: 1;
 
-  color: #060606;
+   color: #464545;
 }
 
 
@@ -261,7 +261,7 @@
   font-size: 17px;
   font-weight: 700;
 
-  color: #030303;
+   color: #464545;
 }
 
 
@@ -273,7 +273,7 @@
   font-size: 13px;
   line-height: 1.55;
 
-  color: #383d45;
+   color: #464545;
 }
 
 
@@ -427,7 +427,7 @@ background: #0c0c0c;
 
 
   .quienes-imagen {
-    height: 300px;
+    height: 400px;
 
     border-radius: 12px;
   }

@@ -2,11 +2,11 @@
 /* Estilos generales del footer */
 .footer {
   border-top: 2px solid #f5f4f4;
-  background-image: url('/assets/img/fondo5.jpg');
+  background-image: url(/assets/img/fondo4.jpeg);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  color: #fff;
+  color: #3f3e3e;
   
   padding: 40px 20px 20px;
   font-family: Arial, sans-serif;
@@ -54,7 +54,7 @@
 
 /* Enlaces del footer */
 .footer-section ul li a {
-  color: #ccc;
+ color: #3f3e3e;
   text-decoration: none;
   transition: color 0.3s ease;
 }
@@ -71,7 +71,7 @@
   margin-top: 20px;
   padding-top: 10px;
   font-size: 13px;
-  color: #aaa;
+ color: #3f3e3e;
 }
 
 /* Adaptación para celulares */

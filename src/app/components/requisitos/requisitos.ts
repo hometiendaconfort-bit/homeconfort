@@ -15,24 +15,21 @@ export class Requisitos  {
 requisitos = [
     {
       icono: 'bx bx-user-plus',
-      titulo: '4 referencias: ',
-      descripcion: ' 2 personales y 2 familiares (nombre, teléfono y dirección)'
+      descripcion: ' Foto de la Cedula por Ambos Lados ',
+      
     },
     {
       icono: 'bx bx-home',
-      titulo: 'Dirección de tu vivienda:  ',
-      descripcion: 'Dirección exacta de donde resides actualmente'
+      descripcion: 'trabajo Estable',
+      
     },
+
     {
-      icono: 'bx bx-buildings',
-      titulo: 'Información laboral: ',
-      descripcion: 'Dirección y teléfono del lugar donde trabajas'
-    },
-    {
-      icono: 'bx bx-id-card',
-      titulo: 'Datos personales completos:  ',
-      descripcion: 'Nombre, cédula, número de contacto, entre otros'
+      icono: 'bx bx-home',
+      descripcion: 'aplica para resportados y extrangeros',
+    
     }
+   
   ];
 }
 

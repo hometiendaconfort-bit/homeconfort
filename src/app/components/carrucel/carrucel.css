@@ -12,12 +12,14 @@ body {
 /* CONTENEDOR GENERAL */
 .contenedor-general {
   display: grid;
+  
   gap: 12px;
   padding: 4px 7px;
   grid-template-columns: 3fr 1fr;
   max-width: 100%;
   border-bottom: 2.5px solid rgba(255, 255, 255, 0.87);
-  background-image: url('/assets/img/fondo5.jpg');
+  background-image: url(/assets/img/fondo4.jpeg);
+
 }
 
 /* CONTENEDOR DEL CARRUSEL */
