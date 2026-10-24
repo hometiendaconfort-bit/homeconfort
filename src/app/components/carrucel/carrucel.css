@@ -12,7 +12,7 @@ body {
 /* CONTENEDOR GENERAL */
 .contenedor-general {
   display: grid;
-  
+  padding-bottom: 0 !important;
   gap: 12px;
   padding: 4px 7px;
   grid-template-columns: 3fr 1fr;

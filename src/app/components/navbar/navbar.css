@@ -27,6 +27,38 @@ body {
   
 }
 
+.top-pay-bar{
+  background:#060606;
+  color:#f8f5f5;
+  font-size:11px;
+  text-align:center;
+  padding:6px 10px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  letter-spacing:0.2px;
+}
+.pay-badge{
+  background:#fff;
+  padding:2px 7px;
+  border-radius:4px;
+  font-weight:800;
+  font-size:11px;
+}
+.pay-badge.addi{
+  background: #f9f7f7;
+  color:#060606; 
+border: white 2px solid;
+}
+  
+.pay-badge.siste{ 
+  background:#f0eeee ;
+  color:#050505;
+border: white 2px solid;
+}
+.pay-extra{ opacity:0.85; }
+
 /* MENÚ PRINCIPAL */
 .nav-container {
   width: 100%;

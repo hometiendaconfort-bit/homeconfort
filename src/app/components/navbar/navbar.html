@@ -1,4 +1,12 @@
 <header class="header">
+  <!-- NUEVO: Barra pagos - arriba del navbar -->
+  <div class="top-pay-bar">
+    <span>Paga con:</span>
+    <span class="pay-badge addi">Addi</span>
+    <span class="pay-badge siste">Sistecrédito</span>
+    <span class="pay-extra">Nequi | Bancolombia | Daviplata</span>
+  </div>
+
   <div class="nav-container">
     <!-- Izquierda: Menu + Logo -->
     <div class="nav-left">
@@ -15,20 +23,16 @@
     <div class="nav-center">
       <a routerLink="/home" class="nav-link-desktop">Inicio</a>
       <a routerLink="/home" class="nav-link-desktop">Combos</a>
-     <a routerLink="/productoss" class="nav-link-desktop">Productos</a>
-
+      <a routerLink="/productoss" class="nav-link-desktop">Productos</a>
     </div>
 
-     <div class="buscador-top">
+    <div class="buscador-top">
         <i class="bx bx-search"></i>
         <input type="text"
                placeholder="Buscar colchón, manilla, base cama..."
                (input)="buscar($any($event.target).value)">
-               <a routerLink="/productoss"><i class="bx bx-store"></i></a>
-       
-      </div>
-
-      
+        <a routerLink="/productoss"><i class="bx bx-store"></i></a>
+    </div>
 
     <!-- Derecha: Iconos limpios -->
     <div class="nav-right">
@@ -45,9 +49,7 @@
     <input type="text"
            placeholder="Buscar colchón, manilla, base cama..."
            (input)="buscar($any($event.target).value)">
-
-           <a routerLink="/productoss"><i class="bx bx-store"></i></a>
-           
+    <a routerLink="/productoss"><i class="bx bx-store"></i></a>
   </div>
 
   <!-- Barra financiación -->

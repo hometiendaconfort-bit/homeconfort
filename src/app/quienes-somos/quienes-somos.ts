@@ -21,7 +21,7 @@ tituloABeneficio="Calidad Garantizada";
 subtituloABeneficio="productos seleccionados con los mejores materiales";
 
 tituloBBeneficio="Envíos Rápidos y Seguros";
-subtituloBBeneficio=" Llevamos tu pedido hasta La puerta de tu hogar.";
+subtituloBBeneficio=" Llevamos tu pedido hasta la puerta de tu hogar.";
 
 tituloCBeneficio="Atención Personalizada";
 subtituloCBeneficio="Te asesoramos para que elijas lo mejor para ti.";
