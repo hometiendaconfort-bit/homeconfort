@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { Productos } from '../../services/productos';
 import { FormsModule } from '@angular/forms';
@@ -11,7 +12,8 @@ import { CommonModule } from '@angular/common';
   styleUrl: './admin-productos.css',
 })
 export class AdminProductos implements OnInit {
- productoss: any[] = [];
+
+  productoss: any[] = [];
   docIdEditando = '';
 
   id = 0;
@@ -24,7 +26,15 @@ export class AdminProductos implements OnInit {
   vendeCredito = false;
 
   inicial = 0;
+
+  // Valor de la cuota seleccionada.
+  // Se conserva el nombre para no alterar innecesariamente
+  // la estructura que ya utiliza el proyecto.
   quincenal = 0;
+
+  // Frecuencia y número de cuotas del crédito.
+  frecuenciaPago: 'quincenal' | 'mensual' = 'quincenal';
+  numeroCuotas = 0;
 
   categoria = '';
   descripcion = '';
@@ -59,6 +69,24 @@ export class AdminProductos implements OnInit {
         return;
       }
 
+      if (this.vendeCredito && this.inicial < 0) {
+        alert('La inicial no puede ser negativa');
+        return;
+      }
+
+      if (this.vendeCredito && this.quincenal <= 0) {
+        alert('Ingresa un valor de cuota válido');
+        return;
+      }
+
+      if (
+        this.vendeCredito &&
+        (!Number.isInteger(this.numeroCuotas) || this.numeroCuotas < 1)
+      ) {
+        alert('Ingresa un número de cuotas válido');
+        return;
+      }
+
       const imagenes = this.imagenesTexto
         .split(',')
         .map(img => img.trim())
@@ -70,7 +98,8 @@ export class AdminProductos implements OnInit {
           ? 'contado'
           : 'credito';
 
-      // Mantengo precio para compatibilidad con productos anteriores.
+      // Mantener el campo precio para compatibilidad
+      // con los productos registrados anteriormente.
       const precio = this.vendeContado
         ? this.precioContado
         : this.precioCredito;
@@ -79,12 +108,41 @@ export class AdminProductos implements OnInit {
         id: this.id,
         nombre: this.nombre,
         precio,
-        precioContado: this.vendeContado ? this.precioContado : null,
-        precioCredito: this.vendeCredito ? this.precioCredito : null,
+
+        precioContado: this.vendeContado
+          ? this.precioContado
+          : null,
+
+        precioCredito: this.vendeCredito
+          ? this.precioCredito
+          : null,
+
         vendeContado: this.vendeContado,
         vendeCredito: this.vendeCredito,
-        inicial: this.vendeCredito ? this.inicial : 0,
-        quincenal: this.vendeCredito ? this.quincenal : 0,
+
+        inicial: this.vendeCredito
+          ? this.inicial
+          : 0,
+
+        // Guardar el valor en el campo correspondiente.
+        quincenal: this.vendeCredito &&
+          this.frecuenciaPago === 'quincenal'
+          ? this.quincenal
+          : 0,
+
+        mensual: this.vendeCredito &&
+          this.frecuenciaPago === 'mensual'
+          ? this.quincenal
+          : 0,
+
+        frecuenciaPago: this.vendeCredito
+          ? this.frecuenciaPago
+          : null,
+
+        numeroCuotas: this.vendeCredito
+          ? this.numeroCuotas
+          : 0,
+
         categoria: this.categoria,
         descripcion: this.descripcion,
         color: this.color,
@@ -158,7 +216,20 @@ export class AdminProductos implements OnInit {
       (producto.tipo !== 'contado' ? producto.precio : 0);
 
     this.inicial = producto.inicial ?? 0;
-    this.quincenal = producto.quincenal ?? 0;
+
+    // Recuperar la frecuencia de los productos nuevos.
+    // Los antiguos quedan en quincenal por defecto.
+    this.frecuenciaPago =
+      producto.frecuenciaPago === 'mensual'
+        ? 'mensual'
+        : 'quincenal';
+
+    // Cargar el valor según la frecuencia guardada.
+    this.quincenal = this.frecuenciaPago === 'mensual'
+      ? (producto.mensual ?? 0)
+      : (producto.quincenal ?? 0);
+
+    this.numeroCuotas = producto.numeroCuotas ?? 0;
 
     this.categoria = producto.categoria ?? '';
     this.descripcion = producto.descripcion ?? '';
@@ -191,6 +262,9 @@ export class AdminProductos implements OnInit {
 
     this.inicial = 0;
     this.quincenal = 0;
+
+    this.frecuenciaPago = 'quincenal';
+    this.numeroCuotas = 0;
 
     this.categoria = '';
     this.descripcion = '';

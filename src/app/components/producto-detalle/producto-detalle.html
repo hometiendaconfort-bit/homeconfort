@@ -1,3 +1,4 @@
+
 <div class="detalle-container" *ngIf="producto">
 
   <!-- GALERÍA DE IMÁGENES -->
@@ -36,6 +37,7 @@
 
     <h1>{{ producto.nombre }}</h1>
 
+    <!-- TEXTO ADICIONAL -->
     <p *ngIf="producto.texto">
       {{ producto.texto }}
     </p>
@@ -87,6 +89,7 @@
 
         <h3>Precio a crédito</h3>
 
+        <!-- PRECIO A CRÉDITO -->
         <p class="precio-final">
           {{
             precioFinal(producto, 'credito')
@@ -94,7 +97,8 @@
           }}
         </p>
 
-        <p *ngIf="producto.inicial != null">
+        <!-- CUOTA INICIAL -->
+        <p *ngIf="producto.inicial > 0">
           <strong>Cuota inicial:</strong>
           {{
             producto.inicial
@@ -102,12 +106,22 @@
           }}
         </p>
 
-        <p *ngIf="producto.quincenal != null">
-          <strong>Pago quincenal:</strong>
+        <!-- CUOTA MENSUAL O QUINCENAL -->
+        <p *ngIf="obtenerValorCuota(producto) > 0">
+          <strong>
+            Pago {{ obtenerNombreFrecuencia(producto) }}:
+          </strong>
+
           {{
-            producto.quincenal
+            obtenerValorCuota(producto)
               | currency:'COP':'symbol':'1.0-0'
           }}
+        </p>
+
+        <!-- NÚMERO DE CUOTAS -->
+        <p *ngIf="producto.numeroCuotas > 0">
+          <strong>Número de cuotas:</strong>
+          {{ producto.numeroCuotas }}
         </p>
 
       </div>
@@ -122,9 +136,11 @@
 
       <p>¿Cómo deseas comprar?</p>
 
+      <!-- CONTADO -->
       <label
         [class.seleccionada]="modalidadSeleccionada === 'contado'"
       >
+
         <input
           type="radio"
           name="modalidadDetalle"
@@ -134,11 +150,14 @@
         >
 
         <span>De contado</span>
+
       </label>
 
+      <!-- CRÉDITO -->
       <label
         [class.seleccionada]="modalidadSeleccionada === 'credito'"
       >
+
         <input
           type="radio"
           name="modalidadDetalle"
@@ -148,6 +167,7 @@
         >
 
         <span>A crédito</span>
+
       </label>
 
     </div>
@@ -165,3 +185,4 @@
   </div>
 
 </div>
+

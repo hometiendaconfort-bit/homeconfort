@@ -46,8 +46,7 @@
 
 /* CUADRÍCULA DE PRODUCTOS */
 .productos-contenedor {
-  
- display: grid;
+  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 270px));
   justify-content: center;
   align-items: stretch;
@@ -57,8 +56,7 @@
 
 /* TARJETA */
 .producto {
-
- width: 100%;
+  width: 100%;
   max-width: 250px;
   min-width: 0;
   min-height: 490px;
@@ -125,11 +123,11 @@
   padding: 7px 2px 2px;
 }
 
-.producto-info .categoria{
+.producto-info .categoria {
   display: none;
 }
 
-.producto-info .color{
+.producto-info .color {
   display: none;
 }
 
@@ -181,9 +179,9 @@
   margin: 0;
 }
 
-/* PRECIOS: ESPACIO RESERVADO */
+/* PRECIOS Y FINANCIACIÓN */
 .bloque-precios {
-  min-height: 105px;
+  min-height: 125px;
   flex-shrink: 0;
   margin-top: 4px;
 }
@@ -294,7 +292,7 @@
   }
 
   .bloque-precios {
-    min-height: 100px;
+    min-height: 120px;
   }
 }
 
@@ -303,7 +301,6 @@
   .principal {
     padding: 10px 8px;
     margin-top: 6rem;
-    
   }
 
   .principal h2 {
@@ -374,15 +371,17 @@
   }
 
   .bloque-precios {
-    min-height: 5px;
+    min-height: 115px;
   }
 
   .bloque-precios p {
     font-size: 10px;
+    line-height: 1.35;
     margin: 4px 0;
+    overflow-wrap: anywhere;
   }
 
-  .producto-info .precio {
+  .bloque-precios p.precio {
     font-size: 12px;
   }
 

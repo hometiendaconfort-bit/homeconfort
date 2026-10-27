@@ -1,3 +1,4 @@
+
 <div class="principal">
 
   <h2>Productos CONFORT HOME</h2>
@@ -134,7 +135,7 @@
           <!-- BLOQUE PRECIOS -->
           <div class="bloque-precios">
 
-            <!-- PRECIO DE CREDITO -->
+            <!-- PRECIO Y FINANCIACION A CREDITO -->
             <ng-container
               *ngIf="obtenerModalidad(p) === 'credito' && p.vendeCredito">
 
@@ -143,12 +144,28 @@
                 {{ precioFinal(p, 'credito') | currency:'COP':'symbol-narrow':'1.0-0' }}
               </p>
 
-              <p *ngIf="p.inicial != null">
-                Inicial: {{ p.inicial | currency:'COP':'symbol-narrow':'1.0-0' }}
+              <p *ngIf="p.inicial != null && p.inicial > 0">
+                Inicial:
+                {{ p.inicial | currency:'COP':'symbol-narrow':'1.0-0' }}
               </p>
 
-              <p *ngIf="p.quincenal != null">
-                Quincenal: {{ p.quincenal | currency:'COP':'symbol-narrow':'1.0-0' }}
+              <!-- CUOTA SEGUN LA FRECUENCIA -->
+              <p
+                *ngIf="p.frecuenciaPago === 'mensual'
+                  ? p.mensual > 0
+                  : p.quincenal > 0">
+
+                Cuota {{ p.frecuenciaPago === 'mensual' ? 'mensual' : 'quincenal' }}:
+
+                {{ (p.frecuenciaPago === 'mensual'
+                  ? p.mensual
+                  : p.quincenal) | currency:'COP':'symbol-narrow':'1.0-0' }}
+
+              </p>
+
+              <!-- NUMERO DE CUOTAS -->
+              <p *ngIf="p.numeroCuotas > 0">
+                Número de cuotas: {{ p.numeroCuotas }}
               </p>
 
             </ng-container>
@@ -160,11 +177,14 @@
               <p
                 class="precio-anterior"
                 *ngIf="(p.descuento > 0 || p.oferta) && precioFinal(p, 'contado') < precioOriginal(p)">
+
                 {{ precioOriginal(p) | currency:'COP':'symbol-narrow':'1.0-0' }}
+
               </p>
 
               <p class="precio">
-                Contado: {{ precioFinal(p, 'contado') | currency:'COP':'symbol-narrow':'1.0-0' }}
+                Contado:
+                {{ precioFinal(p, 'contado') | currency:'COP':'symbol-narrow':'1.0-0' }}
               </p>
 
               <p class="descuento" *ngIf="p.descuento > 0">
@@ -192,7 +212,9 @@
             [href]="obtenerLinkWhatsApp(p)"
             target="_blank"
             rel="noopener noreferrer">
+
             Consultar por WhatsApp
+
           </a>
 
         </div>
@@ -200,8 +222,12 @@
       </div>
 
       <!-- CUANDO NO HAY RESULTADOS -->
-      <p *ngIf="productosFiltrados.length === 0" style="text-align:center; padding: 2rem; grid-column: 1 / -1;">
+      <p
+        *ngIf="productosFiltrados.length === 0"
+        style="text-align:center; padding: 2rem; grid-column: 1 / -1;">
+
         No se encontraron productos con esos filtros.
+
       </p>
 
     </ng-container>

@@ -84,6 +84,16 @@ export class Productoss implements OnInit {
             vendeCredito,
             precioContado,
             precioCredito,
+
+            // COMPATIBILIDAD CON PRODUCTOS ANTIGUOS
+            frecuenciaPago: p.frecuenciaPago === 'mensual'
+              ? 'mensual'
+              : 'quincenal',
+
+            mensual: Number(p.mensual ?? 0),
+            quincenal: Number(p.quincenal ?? 0),
+            numeroCuotas: Number(p.numeroCuotas ?? 0),
+
             imagenes,
             imagenActiva: imagenes.length
               ? imagenes[0]
@@ -254,7 +264,7 @@ export class Productoss implements OnInit {
     // INCLUIR LOS VALORES DE FINANCIACION SI ES CREDITO
     if (modalidad === 'credito') {
 
-      if (p.inicial != null) {
+      if (p.inicial != null && Number(p.inicial) > 0) {
         mensaje += ` Inicial: ${Number(p.inicial).toLocaleString('es-CO', {
           style: 'currency',
           currency: 'COP',
@@ -262,12 +272,26 @@ export class Productoss implements OnInit {
         })}.`;
       }
 
-      if (p.quincenal != null) {
-        mensaje += ` Cuota quincenal: ${Number(p.quincenal).toLocaleString('es-CO', {
+      // MOSTRAR LA CUOTA SEGUN LA FRECUENCIA CONFIGURADA
+      const frecuencia = p.frecuenciaPago === 'mensual'
+        ? 'mensual'
+        : 'quincenal';
+
+      const valorCuota = frecuencia === 'mensual'
+        ? Number(p.mensual ?? 0)
+        : Number(p.quincenal ?? 0);
+
+      if (valorCuota > 0) {
+        mensaje += ` Cuota ${frecuencia}: ${valorCuota.toLocaleString('es-CO', {
           style: 'currency',
           currency: 'COP',
           maximumFractionDigits: 0
         })}.`;
+      }
+
+      // MOSTRAR EL NUMERO DE CUOTAS SI ESTA CONFIGURADO
+      if (Number(p.numeroCuotas) > 0) {
+        mensaje += ` Número de cuotas: ${p.numeroCuotas}.`;
       }
     }
 

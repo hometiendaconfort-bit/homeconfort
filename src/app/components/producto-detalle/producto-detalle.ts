@@ -80,15 +80,26 @@ export class ProductoDetalleComponent implements OnInit {
           ? encontrado.imagenes
           : [];
 
-        // CONSERVO LOS DATOS DEL PRODUCTO Y SUS PRECIOS
+        // CONSERVO LOS DATOS Y ADAPTO LA FINANCIACIÓN
         this.producto = {
           ...encontrado,
           vendeContado,
           vendeCredito,
           precioContado,
           precioCredito,
-          inicial: encontrado.inicial ?? null,
-          quincenal: encontrado.quincenal ?? null,
+
+          inicial: Number(encontrado.inicial ?? 0),
+          quincenal: Number(encontrado.quincenal ?? 0),
+          mensual: Number(encontrado.mensual ?? 0),
+
+          // LOS PRODUCTOS ANTIGUOS USAN PAGO QUINCENAL
+          frecuenciaPago:
+            encontrado.frecuenciaPago === 'mensual'
+              ? 'mensual'
+              : 'quincenal',
+
+          numeroCuotas: Number(encontrado.numeroCuotas ?? 0),
+
           descuento: Number(encontrado.descuento ?? 0),
           imagenes,
           imagenActiva: imagenes[0] || encontrado.imagen || ''
@@ -113,17 +124,11 @@ export class ProductoDetalleComponent implements OnInit {
   // CAMBIAR LA MODALIDAD DE COMPRA
   seleccionarModalidad(modalidad: 'contado' | 'credito'): void {
 
-    if (
-      modalidad === 'contado' &&
-      this.producto?.vendeContado
-    ) {
+    if (modalidad === 'contado' && this.producto?.vendeContado) {
       this.modalidadSeleccionada = 'contado';
     }
 
-    if (
-      modalidad === 'credito' &&
-      this.producto?.vendeCredito
-    ) {
+    if (modalidad === 'credito' && this.producto?.vendeCredito) {
       this.modalidadSeleccionada = 'credito';
     }
   }
@@ -170,6 +175,23 @@ export class ProductoDetalleComponent implements OnInit {
     return precioBase;
   }
 
+  // OBTENER EL VALOR DE LA CUOTA SEGÚN SU FRECUENCIA
+  obtenerValorCuota(p: any): number {
+
+    if (p.frecuenciaPago === 'mensual') {
+      return Number(p.mensual ?? 0);
+    }
+
+    return Number(p.quincenal ?? 0);
+  }
+
+  // OBTENER EL NOMBRE DE LA FRECUENCIA
+  obtenerNombreFrecuencia(p: any): string {
+    return p.frecuenciaPago === 'mensual'
+      ? 'mensual'
+      : 'quincenal';
+  }
+
   // FORMATEAR VALORES PARA WHATSAPP
   private formatearPrecio(valor: number): string {
     return Number(valor || 0).toLocaleString('es-CO', {
@@ -207,14 +229,21 @@ export class ProductoDetalleComponent implements OnInit {
     // AGREGAR LOS DATOS DE FINANCIACIÓN
     if (modalidad === 'credito') {
 
-      if (p.inicial != null && p.inicial !== '') {
+      if (Number(p.inicial) > 0) {
         mensaje +=
           ` Cuota inicial: ${this.formatearPrecio(Number(p.inicial))}.`;
       }
 
-      if (p.quincenal != null && p.quincenal !== '') {
+      const valorCuota = this.obtenerValorCuota(p);
+      const frecuencia = this.obtenerNombreFrecuencia(p);
+
+      if (valorCuota > 0) {
         mensaje +=
-          ` Pago quincenal: ${this.formatearPrecio(Number(p.quincenal))}.`;
+          ` Pago ${frecuencia}: ${this.formatearPrecio(valorCuota)}.`;
+      }
+
+      if (Number(p.numeroCuotas) > 0) {
+        mensaje += ` Número de cuotas: ${p.numeroCuotas}.`;
       }
     }
 
