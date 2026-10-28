@@ -33,12 +33,23 @@ export class AdminCombos implements OnInit {
   vendeContado: boolean = true;
   vendeCredito: boolean = false;
 
+  // FRECUENCIAS DE CRÉDITO
+  vendeQuincenal: boolean = true;
+  vendeMensual: boolean = false;
+
   // PRECIOS
   precioContado: number | null = 0;
   precioCredito: number | null = 0;
 
   inicial: number | null = 0;
+
+  // CUOTAS QUINCENALES
   quincenal: number | null = 0;
+  cuotasQuincenales: number | null = 1;
+
+  // CUOTAS MENSUALES
+  mensual: number | null = 0;
+  cuotasMensuales: number | null = 1;
 
   // PRECIO ANTIGUO PARA COMPATIBILIDAD
   precioCombo: number = 0;
@@ -116,14 +127,48 @@ export class AdminCombos implements OnInit {
 
       if (
         this.vendeCredito &&
+        (this.inicial == null || this.inicial < 0)
+      ) {
+        alert('Ingresa una cuota inicial válida');
+        return;
+      }
+
+      if (
+        this.vendeCredito &&
+        !this.vendeQuincenal &&
+        !this.vendeMensual
+      ) {
+        alert('Selecciona al menos una frecuencia: quincenal o mensual');
+        return;
+      }
+
+      if (
+        this.vendeCredito &&
+        this.vendeQuincenal &&
         (
-          this.inicial == null ||
           this.quincenal == null ||
-          this.inicial < 0 ||
-          this.quincenal <= 0
+          this.quincenal <= 0 ||
+          this.cuotasQuincenales == null ||
+          !Number.isInteger(Number(this.cuotasQuincenales)) ||
+          this.cuotasQuincenales <= 0
         )
       ) {
-        alert('Ingresa una inicial válida y una cuota quincenal mayor que cero');
+        alert('Ingresa un valor quincenal y una cantidad de cuotas quincenales válidos');
+        return;
+      }
+
+      if (
+        this.vendeCredito &&
+        this.vendeMensual &&
+        (
+          this.mensual == null ||
+          this.mensual <= 0 ||
+          this.cuotasMensuales == null ||
+          !Number.isInteger(Number(this.cuotasMensuales)) ||
+          this.cuotasMensuales <= 0
+        )
+      ) {
+        alert('Ingresa un valor mensual y una cantidad de cuotas mensuales válidos');
         return;
       }
 
@@ -131,6 +176,23 @@ export class AdminCombos implements OnInit {
       this.precioCombo = this.vendeContado
         ? this.precioContado!
         : this.precioCredito!;
+
+      // SI UNA FRECUENCIA NO SE OFRECE, NO GUARDAR SUS VALORES
+      const valorQuincenal = this.vendeCredito && this.vendeQuincenal
+        ? this.quincenal
+        : null;
+
+      const cantidadQuincenal = this.vendeCredito && this.vendeQuincenal
+        ? Number(this.cuotasQuincenales)
+        : null;
+
+      const valorMensual = this.vendeCredito && this.vendeMensual
+        ? this.mensual
+        : null;
+
+      const cantidadMensual = this.vendeCredito && this.vendeMensual
+        ? Number(this.cuotasMensuales)
+        : null;
 
       if (this.docIdEditando) {
         // ACTUALIZAR COMBO EXISTENTE
@@ -149,7 +211,12 @@ export class AdminCombos implements OnInit {
           this.precioContado,
           this.precioCredito,
           this.inicial,
-          this.quincenal
+          valorQuincenal,
+          cantidadQuincenal,
+          valorMensual,
+          cantidadMensual,
+          this.vendeQuincenal,
+          this.vendeMensual
         );
 
         alert('Combo actualizado');
@@ -170,14 +237,18 @@ export class AdminCombos implements OnInit {
           this.precioContado,
           this.precioCredito,
           this.inicial,
-          this.quincenal
+          valorQuincenal,
+          cantidadQuincenal,
+          valorMensual,
+          cantidadMensual,
+          this.vendeQuincenal,
+          this.vendeMensual
         );
 
         alert('Combo guardado');
       }
 
       await this.cargarCombos();
-
       this.limpiarFormulario();
 
     } catch (error) {
@@ -206,10 +277,21 @@ export class AdminCombos implements OnInit {
           combo.tipo === 'ambos'
         );
 
+      // LOS COMBOS ANTIGUOS TENÍAN CUOTA QUINCENAL
+      const vendeQuincenal =
+        combo.vendeQuincenal ??
+        (combo.quincenal != null && Number(combo.quincenal) > 0);
+
+      const vendeMensual =
+        combo.vendeMensual ??
+        (combo.mensual != null && Number(combo.mensual) > 0);
+
       return {
         ...combo,
         vendeContado,
         vendeCredito,
+        vendeQuincenal,
+        vendeMensual,
 
         precioContado:
           combo.precioContado ??
@@ -254,12 +336,23 @@ export class AdminCombos implements OnInit {
       (combo.tipo !== 'contado' ? combo.precio ?? 0 : 0);
 
     this.inicial = combo.inicial ?? 0;
+
+    this.vendeQuincenal =
+      combo.vendeQuincenal ??
+      (combo.quincenal != null && Number(combo.quincenal) > 0);
+
+    this.vendeMensual =
+      combo.vendeMensual ??
+      (combo.mensual != null && Number(combo.mensual) > 0);
+
     this.quincenal = combo.quincenal ?? 0;
+    this.cuotasQuincenales = combo.cuotasQuincenales ?? 1;
+
+    this.mensual = combo.mensual ?? 0;
+    this.cuotasMensuales = combo.cuotasMensuales ?? 1;
 
     this.precioCombo = combo.precio ?? 0;
     this.descripcionCombo = combo.descripcion ?? '';
-
-    // NO ES NECESARIO LLAMAR A detectChanges()
   }
 
   // LIMPIAR FORMULARIO Y SALIR DE EDICIÓN
@@ -277,11 +370,19 @@ export class AdminCombos implements OnInit {
     this.vendeContado = true;
     this.vendeCredito = false;
 
+    this.vendeQuincenal = true;
+    this.vendeMensual = false;
+
     this.precioContado = 0;
     this.precioCredito = 0;
 
     this.inicial = 0;
+
     this.quincenal = 0;
+    this.cuotasQuincenales = 1;
+
+    this.mensual = 0;
+    this.cuotasMensuales = 1;
 
     this.precioCombo = 0;
     this.descripcionCombo = '';
@@ -297,7 +398,6 @@ export class AdminCombos implements OnInit {
 
     try {
       await this.combos.eliminarCombo(docId);
-
       await this.cargarCombos();
 
       // SI SE ELIMINA EL COMBO QUE SE EDITABA, LIMPIAR
@@ -311,3 +411,4 @@ export class AdminCombos implements OnInit {
     }
   }
 }
+

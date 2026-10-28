@@ -14,14 +14,17 @@ import { Productos } from '../services/productos';
 })
 export class ComboDetalleComponent implements OnInit {
 
-  // Aquí guardamos el combo seleccionado
+  // COMBO SELECCIONADO
   combo: any;
 
-  // Aquí guardamos todos los productos
+  // TODOS LOS PRODUCTOS
   productosLista: any[] = [];
 
-  // Modalidad seleccionada
+  // MODALIDAD SELECCIONADA
   modalidad: 'contado' | 'credito' = 'credito';
+
+  // FRECUENCIA DE PAGO SELECCIONADA
+  frecuencia: 'quincenal' | 'mensual' = 'quincenal';
 
   constructor(
     private route: ActivatedRoute,
@@ -34,39 +37,91 @@ export class ComboDetalleComponent implements OnInit {
   async ngOnInit() {
     try {
 
-      // Obtiene el docId que viene en la URL
+      // OBTIENE EL ID DE LA URL
       const docId = this.route.snapshot.paramMap.get('id');
 
-      // Obtiene todos los combos
+      // OBTIENE LOS COMBOS Y PRODUCTOS
       const combos = await this.combos.obtenerCombo();
-
-      // Obtiene todos los productos
       const productos = await this.productos.obtenerProductos();
 
-      // Guarda los productos
       this.productosLista = productos;
 
-      // Busca el combo seleccionado
-      this.combo = combos.find(
+      // BUSCA EL COMBO SELECCIONADO
+      const comboEncontrado = combos.find(
         combo => combo.docId === docId
       );
 
-      // Si encontró el combo
-      if (this.combo) {
-
-        // Imagen inicial del combo
-        this.combo.imagenActiva = this.combo.imagen;
-
-        // Selecciona una modalidad disponible
-        if (this.combo.vendeCredito) {
-          this.modalidad = 'credito';
-        } else if (this.combo.vendeContado) {
-          this.modalidad = 'contado';
-        }
-
+      if (!comboEncontrado) {
+        this.cdr.detectChanges();
+        return;
       }
 
-      // Actualiza la vista
+      // COMPATIBILIDAD CON COMBOS ANTIGUOS
+      const vendeContado =
+        comboEncontrado.vendeContado ??
+        (
+          comboEncontrado.tipo === 'contado' ||
+          comboEncontrado.tipo === 'ambos' ||
+          (!comboEncontrado.tipo && comboEncontrado.precio != null)
+        );
+
+      const vendeCredito =
+        comboEncontrado.vendeCredito ??
+        (
+          comboEncontrado.tipo === 'credito' ||
+          comboEncontrado.tipo === 'ambos'
+        );
+
+      const precioContado =
+        comboEncontrado.precioContado ??
+        (
+          comboEncontrado.tipo !== 'credito'
+            ? comboEncontrado.precio
+            : null
+        );
+
+      const precioCredito =
+        comboEncontrado.precioCredito ??
+        (
+          comboEncontrado.tipo !== 'contado'
+            ? comboEncontrado.precio
+            : null
+        );
+
+      const vendeQuincenal =
+        comboEncontrado.vendeQuincenal ??
+        (Number(comboEncontrado.quincenal) > 0);
+
+      const vendeMensual =
+        comboEncontrado.vendeMensual ??
+        (Number(comboEncontrado.mensual) > 0);
+
+      // PREPARA EL COMBO PARA LA VISTA
+      this.combo = {
+        ...comboEncontrado,
+        vendeContado,
+        vendeCredito,
+        precioContado,
+        precioCredito,
+        vendeQuincenal,
+        vendeMensual,
+        imagenActiva: comboEncontrado.imagen
+      };
+
+      // SELECCIONA UNA MODALIDAD DISPONIBLE
+      if (this.combo.vendeCredito) {
+        this.modalidad = 'credito';
+      } else if (this.combo.vendeContado) {
+        this.modalidad = 'contado';
+      }
+
+      // SELECCIONA UNA FRECUENCIA DISPONIBLE
+      if (this.combo.vendeQuincenal) {
+        this.frecuencia = 'quincenal';
+      } else if (this.combo.vendeMensual) {
+        this.frecuencia = 'mensual';
+      }
+
       this.cdr.detectChanges();
 
     } catch (error) {
@@ -74,19 +129,19 @@ export class ComboDetalleComponent implements OnInit {
     }
   }
 
-  // Busca un producto por su docId
+  // BUSCA UN PRODUCTO POR SU DOCID
   obtenerProducto(docId: string) {
     return this.productosLista.find(
       producto => producto.docId === docId
     );
   }
 
-  // Cambia la imagen principal
+  // CAMBIA LA IMAGEN PRINCIPAL
   cambiarImagen(combo: any, imagen: string) {
     combo.imagenActiva = imagen;
   }
 
-  // Cambia entre contado y crédito
+  // CAMBIA ENTRE CONTADO Y CRÉDITO
   seleccionarModalidad(modalidad: 'contado' | 'credito') {
 
     if (
@@ -97,11 +152,48 @@ export class ComboDetalleComponent implements OnInit {
     }
   }
 
-  // Obtiene el precio final según la modalidad
+  // CAMBIA LA FRECUENCIA DE PAGO
+  seleccionarFrecuencia(frecuencia: 'quincenal' | 'mensual') {
+
+    if (
+      frecuencia === 'quincenal' &&
+      this.combo?.vendeQuincenal
+    ) {
+      this.frecuencia = 'quincenal';
+    }
+
+    if (
+      frecuencia === 'mensual' &&
+      this.combo?.vendeMensual
+    ) {
+      this.frecuencia = 'mensual';
+    }
+  }
+
+  // OBTIENE LA FRECUENCIA SELECCIONADA
+  obtenerFrecuencia(combo: any): 'quincenal' | 'mensual' {
+    if (
+      this.frecuencia === 'quincenal' &&
+      combo.vendeQuincenal
+    ) {
+      return 'quincenal';
+    }
+
+    if (combo.vendeMensual) {
+      return 'mensual';
+    }
+
+    return 'quincenal';
+  }
+
+  // OBTIENE EL PRECIO FINAL SEGÚN LA MODALIDAD
   obtenerPrecio(combo: any): number {
 
     if (this.modalidad === 'contado') {
-      const precio = Number(combo.precioContado) || 0;
+      const precio = Number(
+        combo.precioContado ?? combo.precio
+      ) || 0;
+
       const descuento = Number(combo.descuento) || 0;
 
       return descuento > 0
@@ -109,10 +201,21 @@ export class ComboDetalleComponent implements OnInit {
         : precio;
     }
 
-    return Number(combo.precioCredito) || 0;
+    return Number(
+      combo.precioCredito ?? combo.precio
+    ) || 0;
   }
 
-  // Genera el enlace de WhatsApp
+  // FORMATEA UN VALOR COMO PESOS COLOMBIANOS
+  private formatoPesos(valor: number): string {
+    return Number(valor).toLocaleString('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0
+    });
+  }
+
+  // GENERA EL ENLACE DE WHATSAPP
   obtenerLinkWhatsApp(combo: any): string {
 
     const precio = this.obtenerPrecio(combo);
@@ -125,38 +228,57 @@ export class ComboDetalleComponent implements OnInit {
     let mensaje =
       `Hola, estoy interesado en el combo ${combo.nombre}. ` +
       `Modalidad: ${nombreModalidad}. ` +
-      `Precio: ${precio.toLocaleString('es-CO', {
-        style: 'currency',
-        currency: 'COP',
-        maximumFractionDigits: 0
-      })}.`;
+      `Precio: ${this.formatoPesos(precio)}.`;
 
-    // Agrega la información de crédito al mensaje
+    // INFORMACIÓN ADICIONAL DE CRÉDITO
     if (this.modalidad === 'credito') {
 
       if (combo.inicial != null) {
         mensaje +=
-          ` Cuota inicial: ${Number(combo.inicial).toLocaleString('es-CO', {
-            style: 'currency',
-            currency: 'COP',
-            maximumFractionDigits: 0
-          })}.`;
+          ` Cuota inicial: ${this.formatoPesos(Number(combo.inicial))}.`;
       }
 
-      if (combo.quincenal != null) {
-        mensaje +=
-          ` Pago quincenal: ${Number(combo.quincenal).toLocaleString('es-CO', {
-            style: 'currency',
-            currency: 'COP',
-            maximumFractionDigits: 0
-          })}.`;
+      const frecuenciaSeleccionada = this.obtenerFrecuencia(combo);
+
+      // PAGO QUINCENAL
+      if (
+        frecuenciaSeleccionada === 'quincenal' &&
+        combo.vendeQuincenal
+      ) {
+
+        if (combo.quincenal != null) {
+          mensaje +=
+            ` Cuota quincenal: ${this.formatoPesos(Number(combo.quincenal))}.`;
+        }
+
+        if (combo.cuotasQuincenales != null) {
+          mensaje +=
+            ` Número de cuotas quincenales: ${combo.cuotasQuincenales}.`;
+        }
+      }
+
+      // PAGO MENSUAL
+      if (
+        frecuenciaSeleccionada === 'mensual' &&
+        combo.vendeMensual
+      ) {
+
+        if (combo.mensual != null) {
+          mensaje +=
+            ` Cuota mensual: ${this.formatoPesos(Number(combo.mensual))}.`;
+        }
+
+        if (combo.cuotasMensuales != null) {
+          mensaje +=
+            ` Número de cuotas mensuales: ${combo.cuotasMensuales}.`;
+        }
       }
     }
 
     return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
   }
 
-  // Regresa a la página anterior
+  // REGRESA A LA PÁGINA ANTERIOR
   volver() {
     this.location.back();
   }

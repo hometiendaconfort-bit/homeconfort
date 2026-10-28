@@ -3,98 +3,65 @@
 
   <h1>{{ comboEditando ? 'Editar combo' : 'Crear combo' }}</h1>
 
-  <!-- ID DEL COMBO -->
   <label for="idCombo">ID del combo</label>
-  <input
-    id="idCombo"
-    type="number"
-    [(ngModel)]="idCombo"
-    placeholder="Ej: 1">
+  <input id="idCombo" type="number" [(ngModel)]="idCombo" placeholder="Ej: 1">
 
   <br>
 
-  <!-- NOMBRE -->
   <label for="nombreCombo">Nombre del combo</label>
-  <input
-    id="nombreCombo"
-    type="text"
-    [(ngModel)]="nombreCombo"
-    placeholder="Ej: Combo habitación completa">
+  <input id="nombreCombo" type="text" [(ngModel)]="nombreCombo" placeholder="Ej: Combo habitación completa">
 
   <br>
 
-  <!-- IMAGEN -->
   <label for="imagenCombo">Imagen del combo</label>
-  <input
-    id="imagenCombo"
-    type="text"
-    [(ngModel)]="imagenCombo"
-    placeholder="Ej: /assets/img/camacolchon.jpg">
+  <input id="imagenCombo" type="text" [(ngModel)]="imagenCombo" placeholder="Ej: /assets/img/camacolchon.jpg">
 
   <br>
 
-  <!-- BASE -->
   <label for="baseId">Base</label>
   <select id="baseId" [(ngModel)]="baseId">
     <option value="">Seleccionar base</option>
-
-    <option
-      *ngFor="let producto of bases"
-      [value]="producto.docId">
+    <option *ngFor="let producto of bases" [value]="producto.docId">
       {{ producto.nombre }}
     </option>
   </select>
 
   <br>
 
-  <!-- COLCHÓN -->
   <label for="colchonId">Colchón</label>
   <select id="colchonId" [(ngModel)]="colchonId">
     <option value="">Seleccionar colchón</option>
-
-    <option
-      *ngFor="let producto of colchones"
-      [value]="producto.docId">
+    <option *ngFor="let producto of colchones" [value]="producto.docId">
       {{ producto.nombre }}
     </option>
   </select>
 
   <br>
 
-  <!-- ESPALDAR -->
   <label for="espaldarId">Espaldar</label>
   <select id="espaldarId" [(ngModel)]="espaldarId">
     <option value="">Sin espaldar</option>
-
-    <option
-      *ngFor="let producto of espaldares"
-      [value]="producto.docId">
+    <option *ngFor="let producto of espaldares" [value]="producto.docId">
       {{ producto.nombre }}
     </option>
   </select>
 
   <hr>
 
-  <!-- MODALIDADES DE VENTA -->
   <h3>Modalidades de venta</h3>
 
   <label class="modalidad">
-    <input
-      type="checkbox"
-      [(ngModel)]="vendeContado">
+    <input type="checkbox" [(ngModel)]="vendeContado">
     Vender de contado
   </label>
 
   <label class="modalidad">
-    <input
-      type="checkbox"
-      [(ngModel)]="vendeCredito">
+    <input type="checkbox" [(ngModel)]="vendeCredito">
     Vender a crédito
   </label>
 
   <hr>
 
-  <!-- PRECIO DE CONTADO -->
   <div *ngIf="vendeContado">
     <h3>Precio de contado</h3>
 
@@ -108,7 +75,6 @@
 
   <br>
 
-  <!-- PRECIO DE CRÉDITO -->
   <div *ngIf="vendeCredito">
     <h3>Precio a crédito</h3>
 
@@ -128,19 +94,66 @@
       [(ngModel)]="inicial"
       placeholder="Ej: 150000">
 
-    <br>
+    <hr>
 
-    <label for="quincenal">Cuota quincenal</label>
-    <input
-      id="quincenal"
-      type="number"
-      [(ngModel)]="quincenal"
-      placeholder="Ej: 80000">
+    <h3>Frecuencia de las cuotas</h3>
+    <p>Selecciona las opciones de crédito que ofrecerás para este combo.</p>
+
+    <label class="modalidad">
+      <input type="checkbox" [(ngModel)]="vendeQuincenal">
+      Permitir pago quincenal
+    </label>
+
+    <div *ngIf="vendeQuincenal">
+      <label for="quincenal">Valor de cada cuota quincenal</label>
+      <input
+        id="quincenal"
+        type="number"
+        [(ngModel)]="quincenal"
+        placeholder="Ej: 80000">
+
+      <br>
+
+      <label for="cuotasQuincenales">Cantidad de cuotas quincenales</label>
+      <input
+        id="cuotasQuincenales"
+        type="number"
+        min="1"
+        step="1"
+        [(ngModel)]="cuotasQuincenales"
+        placeholder="Ej: 18">
+    </div>
+
+    <hr>
+
+    <label class="modalidad">
+      <input type="checkbox" [(ngModel)]="vendeMensual">
+      Permitir pago mensual
+    </label>
+
+    <div *ngIf="vendeMensual">
+      <label for="mensual">Valor de cada cuota mensual</label>
+      <input
+        id="mensual"
+        type="number"
+        [(ngModel)]="mensual"
+        placeholder="Ej: 160000">
+
+      <br>
+
+      <label for="cuotasMensuales">Cantidad de cuotas mensuales</label>
+      <input
+        id="cuotasMensuales"
+        type="number"
+        min="1"
+        step="1"
+        [(ngModel)]="cuotasMensuales"
+        placeholder="Ej: 9">
+    </div>
   </div>
 
   <hr>
 
-  <!-- DESCRIPCIÓN -->
   <label for="descripcionCombo">Descripción del combo</label>
   <textarea
     id="descripcionCombo"
@@ -150,7 +163,6 @@
 
   <br>
 
-  <!-- GUARDAR O ACTUALIZAR -->
   <button
     type="button"
     class="guardar"
@@ -169,7 +181,6 @@
 
 <hr>
 
-<!-- TABLA DE COMBOS -->
 <div class="admin-combos-contenedor-tabla">
 
   <h2>Combos creados</h2>
@@ -183,7 +194,10 @@
         <th>Contado</th>
         <th>Crédito</th>
         <th>Inicial</th>
-        <th>Quincenal</th>
+        <th>Cuota quincenal</th>
+        <th>N.º cuotas quincenales</th>
+        <th>Cuota mensual</th>
+        <th>N.º cuotas mensuales</th>
         <th>Descripción</th>
         <th>Acciones</th>
       </tr>
@@ -191,9 +205,7 @@
 
     <tbody>
       <tr *ngFor="let combo of combolista">
-
         <td>{{ combo.id }}</td>
-
         <td>{{ combo.nombre }}</td>
 
         <td>
@@ -225,10 +237,31 @@
         </td>
 
         <td>
-          <span *ngIf="combo.vendeCredito && combo.quincenal != null">
+          <span *ngIf="combo.vendeCredito && combo.vendeQuincenal && combo.quincenal != null">
             {{ combo.quincenal | currency:'COP':'symbol':'1.0-0' }}
           </span>
-          <span *ngIf="!combo.vendeCredito">—</span>
+          <span *ngIf="!combo.vendeCredito || !combo.vendeQuincenal">—</span>
+        </td>
+
+        <td>
+          <span *ngIf="combo.vendeCredito && combo.vendeQuincenal">
+            {{ combo.cuotasQuincenales ?? '—' }}
+          </span>
+          <span *ngIf="!combo.vendeCredito || !combo.vendeQuincenal">—</span>
+        </td>
+
+        <td>
+          <span *ngIf="combo.vendeCredito && combo.vendeMensual && combo.mensual != null">
+            {{ combo.mensual | currency:'COP':'symbol':'1.0-0' }}
+          </span>
+          <span *ngIf="!combo.vendeCredito || !combo.vendeMensual">—</span>
+        </td>
+
+        <td>
+          <span *ngIf="combo.vendeCredito && combo.vendeMensual">
+            {{ combo.cuotasMensuales ?? '—' }}
+          </span>
+          <span *ngIf="!combo.vendeCredito || !combo.vendeMensual">—</span>
         </td>
 
         <td>{{ combo.descripcion }}</td>
@@ -248,11 +281,10 @@
             Eliminar
           </button>
         </td>
-
       </tr>
 
       <tr *ngIf="combolista.length === 0">
-        <td colspan="9">No hay combos registrados.</td>
+        <td colspan="12">No hay combos registrados.</td>
       </tr>
     </tbody>
   </table>

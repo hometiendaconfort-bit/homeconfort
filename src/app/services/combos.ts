@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import {
   addDoc,
@@ -29,8 +30,13 @@ export class Combos {
     precioContado: number | null = null,
     precioCredito: number | null = null,
     inicial: number | null = null,
-    quincenal: number | null = null
-  ) {
+    quincenal: number | null = null,
+    cuotasQuincenales: number | null = null,
+    mensual: number | null = null,
+    cuotasMensuales: number | null = null,
+    vendeQuincenal: boolean = true,
+    vendeMensual: boolean = false
+  ): Promise<void> {
 
     const combosRef = collection(db, 'combos');
 
@@ -42,34 +48,43 @@ export class Combos {
       colchonId,
       espaldarId,
 
-      // CONSERVO EL PRECIO ANTIGUO
+      // PRECIO ANTIGUO PARA COMPATIBILIDAD
       precio,
 
-      // NUEVOS CAMPOS DE MODALIDADES
+      // MODALIDADES DE VENTA
       vendeContado,
       vendeCredito,
       precioContado: vendeContado ? precioContado : null,
       precioCredito: vendeCredito ? precioCredito : null,
       inicial: vendeCredito ? inicial : null,
-      quincenal: vendeCredito ? quincenal : null,
+
+      // FRECUENCIA QUINCENAL
+      vendeQuincenal: vendeCredito ? vendeQuincenal : false,
+      quincenal:
+        vendeCredito && vendeQuincenal ? quincenal : null,
+      cuotasQuincenales:
+        vendeCredito && vendeQuincenal ? cuotasQuincenales : null,
+
+      // FRECUENCIA MENSUAL
+      vendeMensual: vendeCredito ? vendeMensual : false,
+      mensual:
+        vendeCredito && vendeMensual ? mensual : null,
+      cuotasMensuales:
+        vendeCredito && vendeMensual ? cuotasMensuales : null,
 
       descripcion
     });
-
   }
 
   // OBTENER LOS COMBOS
-  async obtenerCombo() {
-
+  async obtenerCombo(): Promise<any[]> {
     const combosRef = collection(db, 'combos');
-
     const snapshot = await getDocs(combosRef);
 
     return snapshot.docs.map(documento => ({
       docId: documento.id,
       ...documento.data()
     }));
-
   }
 
   // EDITAR UN COMBO
@@ -88,8 +103,13 @@ export class Combos {
     precioContado: number | null = null,
     precioCredito: number | null = null,
     inicial: number | null = null,
-    quincenal: number | null = null
-  ) {
+    quincenal: number | null = null,
+    cuotasQuincenales: number | null = null,
+    mensual: number | null = null,
+    cuotasMensuales: number | null = null,
+    vendeQuincenal: boolean = true,
+    vendeMensual: boolean = false
+  ): Promise<void> {
 
     const comboRef = doc(db, 'combos', docId);
 
@@ -101,31 +121,39 @@ export class Combos {
       colchonId,
       espaldarId,
 
-      // CONSERVO EL PRECIO ANTIGUO
+      // PRECIO ANTIGUO PARA COMPATIBILIDAD
       precio,
 
-      // ACTUALIZO LAS MODALIDADES
+      // MODALIDADES DE VENTA
       vendeContado,
       vendeCredito,
       precioContado: vendeContado ? precioContado : null,
       precioCredito: vendeCredito ? precioCredito : null,
       inicial: vendeCredito ? inicial : null,
-      quincenal: vendeCredito ? quincenal : null,
+
+      // FRECUENCIA QUINCENAL
+      vendeQuincenal: vendeCredito ? vendeQuincenal : false,
+      quincenal:
+        vendeCredito && vendeQuincenal ? quincenal : null,
+      cuotasQuincenales:
+        vendeCredito && vendeQuincenal ? cuotasQuincenales : null,
+
+      // FRECUENCIA MENSUAL
+      vendeMensual: vendeCredito ? vendeMensual : false,
+      mensual:
+        vendeCredito && vendeMensual ? mensual : null,
+      cuotasMensuales:
+        vendeCredito && vendeMensual ? cuotasMensuales : null,
 
       descripcion
     });
-
   }
 
   // ELIMINAR UN COMBO
-  async eliminarCombo(docId: string) {
-
+  async eliminarCombo(docId: string): Promise<void> {
     const comboRef = doc(db, 'combos', docId);
-
     await deleteDoc(comboRef);
-
   }
 
   productoParaVolver: string | null = null;
-
 }

@@ -1,11 +1,10 @@
+
 /* CONTENEDOR DEL FORMULARIO */
 
 .admin-combos-contenedor {
   width: 400px;
-  max-width: 100%;
-  margin-top: 7rem !important;
-  margin:auto;
-
+  max-width: calc(100% - 24px);
+  margin: 7rem auto 20px !important;
   padding: 15px;
   box-sizing: border-box;
   display: flex;
@@ -16,6 +15,8 @@
   background-color: #f9f9f9;
   border-radius: 10px;
 }
+
+/* TÍTULOS */
 
 .admin-combos-contenedor h1 {
   text-align: center;
@@ -31,7 +32,16 @@
   color: #333;
 }
 
-/* FORMULARIO: ETIQUETAS */
+/* TEXTO INFORMATIVO */
+
+.admin-combos-contenedor p {
+  margin: 5px 0 10px;
+  color: #555;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ETIQUETAS */
 
 .admin-combos-contenedor label {
   display: block;
@@ -39,7 +49,7 @@
   padding: 0;
   font-size: 14px;
   font-weight: bold;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 /* CAMPOS DE TEXTO, NÚMEROS Y SELECTORES */
@@ -75,7 +85,17 @@
   resize: vertical;
 }
 
-/* MODALIDADES: CONTADO Y CRÉDITO */
+/* EFECTO AL SELECCIONAR UN CAMPO */
+
+.admin-combos-contenedor input:not([type="checkbox"]):focus,
+.admin-combos-contenedor select:focus,
+.admin-combos-contenedor textarea:focus {
+  outline: 2px solid #4CAF50;
+  outline-offset: 1px;
+  border-color: #4CAF50;
+}
+
+/* MODALIDADES DE CONTADO Y CRÉDITO */
 
 .admin-combos-contenedor label.modalidad {
   display: flex;
@@ -110,7 +130,7 @@
 
 .admin-combos-contenedor button.guardar {
   width: 100%;
-  padding: 9px 15px;
+  padding: 10px 15px;
   margin-top: 10px;
   font-size: 14px;
   font-weight: bold;
@@ -130,7 +150,7 @@
 
 .admin-combos-contenedor button:not(.guardar) {
   width: 100%;
-  padding: 8px 12px;
+  padding: 9px 12px;
   margin-top: 7px;
   font-size: 13px;
   font-weight: bold;
@@ -139,6 +159,11 @@
   border-radius: 5px;
   background-color: #eee;
   color: #333;
+  transition: background-color 0.2s ease;
+}
+
+.admin-combos-contenedor button:not(.guardar):hover {
+  background-color: #ddd;
 }
 
 /* TABLA DE COMBOS */
@@ -150,6 +175,7 @@
   font-family: Arial, sans-serif;
   font-size: 14px;
   box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
 }
 
 .admin-combos-contenedor-tabla h2 {
@@ -159,6 +185,7 @@
 
 .admin-combos-contenedor-tabla table {
   width: 100%;
+  min-width: 1250px;
   border-collapse: collapse;
   margin-top: 15px;
   background-color: #f9f9f9;
@@ -178,8 +205,16 @@
   white-space: nowrap;
 }
 
+.admin-combos-contenedor-tabla td {
+  overflow-wrap: anywhere;
+}
+
 .admin-combos-contenedor-tabla tr:nth-child(even) {
   background-color: #f9f9f9;
+}
+
+.admin-combos-contenedor-tabla tr:hover {
+  background-color: #f1f1f1;
 }
 
 /* IMÁGENES DE LA TABLA */
@@ -234,15 +269,14 @@
   align-items: center;
 }
 
-/* CELULAR */
+/* TABLET Y CELULAR */
 
 @media (max-width: 600px) {
 
   .admin-combos-contenedor {
     width: calc(100% - 24px);
     max-width: 400px;
-    margin-top: 10rem !important;
-    margin: 20px auto;
+    margin: 20px auto !important;
     padding: 12px;
   }
 
@@ -271,7 +305,7 @@
   }
 
   .admin-combos-contenedor-tabla table {
-    min-width: 950px;
+    min-width: 1250px;
   }
 
   .admin-combos-contenedor-tabla th,
@@ -296,13 +330,13 @@
   }
 }
 
+/* CELULARES PEQUEÑOS */
+
 @media (max-width: 480px) {
 
   .admin-combos-contenedor {
     width: calc(100% - 24px);
     max-width: 400px;
-    margin-top: 10rem !important;
-    margin: 20px auto;
     padding: 12px;
   }
 
@@ -318,20 +352,13 @@
     font-size: 13px;
   }
 
-  .admin-combos-contenedor input:not([type="checkbox"]),
-  .admin-combos-contenedor select,
-  .admin-combos-contenedor textarea {
-    font-size: 14px;
-  }
-
   .admin-combos-contenedor-tabla {
     width: calc(100% - 16px);
-    margin: 20px auto;
     overflow-x: auto;
   }
 
   .admin-combos-contenedor-tabla table {
-    min-width: 950px;
+    min-width: 1250px;
   }
 
   .admin-combos-contenedor-tabla th,
@@ -343,15 +370,5 @@
   .admin-combos-contenedor-tabla img.combo-imagen {
     width: 50px;
     height: 45px;
-  }
-
-  .admin-combos-contenedor-tabla .acciones,
-  .acciones {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .admin-combos-contenedor-tabla button {
-    width: 100%;
   }
 }

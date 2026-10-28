@@ -149,7 +149,7 @@
   overflow-wrap: anywhere;
 }
 
-/* SELECTOR DE MODALIDAD */
+/* SELECTOR DE MODALIDAD: CONTADO / CRÉDITO */
 .selector-modalidad {
   display: flex;
   gap: 10px;
@@ -190,16 +190,17 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   margin-top: 26px;
+  min-width: 0;
 }
 
-/* LOS DOS BLOQUES OCUPAN EL MISMO ESPACIO */
+/* LOS DOS BLOQUES COMPARTEN LA MISMA POSICIÓN */
 .precios .precio-modalidad {
   grid-column: 1;
   grid-row: 1;
 
   min-width: 0;
-  height: 205px;
   min-height: 205px;
+  height: auto;
 
   padding: 18px;
   box-sizing: border-box;
@@ -207,6 +208,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  align-self: start;
 
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -260,6 +262,60 @@
   border-radius: 6px;
   font-size: 14px;
   font-weight: 700;
+}
+
+/* SELECTOR DE FRECUENCIA: QUINCENAL / MENSUAL */
+.selector-frecuencia {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  margin: 12px 0 8px;
+}
+
+.selector-frecuencia button {
+  flex: 1 1 120px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 9px 12px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #374151;
+
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.selector-frecuencia button:hover {
+  border-color: #0d6efd;
+}
+
+.selector-frecuencia button.activo {
+  background: #e8f0ff;
+  color: #2453a4;
+  border-color: #496fc2;
+}
+
+/* INFORMACIÓN DE CUOTAS */
+.informacion-cuotas {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.informacion-cuotas p {
+  margin: 4px 0;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 /* BOTÓN WHATSAPP */
@@ -341,7 +397,6 @@
   }
 
   .precios .precio-modalidad {
-    height: 205px;
     min-height: 205px;
   }
 }
@@ -428,7 +483,7 @@
     line-height: 1.65;
   }
 
-  /* SELECTOR */
+  /* SELECTOR DE MODALIDAD */
   .selector-modalidad {
     margin-top: 18px;
     gap: 8px;
@@ -445,7 +500,6 @@
   }
 
   .precios .precio-modalidad {
-    height: 190px;
     min-height: 190px;
     padding: 15px;
   }
@@ -462,6 +516,22 @@
     font-size: 16px;
   }
 
+  /* FRECUENCIA */
+  .selector-frecuencia {
+    gap: 7px;
+    margin-top: 10px;
+  }
+
+  .selector-frecuencia button {
+    flex-basis: 110px;
+    min-height: 40px;
+    font-size: 13px;
+  }
+
+  .informacion-cuotas p {
+    font-size: 14px;
+  }
+
   /* WHATSAPP */
   .btn-whatsapp {
     width: 100%;
@@ -473,8 +543,6 @@
 
 /* CELULARES PEQUEÑOS */
 @media (max-width: 480px) {
-  
-
   .detalle-container {
     width: calc(100% - 16px);
     margin-top: 10rem !important;
@@ -504,13 +572,22 @@
   }
 
   .precios .precio-modalidad {
-    height: 180px;
     min-height: 180px;
     padding: 12px;
   }
 
   .precios .precio-final {
     font-size: 23px;
+  }
+
+  .selector-frecuencia button {
+    flex-basis: 100px;
+    padding: 8px 7px;
+    font-size: 12px;
+  }
+
+  .informacion-cuotas p {
+    font-size: 13px;
   }
 
   .btn-whatsapp {

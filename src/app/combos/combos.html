@@ -15,7 +15,7 @@
         [src]="combo.imagenActiva || combo.imagen"
         [alt]="combo.nombre"
         class="imagen-principal"
-      > 
+      >
     </div>
 
     <!-- MINIATURAS -->
@@ -51,7 +51,7 @@
         >
       </div>
 
-      <!-- COLCHON -->
+      <!-- COLCHÓN -->
       <div
         class="producto-mini"
         *ngIf="combo.colchonId && obtenerProducto(combo.colchonId) as colchon"
@@ -83,7 +83,7 @@
 
     </div>
 
-    <!-- INFORMACION DEL COMBO -->
+    <!-- INFORMACIÓN DEL COMBO -->
     <div class="combo-info">
 
       <h3>{{ combo.nombre }}</h3>
@@ -92,7 +92,7 @@
         {{ combo.descripcion }}
       </p>
 
-      <!-- SELECTOR CUANDO EXISTEN LAS DOS MODALIDADES -->
+      <!-- SELECTOR DE MODALIDAD -->
       <div
         class="selector-modalidad"
         *ngIf="combo.vendeContado && combo.vendeCredito"
@@ -135,10 +135,11 @@
         </p>
       </ng-container>
 
-      <!-- PRECIO A CREDITO -->
+      <!-- INFORMACIÓN A CRÉDITO -->
       <ng-container
         *ngIf="obtenerModalidad(combo) === 'credito' && combo.vendeCredito"
       >
+
         <p class="precio">
           Precio a crédito:
           {{ precioFinal(combo, 'credito') | currency:'COP':'symbol':'1.0-0' }}
@@ -149,13 +150,76 @@
           {{ combo.inicial | currency:'COP':'symbol':'1.0-0' }}
         </p>
 
-        <p *ngIf="combo.quincenal != null">
-          Cuota quincenal:
-          {{ combo.quincenal | currency:'COP':'symbol':'1.0-0' }}
-        </p>
+        <!-- SELECTOR DE FRECUENCIA -->
+        <div
+          class="selector-modalidad selector-frecuencia"
+          *ngIf="combo.vendeQuincenal && combo.vendeMensual"
+          (click)="$event.stopPropagation()"
+        >
+
+          <label
+            [class.seleccionada]="obtenerFrecuencia(combo) === 'quincenal'"
+          >
+            <input
+              type="radio"
+              [name]="'frecuencia-' + (combo.docId ?? combo.id)"
+              [checked]="obtenerFrecuencia(combo) === 'quincenal'"
+              (change)="seleccionarFrecuencia(combo, 'quincenal')"
+            >
+            Pago quincenal
+          </label>
+
+          <label
+            [class.seleccionada]="obtenerFrecuencia(combo) === 'mensual'"
+          >
+            <input
+              type="radio"
+              [name]="'frecuencia-' + (combo.docId ?? combo.id)"
+              [checked]="obtenerFrecuencia(combo) === 'mensual'"
+              (change)="seleccionarFrecuencia(combo, 'mensual')"
+            >
+            Pago mensual
+          </label>
+
+        </div>
+
+        <!-- SOLO PAGO QUINCENAL -->
+        <ng-container
+          *ngIf="combo.vendeQuincenal && (!combo.vendeMensual || obtenerFrecuencia(combo) === 'quincenal')"
+        >
+
+          <p *ngIf="combo.quincenal != null">
+            Cuota quincenal:
+            {{ combo.quincenal | currency:'COP':'symbol':'1.0-0' }}
+          </p>
+
+          <p *ngIf="combo.cuotasQuincenales != null">
+            Número de cuotas quincenales:
+            {{ combo.cuotasQuincenales }}
+          </p>
+
+        </ng-container>
+
+        <!-- SOLO PAGO MENSUAL -->
+        <ng-container
+          *ngIf="combo.vendeMensual && (!combo.vendeQuincenal || obtenerFrecuencia(combo) === 'mensual')"
+        >
+
+          <p *ngIf="combo.mensual != null">
+            Cuota mensual:
+            {{ combo.mensual | currency:'COP':'symbol':'1.0-0' }}
+          </p>
+
+          <p *ngIf="combo.cuotasMensuales != null">
+            Número de cuotas mensuales:
+            {{ combo.cuotasMensuales }}
+          </p>
+
+        </ng-container>
+
       </ng-container>
 
-      <!-- COMPATIBILIDAD CON COMBOS ANTIGUOS SIN MODALIDAD DEFINIDA -->
+      <!-- COMPATIBILIDAD CON COMBOS ANTIGUOS -->
       <p
         class="precio"
         *ngIf="!combo.vendeContado && !combo.vendeCredito"

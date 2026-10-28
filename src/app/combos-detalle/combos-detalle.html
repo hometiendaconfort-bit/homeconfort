@@ -111,7 +111,7 @@
           {{ combo.precioContado | currency:'COP':'symbol':'1.0-0' }}
         </p>
 
-        <!-- PRECIO FINAL -->
+        <!-- PRECIO FINAL CON DESCUENTO -->
         <p class="precio-final">
           {{
             (
@@ -133,7 +133,7 @@
 
       </div>
 
-      <!-- PRECIO A CRÉDITO -->
+      <!-- INFORMACIÓN A CRÉDITO -->
       <div
         class="precio-modalidad"
         [class.invisible]="modalidad !== 'credito'"
@@ -151,17 +151,71 @@
           {{ combo.inicial | currency:'COP':'symbol':'1.0-0' }}
         </p>
 
-        <!-- PAGO QUINCENAL -->
-        <p *ngIf="combo.quincenal != null">
-          Pago quincenal:
-          {{ combo.quincenal | currency:'COP':'symbol':'1.0-0' }}
-        </p>
+        <!-- SELECTOR DE FRECUENCIA -->
+        <div
+          class="selector-frecuencia"
+          *ngIf="combo.vendeQuincenal && combo.vendeMensual"
+        >
+
+          <button
+            type="button"
+            [class.activo]="obtenerFrecuencia(combo) === 'quincenal'"
+            (click)="seleccionarFrecuencia('quincenal')"
+          >
+            Pago quincenal
+          </button>
+
+          <button
+            type="button"
+            [class.activo]="obtenerFrecuencia(combo) === 'mensual'"
+            (click)="seleccionarFrecuencia('mensual')"
+          >
+            Pago mensual
+          </button>
+
+        </div>
+
+        <!-- INFORMACIÓN DE PAGO QUINCENAL -->
+        <div
+          class="informacion-cuotas"
+          *ngIf="combo.vendeQuincenal && (!combo.vendeMensual || obtenerFrecuencia(combo) === 'quincenal')"
+        >
+
+          <p *ngIf="combo.quincenal != null">
+            Cuota quincenal:
+            {{ combo.quincenal | currency:'COP':'symbol':'1.0-0' }}
+          </p>
+
+          <p *ngIf="combo.cuotasQuincenales != null">
+            Número de cuotas quincenales:
+            {{ combo.cuotasQuincenales }}
+          </p>
+
+        </div>
+
+        <!-- INFORMACIÓN DE PAGO MENSUAL -->
+        <div
+          class="informacion-cuotas"
+          *ngIf="combo.vendeMensual && (!combo.vendeQuincenal || obtenerFrecuencia(combo) === 'mensual')"
+        >
+
+          <p *ngIf="combo.mensual != null">
+            Cuota mensual:
+            {{ combo.mensual | currency:'COP':'symbol':'1.0-0' }}
+          </p>
+
+          <p *ngIf="combo.cuotasMensuales != null">
+            Número de cuotas mensuales:
+            {{ combo.cuotasMensuales }}
+          </p>
+
+        </div>
 
       </div>
 
     </div>
 
-    <!-- WHATSAPP -->
+    <!-- COMPRAR POR WHATSAPP -->
     <a
       [href]="obtenerLinkWhatsApp(combo)"
       target="_blank"
@@ -174,3 +228,4 @@
   </div>
 
 </div>
+

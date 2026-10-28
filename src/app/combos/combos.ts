@@ -20,6 +20,9 @@ export class CombosComponent implements OnInit {
   // GUARDO LA MODALIDAD SELECCIONADA PARA CADA COMBO
   modalidadCombo: { [docId: string]: 'contado' | 'credito' } = {};
 
+  // GUARDO LA FRECUENCIA DE PAGO DE CADA COMBO
+  frecuenciaCombo: { [docId: string]: 'quincenal' | 'mensual' } = {};
+
   constructor(
     private combos: Combos,
     private productos: Productos,
@@ -58,12 +61,23 @@ export class CombosComponent implements OnInit {
           combo.precioCredito ??
           (combo.tipo !== 'contado' ? combo.precio : null);
 
+        // COMPATIBILIDAD CON COMBOS ANTIGUOS
+        const vendeQuincenal =
+          combo.vendeQuincenal ??
+          (Number(combo.quincenal) > 0);
+
+        const vendeMensual =
+          combo.vendeMensual ??
+          (Number(combo.mensual) > 0);
+
         const comboAdaptado = {
           ...combo,
           vendeContado,
           vendeCredito,
           precioContado,
           precioCredito,
+          vendeQuincenal,
+          vendeMensual,
           imagenActiva: combo.imagen
         };
 
@@ -74,6 +88,13 @@ export class CombosComponent implements OnInit {
           this.modalidadCombo[id] = 'credito';
         } else if (vendeContado) {
           this.modalidadCombo[id] = 'contado';
+        }
+
+        // SELECCIONO UNA FRECUENCIA DISPONIBLE
+        if (vendeQuincenal) {
+          this.frecuenciaCombo[id] = 'quincenal';
+        } else if (vendeMensual) {
+          this.frecuenciaCombo[id] = 'mensual';
         }
 
         return comboAdaptado;
@@ -117,6 +138,30 @@ export class CombosComponent implements OnInit {
 
     return this.modalidadCombo[id] ??
       (combo.vendeCredito ? 'credito' : 'contado');
+  }
+
+  // CAMBIO LA FRECUENCIA DE PAGO
+  seleccionarFrecuencia(
+    combo: any,
+    frecuencia: 'quincenal' | 'mensual'
+  ) {
+    const id = String(combo.docId ?? combo.id);
+
+    if (frecuencia === 'quincenal' && combo.vendeQuincenal) {
+      this.frecuenciaCombo[id] = 'quincenal';
+    }
+
+    if (frecuencia === 'mensual' && combo.vendeMensual) {
+      this.frecuenciaCombo[id] = 'mensual';
+    }
+  }
+
+  // OBTENGO LA FRECUENCIA SELECCIONADA
+  obtenerFrecuencia(combo: any): 'quincenal' | 'mensual' {
+    const id = String(combo.docId ?? combo.id);
+
+    return this.frecuenciaCombo[id] ??
+      (combo.vendeQuincenal ? 'quincenal' : 'mensual');
   }
 
   verDetalleCombo(docId: string) {
@@ -167,7 +212,7 @@ export class CombosComponent implements OnInit {
     setTimeout(buscarCombo, 100);
   }
 
-  // GENERO EL MENSAJE DE WHATSAPP CON LA MODALIDAD ELEGIDA
+  // GENERO EL MENSAJE DE WHATSAPP CON LA MODALIDAD Y FRECUENCIA ELEGIDAS
   obtenerLinkWhatsApp(combo: any): string {
     const modalidad = this.obtenerModalidad(combo);
     const precio = this.precioFinal(combo, modalidad);
@@ -180,14 +225,37 @@ export class CombosComponent implements OnInit {
       `Precio de ${nombreModalidad}: ${precio.toLocaleString('es-CO')} pesos.`;
 
     if (modalidad === 'credito') {
+
       if (combo.inicial != null) {
         mensaje +=
           ` Cuota inicial: ${Number(combo.inicial).toLocaleString('es-CO')} pesos.`;
       }
 
-      if (combo.quincenal != null) {
-        mensaje +=
-          ` Pago quincenal: ${Number(combo.quincenal).toLocaleString('es-CO')} pesos.`;
+      const frecuencia = this.obtenerFrecuencia(combo);
+
+      if (frecuencia === 'quincenal' && combo.vendeQuincenal) {
+
+        if (combo.quincenal != null) {
+          mensaje +=
+            ` Pago quincenal: ${Number(combo.quincenal).toLocaleString('es-CO')} pesos.`;
+        }
+
+        if (combo.cuotasQuincenales != null) {
+          mensaje +=
+            ` Número de cuotas quincenales: ${combo.cuotasQuincenales}.`;
+        }
+
+      } else if (frecuencia === 'mensual' && combo.vendeMensual) {
+
+        if (combo.mensual != null) {
+          mensaje +=
+            ` Pago mensual: ${Number(combo.mensual).toLocaleString('es-CO')} pesos.`;
+        }
+
+        if (combo.cuotasMensuales != null) {
+          mensaje +=
+            ` Número de cuotas mensuales: ${combo.cuotasMensuales}.`;
+        }
       }
     }
 
