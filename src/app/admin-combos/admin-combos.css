@@ -1,8 +1,19 @@
 
+
+.contenedor {
+  display: flex;
+  justify-content: center;
+  width: calc(100% - 32px);
+  max-width: 1100px;
+  margin: 0 auto;
+  background: white;
+}
+
+
 /* CONTENEDOR PRINCIPAL DEL FORMULARIO */
 .admin-combos-contenedor {
   width: calc(100% - 32px);
-  max-width: 1400px;
+  max-width: 700px;
   margin: 7rem auto 30px;
   padding: 20px;
   box-sizing: border-box;
