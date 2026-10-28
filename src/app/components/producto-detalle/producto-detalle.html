@@ -45,64 +45,7 @@
       {{ producto.descripcion }}
     </p>
 
-    <!-- PRECIOS -->
-    <div class="precios">
-
-      <!-- CONTADO -->
-      <div *ngIf="producto.vendeContado">
-
-        <h3>Precio de contado</h3>
-
-        <p
-          *ngIf="producto.descuento > 0"
-          class="precio-tachado"
-        >
-          {{ precioOriginal(producto) | currency:'COP':'symbol':'1.0-0' }}
-        </p>
-
-        <p class="precio-final">
-          {{ precioFinal(producto, 'contado') | currency:'COP':'symbol':'1.0-0' }}
-        </p>
-
-        <span
-          *ngIf="producto.descuento > 0"
-          class="descuento"
-        >
-          -{{ producto.descuento }}%
-        </span>
-
-      </div>
-
-      <!-- CRÉDITO -->
-      <div *ngIf="producto.vendeCredito">
-
-        <h3>Precio a crédito</h3>
-
-        <p class="precio-final">
-          {{ precioFinal(producto, 'credito') | currency:'COP':'symbol':'1.0-0' }}
-        </p>
-
-        <p *ngIf="producto.inicial > 0">
-          <strong>Cuota inicial:</strong>
-          {{ producto.inicial | currency:'COP':'symbol':'1.0-0' }}
-        </p>
-
-        <!-- FRECUENCIA SELECCIONADA -->
-        <p *ngIf="obtenerValorCuota(producto) > 0">
-          <strong>Pago {{ obtenerNombreFrecuencia() }}:</strong>
-          {{ obtenerValorCuota(producto) | currency:'COP':'symbol':'1.0-0' }}
-        </p>
-
-        <p *ngIf="obtenerNumeroCuotas(producto) > 0">
-          <strong>Número de cuotas:</strong>
-          {{ obtenerNumeroCuotas(producto) }}
-        </p>
-
-      </div>
-
-    </div>
-
-    <!-- ELEGIR MODALIDAD -->
+    <!-- SELECTOR DE MODALIDAD -->
     <div
       class="selector-modalidad"
       *ngIf="producto.vendeContado && producto.vendeCredito"
@@ -138,68 +81,132 @@
 
     </div>
 
-    <!-- ELEGIR FRECUENCIA DE PAGO -->
-    <div
-      class="selector-frecuencia"
-      *ngIf="producto.vendeCredito && modalidadSeleccionada === 'credito' &&
-             (producto.quincenal > 0 || producto.mensual > 0)"
-    >
+    <!-- PRECIOS -->
+    <div class="precios">
 
-      <p>¿Cómo prefieres pagar tus cuotas?</p>
+      <!-- PRECIO DE CONTADO -->
+      <div
+        *ngIf="producto.vendeContado &&
+               (!producto.vendeCredito || modalidadSeleccionada === 'contado')"
+      >
 
-      <div class="opciones-frecuencia">
+        <h3>Precio de contado</h3>
 
-        <!-- PAGO QUINCENAL -->
-        <label
-          *ngIf="producto.quincenal > 0"
-          class="opcion-frecuencia"
-          [class.seleccionada]="frecuenciaSeleccionada === 'quincenal'"
+        <p
+          *ngIf="producto.descuento > 0"
+          class="precio-tachado"
+        >
+          {{ precioOriginal(producto) | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+
+        <p class="precio-final">
+          {{ precioFinal(producto, 'contado') | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+
+        <span
+          *ngIf="producto.descuento > 0"
+          class="descuento"
+        >
+          -{{ producto.descuento }}%
+        </span>
+
+      </div>
+
+      <!-- INFORMACIÓN A CRÉDITO -->
+      <div
+        *ngIf="producto.vendeCredito &&
+               (!producto.vendeContado || modalidadSeleccionada === 'credito')"
+      >
+
+        <h3>Precio a crédito</h3>
+
+        <p class="precio-final">
+          {{ precioFinal(producto, 'credito') | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+
+        <p *ngIf="producto.inicial > 0">
+          <strong>Cuota inicial:</strong>
+          {{ producto.inicial | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+
+        <!-- FRECUENCIA SELECCIONADA -->
+        <p *ngIf="obtenerValorCuota(producto) > 0">
+          <strong>Pago {{ obtenerNombreFrecuencia() }}:</strong>
+          {{ obtenerValorCuota(producto) | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+
+        <p *ngIf="obtenerNumeroCuotas(producto) > 0">
+          <strong>Número de cuotas {{ obtenerNombreFrecuencia() }}:</strong>
+          {{ obtenerNumeroCuotas(producto) }}
+        </p>
+
+        <!-- ELEGIR FRECUENCIA DE PAGO -->
+        <div
+          class="selector-frecuencia"
+          *ngIf="producto.quincenal > 0 || producto.mensual > 0"
         >
 
-          <input
-            type="radio"
-            name="frecuenciaDetalle"
-            value="quincenal"
-            [checked]="frecuenciaSeleccionada === 'quincenal'"
-            (change)="seleccionarFrecuencia('quincenal')"
-          >
+          <p>¿Cómo prefieres pagar tus cuotas?</p>
 
-          <span>Quincenal</span>
+          <div class="opciones-frecuencia">
 
-          <small>
-            {{ producto.quincenal | currency:'COP':'symbol':'1.0-0' }}
-            <ng-container *ngIf="producto.numeroCuotasQuincenal > 0">
-              · {{ producto.numeroCuotasQuincenal }} cuotas
-            </ng-container>
-          </small>
+            <!-- PAGO QUINCENAL -->
+            <label
+              *ngIf="producto.quincenal > 0"
+              class="opcion-frecuencia"
+              [class.seleccionada]="frecuenciaSeleccionada === 'quincenal'"
+            >
 
-        </label>
+              <input
+                type="radio"
+                name="frecuenciaDetalle"
+                value="quincenal"
+                [checked]="frecuenciaSeleccionada === 'quincenal'"
+                (change)="seleccionarFrecuencia('quincenal')"
+              >
 
-        <!-- PAGO MENSUAL -->
-        <label
-          *ngIf="producto.mensual > 0"
-          class="opcion-frecuencia"
-          [class.seleccionada]="frecuenciaSeleccionada === 'mensual'"
-        >
+              <span>Quincenal</span>
 
-          <input
-            type="radio"
-            name="frecuenciaDetalle"
-            value="mensual"
-            [checked]="frecuenciaSeleccionada === 'mensual'"
-            (change)="seleccionarFrecuencia('mensual')"
-          >
+              <small>
+                {{ producto.quincenal | currency:'COP':'symbol':'1.0-0' }}
 
-          <span>Mensual</span>
+                <ng-container *ngIf="producto.numeroCuotasQuincenal > 0">
+                  · {{ producto.numeroCuotasQuincenal }} cuotas
+                </ng-container>
+              </small>
 
-          <small>
-            {{ producto.mensual | currency:'COP':'symbol':'1.0-0' }}
-            <ng-container *ngIf="producto.numeroCuotasMensual > 0">
-              · {{ producto.numeroCuotasMensual }} cuotas
-            </ng-container>
-          </small>
+            </label>
 
-        </label>
+            <!-- PAGO MENSUAL -->
+            <label
+              *ngIf="producto.mensual > 0"
+              class="opcion-frecuencia"
+              [class.seleccionada]="frecuenciaSeleccionada === 'mensual'"
+            >
+
+              <input
+                type="radio"
+                name="frecuenciaDetalle"
+                value="mensual"
+                [checked]="frecuenciaSeleccionada === 'mensual'"
+                (change)="seleccionarFrecuencia('mensual')"
+              >
+
+              <span>Mensual</span>
+
+              <small>
+                {{ producto.mensual | currency:'COP':'symbol':'1.0-0' }}
+
+                <ng-container *ngIf="producto.numeroCuotasMensual > 0">
+                  · {{ producto.numeroCuotasMensual }} cuotas
+                </ng-container>
+              </small>
+
+            </label>
+
+          </div>
+
+        </div>
 
       </div>
 
