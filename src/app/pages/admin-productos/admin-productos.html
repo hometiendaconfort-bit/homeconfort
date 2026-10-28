@@ -1,6 +1,7 @@
 
 <div class="admin-productos">
 
+  <!-- FORMULARIO: AGREGAR O EDITAR PRODUCTO -->
   <h2>{{ docIdEditando ? 'Editar producto' : 'Agregar producto' }}</h2>
 
   <!-- MENSAJE DE ERROR -->
@@ -8,7 +9,6 @@
     {{ mensajeError }}
   </div>
 
-  <!-- FORMULARIO -->
   <form (ngSubmit)="guardarProducto()">
 
     <!-- IDENTIFICACIÓN -->
@@ -35,7 +35,7 @@
       >
     </div>
 
-    <!-- MODALIDADES -->
+    <!-- MODALIDADES DE VENTA -->
     <h3>Modalidades de venta</h3>
 
     <div class="modalidades">
@@ -58,7 +58,7 @@
       </label>
     </div>
 
-    <!-- PRECIOS -->
+    <!-- PRECIO DE CONTADO -->
     <div class="campo" *ngIf="vendeContado">
       <label for="precioContado">Precio de contado (COP) *</label>
       <input
@@ -72,6 +72,7 @@
       >
     </div>
 
+    <!-- PRECIO A CRÉDITO -->
     <div class="campo" *ngIf="vendeCredito">
       <label for="precioCredito">Precio a crédito (COP) *</label>
       <input
@@ -102,7 +103,7 @@
         >
       </div>
 
-      <!-- OPCIÓN QUINCENAL -->
+      <!-- PAGO QUINCENAL -->
       <section class="opcion-pago">
         <h4>Pago quincenal</h4>
 
@@ -134,7 +135,7 @@
         </div>
       </section>
 
-      <!-- OPCIÓN MENSUAL -->
+      <!-- PAGO MENSUAL -->
       <section class="opcion-pago">
         <h4>Pago mensual</h4>
 
@@ -223,7 +224,9 @@
     </div>
 
     <div class="campo">
-      <label for="imagenesTexto">Imágenes adicionales (URLs separadas por comas)</label>
+      <label for="imagenesTexto">
+        Imágenes adicionales (URLs separadas por comas)
+      </label>
       <textarea
         id="imagenesTexto"
         name="imagenesTexto"
@@ -233,9 +236,13 @@
       ></textarea>
     </div>
 
+    <!-- VISTA PREVIA -->
     <div class="vista-previa" *ngIf="imagen">
       <p>Vista previa de la imagen principal:</p>
-      <img [src]="imagen" [alt]="nombre || 'Vista previa del producto'">
+      <img
+        [src]="imagen"
+        [alt]="nombre || 'Vista previa del producto'"
+      >
     </div>
 
     <div class="campo">
@@ -249,7 +256,7 @@
       ></textarea>
     </div>
 
-    <!-- BOTONES -->
+    <!-- BOTONES DEL FORMULARIO -->
     <div class="acciones-formulario">
       <button type="submit" [disabled]="guardando">
         {{
@@ -273,8 +280,8 @@
 
   </form>
 
-  <!-- TABLA DE PRODUCTOS -->
-  <div class="tabla-container">
+  <!-- SECCIÓN INDEPENDIENTE: TABLA DE PRODUCTOS -->
+  <section class="tabla-container">
 
     <h3>Productos registrados</h3>
 
@@ -308,6 +315,7 @@
       <tbody>
         <tr *ngFor="let producto of productoss">
 
+          <!-- IMAGEN -->
           <td>
             <img
               *ngIf="producto.imagen"
@@ -318,23 +326,31 @@
             >
           </td>
 
+          <!-- IDENTIFICACIÓN -->
           <td>{{ producto.id || '—' }}</td>
-
           <td>{{ producto.nombre }}</td>
 
+          <!-- MODALIDADES -->
           <td>
-            <span *ngIf="producto.vendeContado ?? (producto.tipo === 'contado' || producto.tipo === 'ambos' || (!producto.tipo && producto.precio != null))">
+            <span
+              *ngIf="producto.vendeContado ?? (producto.tipo === 'contado' || producto.tipo === 'ambos' || (!producto.tipo && producto.precio != null))"
+            >
               Contado
             </span>
 
-            <span *ngIf="producto.vendeCredito ?? (producto.tipo === 'credito' || producto.tipo === 'ambos')">
+            <span
+              *ngIf="producto.vendeCredito ?? (producto.tipo === 'credito' || producto.tipo === 'ambos')"
+            >
               Crédito
             </span>
           </td>
 
+          <!-- PRECIO CONTADO -->
           <td>
-           <ng-container *ngIf="producto.vendeContado === true || (producto.vendeContado == null && (producto.tipo === 'contado' || producto.tipo === 'ambos' || (!producto.tipo && producto.precio != null))); else sinContado">
-            {{
+            <ng-container
+              *ngIf="producto.vendeContado === true || (producto.vendeContado == null && (producto.tipo === 'contado' || producto.tipo === 'ambos' || (!producto.tipo && producto.precio != null))); else sinContado"
+            >
+              {{
                 (producto.precioContado ?? producto.precio)
                   | currency:'COP':'symbol':'1.0-0'
               }}
@@ -342,8 +358,11 @@
             <ng-template #sinContado>—</ng-template>
           </td>
 
+          <!-- PRECIO CRÉDITO -->
           <td>
-            <ng-container *ngIf="producto.vendeCredito ?? (producto.tipo === 'credito' || producto.tipo === 'ambos'); else sinCredito">
+            <ng-container
+              *ngIf="producto.vendeCredito ?? (producto.tipo === 'credito' || producto.tipo === 'ambos'); else sinCredito"
+            >
               {{
                 (producto.precioCredito ?? producto.precio)
                   | currency:'COP':'symbol':'1.0-0'
@@ -352,6 +371,7 @@
             <ng-template #sinCredito>—</ng-template>
           </td>
 
+          <!-- CUOTA INICIAL -->
           <td>
             {{
               producto.inicial
@@ -360,6 +380,7 @@
             }}
           </td>
 
+          <!-- CUOTA QUINCENAL -->
           <td>
             {{
               producto.quincenal
@@ -376,6 +397,7 @@
             }}
           </td>
 
+          <!-- CUOTA MENSUAL -->
           <td>
             {{
               producto.mensual
@@ -392,11 +414,13 @@
             }}
           </td>
 
+          <!-- OTROS DATOS -->
           <td>{{ producto.categoria || '—' }}</td>
           <td>{{ producto.color || '—' }}</td>
           <td>{{ producto.descuento || 0 }}%</td>
           <td>{{ producto.descripcion || '—' }}</td>
 
+          <!-- ACCIONES -->
           <td class="acciones-tabla">
             <button
               type="button"
@@ -420,6 +444,6 @@
 
     </table>
 
-  </div>
+  </section>
 
 </div>
