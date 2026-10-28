@@ -14,9 +14,10 @@ import { CommonModule } from '@angular/common';
 export class AdminProductos implements OnInit {
 
   productoss: any[] = [];
+
   docIdEditando: string | null = null;
 
-  id = '';
+  id: string | number = '';
   nombre = '';
 
   vendeContado = true;
@@ -26,21 +27,19 @@ export class AdminProductos implements OnInit {
   precioCredito: number | null = null;
 
   inicial: number | null = 0;
-
-  // AHORA SE GUARDAN LAS DOS FRECUENCIAS
   quincenal: number | null = 0;
   mensual: number | null = 0;
 
-  // CADA FRECUENCIA PUEDE TENER SU PROPIO PLAZO
   numeroCuotasQuincenal: number | null = 0;
   numeroCuotasMensual: number | null = 0;
 
   categoria = '';
   descripcion = '';
   color = '';
+
   descuento: number | null = 0;
 
-  imagen = '';
+  imagen = '/assets/img/';
   imagenesTexto = '';
 
   guardando = false;
@@ -52,7 +51,6 @@ export class AdminProductos implements OnInit {
     this.cargarProductos();
   }
 
-  // CARGAR PRODUCTOS DE FIREBASE
   async cargarProductos(): Promise<void> {
     try {
       this.productoss = await this.productosService.obtenerProductos();
@@ -62,12 +60,13 @@ export class AdminProductos implements OnInit {
     }
   }
 
-  // GUARDAR UN PRODUCTO NUEVO O ACTUALIZAR UNO EXISTENTE
   async guardarProducto(): Promise<void> {
-
     this.mensajeError = '';
 
-    if (!this.nombre.trim()) {
+    const idTexto = String(this.id ?? '').trim();
+    const nombreTexto = String(this.nombre ?? '').trim();
+
+    if (!nombreTexto) {
       this.mensajeError = 'Escribe el nombre del producto.';
       return;
     }
@@ -79,7 +78,7 @@ export class AdminProductos implements OnInit {
 
     if (
       this.vendeContado &&
-      (this.precioContado == null || this.precioContado <= 0)
+      (this.precioContado == null || Number(this.precioContado) <= 0)
     ) {
       this.mensajeError = 'Ingresa un precio de contado válido.';
       return;
@@ -87,7 +86,7 @@ export class AdminProductos implements OnInit {
 
     if (
       this.vendeCredito &&
-      (this.precioCredito == null || this.precioCredito <= 0)
+      (this.precioCredito == null || Number(this.precioCredito) <= 0)
     ) {
       this.mensajeError = 'Ingresa un precio a crédito válido.';
       return;
@@ -95,24 +94,18 @@ export class AdminProductos implements OnInit {
 
     if (
       this.vendeCredito &&
-      (this.inicial == null || this.inicial < 0)
+      (this.inicial == null || Number(this.inicial) < 0)
     ) {
       this.mensajeError = 'La cuota inicial no puede ser negativa.';
       return;
     }
 
-    if (
-      this.vendeCredito &&
-      Number(this.quincenal) < 0
-    ) {
+    if (this.vendeCredito && Number(this.quincenal) < 0) {
       this.mensajeError = 'La cuota quincenal no puede ser negativa.';
       return;
     }
 
-    if (
-      this.vendeCredito &&
-      Number(this.mensual) < 0
-    ) {
+    if (this.vendeCredito && Number(this.mensual) < 0) {
       this.mensajeError = 'La cuota mensual no puede ser negativa.';
       return;
     }
@@ -125,8 +118,7 @@ export class AdminProductos implements OnInit {
         Number(this.numeroCuotasQuincenal) < 1
       )
     ) {
-      this.mensajeError =
-        'Indica un número válido de cuotas quincenales.';
+      this.mensajeError = 'Indica un número válido de cuotas quincenales.';
       return;
     }
 
@@ -138,8 +130,7 @@ export class AdminProductos implements OnInit {
         Number(this.numeroCuotasMensual) < 1
       )
     ) {
-      this.mensajeError =
-        'Indica un número válido de cuotas mensuales.';
+      this.mensajeError = 'Indica un número válido de cuotas mensuales.';
       return;
     }
 
@@ -148,28 +139,26 @@ export class AdminProductos implements OnInit {
       Number(this.quincenal) <= 0 &&
       Number(this.mensual) <= 0
     ) {
-      this.mensajeError =
-        'Ingresa al menos una cuota quincenal o mensual.';
+      this.mensajeError = 'Ingresa al menos una cuota quincenal o mensual.';
       return;
     }
 
     if (
       this.descuento != null &&
-      (this.descuento < 0 || this.descuento > 100)
+      (Number(this.descuento) < 0 || Number(this.descuento) > 100)
     ) {
       this.mensajeError = 'El descuento debe estar entre 0 y 100.';
       return;
     }
 
-    const imagenes = this.imagenesTexto
+    const imagenes = String(this.imagenesTexto ?? '')
       .split(',')
       .map(url => url.trim())
       .filter(url => url.length > 0);
 
-    // CONSERVO LOS CAMPOS NUEVOS Y LOS DE COMPATIBILIDAD
     const producto: any = {
-      id: this.id.trim(),
-      nombre: this.nombre.trim(),
+      id: idTexto,
+      nombre: nombreTexto,
 
       vendeContado: this.vendeContado,
       vendeCredito: this.vendeCredito,
@@ -189,22 +178,13 @@ export class AdminProductos implements OnInit {
         ? Number(this.precioCredito)
         : 0,
 
-      // PRECIO ANTIGUO PARA COMPATIBILIDAD
       precio: this.vendeContado
         ? Number(this.precioContado)
         : Number(this.precioCredito),
 
-      inicial: this.vendeCredito
-        ? Number(this.inicial ?? 0)
-        : 0,
-
-      quincenal: this.vendeCredito
-        ? Number(this.quincenal ?? 0)
-        : 0,
-
-      mensual: this.vendeCredito
-        ? Number(this.mensual ?? 0)
-        : 0,
+      inicial: this.vendeCredito ? Number(this.inicial ?? 0) : 0,
+      quincenal: this.vendeCredito ? Number(this.quincenal ?? 0) : 0,
+      mensual: this.vendeCredito ? Number(this.mensual ?? 0) : 0,
 
       numeroCuotasQuincenal: this.vendeCredito
         ? Number(this.numeroCuotasQuincenal ?? 0)
@@ -214,20 +194,17 @@ export class AdminProductos implements OnInit {
         ? Number(this.numeroCuotasMensual ?? 0)
         : 0,
 
-      // CAMPO ANTIGUO PARA COMPONENTES QUE AÚN LO USEN
       numeroCuotas: this.vendeCredito
-        ? Number(
-            this.numeroCuotasQuincenal ||
-            this.numeroCuotasMensual ||
-            0
-          )
+        ? Number(this.numeroCuotasQuincenal || this.numeroCuotasMensual || 0)
         : 0,
 
-      categoria: this.categoria.trim(),
-      descripcion: this.descripcion.trim(),
-      color: this.color.trim(),
+      categoria: String(this.categoria ?? '').trim(),
+      descripcion: String(this.descripcion ?? '').trim(),
+      color: String(this.color ?? '').trim(),
+
       descuento: Number(this.descuento ?? 0),
-      imagen: this.imagen.trim(),
+
+      imagen: String(this.imagen ?? '').trim(),
       imagenes
     };
 
@@ -248,53 +225,48 @@ export class AdminProductos implements OnInit {
 
     } catch (error) {
       console.error('Error guardando producto:', error);
+
       this.mensajeError =
         'No se pudo guardar el producto. Revisa la conexión e inténtalo nuevamente.';
+
     } finally {
       this.guardando = false;
     }
   }
 
-  // CARGAR LOS DATOS DE UN PRODUCTO PARA EDITAR
   editar(producto: any): void {
-
     this.docIdEditando = producto.docId;
 
-    this.id = producto.id ?? '';
-    this.nombre = producto.nombre ?? '';
+    this.id = String(producto.id ?? '');
+    this.nombre = String(producto.nombre ?? '');
 
-    this.vendeContado = producto.vendeContado ??
+    this.vendeContado =
+      producto.vendeContado ??
       (
         producto.tipo === 'contado' ||
         producto.tipo === 'ambos' ||
         (!producto.tipo && producto.precio != null)
       );
 
-    this.vendeCredito = producto.vendeCredito ??
+    this.vendeCredito =
+      producto.vendeCredito ??
       (
         producto.tipo === 'credito' ||
         producto.tipo === 'ambos'
       );
 
-    this.precioContado = producto.precioContado ??
-      (
-        producto.tipo !== 'credito'
-          ? producto.precio ?? null
-          : null
-      );
+    this.precioContado =
+      producto.precioContado ??
+      (producto.tipo !== 'credito' ? producto.precio ?? null : null);
 
-    this.precioCredito = producto.precioCredito ??
-      (
-        producto.tipo !== 'contado'
-          ? producto.precio ?? null
-          : null
-      );
+    this.precioCredito =
+      producto.precioCredito ??
+      (producto.tipo !== 'contado' ? producto.precio ?? null : null);
 
     this.inicial = Number(producto.inicial ?? 0);
     this.quincenal = Number(producto.quincenal ?? 0);
     this.mensual = Number(producto.mensual ?? 0);
 
-    // COMPATIBILIDAD CON PRODUCTOS GUARDADOS ANTERIORMENTE
     this.numeroCuotasQuincenal = Number(
       producto.numeroCuotasQuincenal ??
       (
@@ -313,11 +285,13 @@ export class AdminProductos implements OnInit {
       )
     );
 
-    this.categoria = producto.categoria ?? '';
-    this.descripcion = producto.descripcion ?? '';
-    this.color = producto.color ?? '';
+    this.categoria = String(producto.categoria ?? '');
+    this.descripcion = String(producto.descripcion ?? '');
+    this.color = String(producto.color ?? '');
+
     this.descuento = Number(producto.descuento ?? 0);
-    this.imagen = producto.imagen ?? '';
+
+    this.imagen = String(producto.imagen ?? '');
 
     this.imagenesTexto = Array.isArray(producto.imagenes)
       ? producto.imagenes.join(', ')
@@ -331,10 +305,9 @@ export class AdminProductos implements OnInit {
     });
   }
 
-  // ELIMINAR PRODUCTO
   async eliminar(docId: string): Promise<void> {
-
     if (!docId) {
+      this.mensajeError = 'No se encontró el identificador del producto.';
       return;
     }
 
@@ -344,20 +317,20 @@ export class AdminProductos implements OnInit {
 
     try {
       await this.productosService.eliminarProducto(docId);
+
       await this.cargarProductos();
 
       if (this.docIdEditando === docId) {
         this.limpiarFormulario();
       }
+
     } catch (error) {
       console.error('Error eliminando producto:', error);
       this.mensajeError = 'No se pudo eliminar el producto.';
     }
   }
 
-  // LIMPIAR FORMULARIO
   limpiarFormulario(): void {
-
     this.docIdEditando = null;
 
     this.id = '';
@@ -370,7 +343,6 @@ export class AdminProductos implements OnInit {
     this.precioCredito = null;
 
     this.inicial = 0;
-
     this.quincenal = 0;
     this.mensual = 0;
 
@@ -380,6 +352,7 @@ export class AdminProductos implements OnInit {
     this.categoria = '';
     this.descripcion = '';
     this.color = '';
+
     this.descuento = 0;
 
     this.imagen = '';
@@ -388,4 +361,3 @@ export class AdminProductos implements OnInit {
     this.mensajeError = '';
   }
 }
-
