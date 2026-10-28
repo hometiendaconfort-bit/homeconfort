@@ -1,15 +1,17 @@
 
-/* CONTENEDOR PRINCIPAL */
-.admin-combos {
+/* CONTENEDOR PRINCIPAL DEL FORMULARIO */
+.admin-combos-contenedor {
   width: calc(100% - 32px);
   max-width: 1400px;
   margin: 7rem auto 30px;
   padding: 20px;
   box-sizing: border-box;
+
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 20px;
+  gap: 8px;
+
   font-family: Arial, sans-serif;
   font-size: 14px;
   background-color: #f9f9f9;
@@ -17,44 +19,22 @@
 }
 
 /* TÍTULOS */
-.admin-combos h1,
-.admin-combos h2 {
+.admin-combos-contenedor h1,
+.admin-combos-contenedor-tabla h2 {
   text-align: center;
   margin: 5px 0 15px;
   font-size: 22px;
 }
 
-.admin-combos h3 {
+.admin-combos-contenedor h3 {
   width: 100%;
   margin: 12px 0 8px;
   font-size: 16px;
   color: #333;
 }
 
-.admin-combos h4 {
-  margin: 5px 0 10px;
-  color: #333;
-}
-
-/* FORMULARIO */
-.admin-combos form {
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 20px;
-  box-sizing: border-box;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-}
-
-/* CAMPOS */
-.admin-combos form .campo {
-  width: 100%;
-  margin-bottom: 8px;
-}
-
-.admin-combos label {
+/* ETIQUETAS */
+.admin-combos-contenedor label {
   display: block;
   text-align: left;
   margin: 8px 0 3px;
@@ -64,189 +44,138 @@
   line-height: 1.3;
 }
 
-.admin-combos input:not([type="checkbox"]),
-.admin-combos select,
-.admin-combos textarea {
+/* CAMPOS DE ENTRADA */
+.admin-combos-contenedor input:not([type="checkbox"]),
+.admin-combos-contenedor select,
+.admin-combos-contenedor textarea {
   display: block;
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
   padding: 9px;
   margin: 3px 0 8px;
+
   font-family: Arial, sans-serif;
   font-size: 14px;
+
   border: 1px solid #999;
   border-radius: 5px;
   background-color: #fff;
   color: #222;
 }
 
-.admin-combos input:not([type="checkbox"]),
-.admin-combos select {
+.admin-combos-contenedor input:not([type="checkbox"]),
+.admin-combos-contenedor select {
   min-height: 36px;
 }
 
-.admin-combos textarea {
+.admin-combos-contenedor textarea {
   min-height: 80px;
   resize: vertical;
 }
 
-/* CASILLAS DE SELECCIÓN */
-.admin-combos input[type="checkbox"] {
+/* CASILLAS DE MODALIDAD */
+.admin-combos-contenedor label.modalidad {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.admin-combos-contenedor input[type="checkbox"] {
   width: 17px;
   height: 17px;
+  flex-shrink: 0;
   margin: 0 6px 0 0;
   vertical-align: middle;
   accent-color: #4CAF50;
   cursor: pointer;
 }
 
-/* MODALIDADES DE VENTA */
-.admin-combos .modalidades {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 10px 0;
+/* SEPARADORES */
+.admin-combos-contenedor hr {
+  width: 100%;
+  margin: 16px 0;
+  border: 0;
+  border-top: 1px solid #ddd;
 }
 
-.admin-combos .modalidades label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-/* FINANCIACIÓN */
-.admin-combos .financiacion {
-  padding: 12px;
-  margin: 12px 0;
-  background-color: #f5f7fa;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-}
-
-/* OPCIONES DE PAGO */
-.admin-combos .opcion-pago {
-  padding: 10px;
-  margin: 12px 0;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 7px;
-}
-
-.admin-combos .opcion-pago h4 {
-  margin: 5px 0 10px;
-  color: #333;
-}
-
-/* AYUDA Y TEXTOS INFORMATIVOS */
-.admin-combos .ayuda {
+/* TEXTO INFORMATIVO */
+.admin-combos-contenedor p {
   color: #555;
   line-height: 1.5;
 }
 
-/* VISTA PREVIA */
-.admin-combos .vista-previa {
-  margin: 12px 0;
-  padding: 10px;
-  border: 1px dashed #bbb;
-  border-radius: 7px;
-}
-
-.admin-combos .vista-previa img {
-  display: block;
-  max-width: 180px;
-  max-height: 150px;
-  object-fit: contain;
-  margin: 10px auto;
-}
-
 /* BOTONES GENERALES */
-.admin-combos button {
-  width: 100%;
+.admin-combos-contenedor button,
+.admin-combos-contenedor-tabla button {
   padding: 9px 12px;
   margin-top: 7px;
+
+  font-family: Arial, sans-serif;
   font-size: 13px;
   font-weight: bold;
+
   cursor: pointer;
   border: 1px solid #999;
   border-radius: 5px;
   background-color: #eee;
   color: #333;
+
   transition: background-color 0.2s ease;
 }
 
-.admin-combos button:disabled {
+.admin-combos-contenedor button {
+  width: 100%;
+}
+
+.admin-combos-contenedor button:disabled,
+.admin-combos-contenedor-tabla button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* ACCIONES DEL FORMULARIO */
-.admin-combos .acciones-formulario {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.admin-combos .acciones-formulario button {
-  flex: 1;
-}
-
 /* BOTÓN GUARDAR */
-.admin-combos button.guardar-combo {
+.admin-combos-contenedor button.guardar {
   background-color: #4CAF50;
   color: #fff;
   border: none;
 }
 
-.admin-combos button.guardar-combo:hover:not(:disabled) {
+.admin-combos-contenedor button.guardar:hover:not(:disabled) {
   background-color: #45a049;
 }
 
-/* MENSAJE DE ERROR */
-.admin-combos .mensaje-error {
-  padding: 12px;
-  margin-bottom: 10px;
-  color: #a51d1d;
-  background-color: #ffe8e8;
-  border: 1px solid #e5a4a4;
-  border-radius: 6px;
-}
-
-/* MENSAJE DE ÉXITO */
-.admin-combos .mensaje-exito {
-  padding: 12px;
-  margin-bottom: 10px;
-  color: #216e39;
-  background-color: #e8f7ec;
-  border: 1px solid #a6d8b3;
-  border-radius: 6px;
-}
-
-/* TABLA DE COMBOS */
-.admin-combos .tabla-container {
+/* CONTENEDOR DE LA TABLA */
+.admin-combos-contenedor-tabla {
   display: block;
-  width: 100%;
-  max-width: 100%;
+  width: calc(100% - 32px);
+  max-width: 1400px;
   min-width: 0;
-  margin: 10px 0 0;
+  margin: 10px auto 30px;
   padding: 18px;
   box-sizing: border-box;
+
   overflow-x: auto;
+
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 10px;
 }
 
 /* TÍTULO DE LA TABLA */
-.admin-combos .tabla-container h3 {
+.admin-combos-contenedor-tabla h2 {
   margin: 0 0 15px;
   padding-bottom: 12px;
-  font-size: 20px;
   border-bottom: 1px solid #ddd;
 }
 
 /* TABLA */
-.admin-combos .tabla-container table {
+.admin-combos-contenedor-tabla table {
   width: 100%;
   min-width: 1200px;
   border-collapse: collapse;
@@ -254,8 +183,9 @@
   background-color: #fff;
 }
 
-.admin-combos .tabla-container th,
-.admin-combos .tabla-container td {
+/* CELDAS */
+.admin-combos-contenedor-tabla th,
+.admin-combos-contenedor-tabla td {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: left;
@@ -263,30 +193,25 @@
   white-space: nowrap;
 }
 
-.admin-combos .tabla-container th {
+/* ENCABEZADOS */
+.admin-combos-contenedor-tabla th {
   background-color: #edf2f7;
   color: #333;
   font-weight: bold;
 }
 
-.admin-combos .tabla-container tbody tr:nth-child(even) {
+/* FILAS ALTERNAS */
+.admin-combos-contenedor-tabla tbody tr:nth-child(even) {
   background-color: #f7f9fc;
 }
 
-.admin-combos .tabla-container tbody tr:hover {
+.admin-combos-contenedor-tabla tbody tr:hover {
   background-color: #eef5ff;
 }
 
-/* DESCRIPCIÓN */
-.admin-combos .descripcion {
-  width: 300px;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-/* IMÁGENES DE LA TABLA */
-.admin-combos .tabla-container .imagen-tabla {
+/* IMÁGENES DE LOS COMBOS */
+.admin-combos-contenedor-tabla .combo-imagen {
+  display: block;
   width: 75px;
   height: 65px;
   max-width: 75px;
@@ -295,13 +220,23 @@
   border-radius: 5px;
 }
 
-/* ACCIONES DE LA TABLA */
-.admin-combos .acciones-tabla {
+/* DESCRIPCIÓN */
+.admin-combos-contenedor-tabla td:nth-child(11) {
+  min-width: 250px;
+  max-width: 300px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* COLUMNA DE ACCIONES */
+.admin-combos-contenedor-tabla td:last-child {
   min-width: 160px;
   white-space: normal;
 }
 
-.admin-combos .acciones-tabla button {
+/* BOTONES DE ACCIONES */
+.admin-combos-contenedor-tabla button {
   width: auto;
   min-width: 70px;
   margin: 3px;
@@ -312,99 +247,103 @@
 }
 
 /* BOTÓN EDITAR */
-.admin-combos .acciones-tabla .btn-editar {
+.admin-combos-contenedor-tabla button.editar {
   background-color: #218838;
   color: #fff;
 }
 
-.admin-combos .acciones-tabla .btn-editar:hover {
+.admin-combos-contenedor-tabla button.editar:hover:not(:disabled) {
   background-color: #17692b;
 }
 
 /* BOTÓN ELIMINAR */
-.admin-combos .acciones-tabla .btn-eliminar {
+.admin-combos-contenedor-tabla button.eliminar {
   background-color: #bf281d;
   color: #fff;
 }
 
-.admin-combos .acciones-tabla .btn-eliminar:hover {
+.admin-combos-contenedor-tabla button.eliminar:hover:not(:disabled) {
   background-color: #a71d15;
 }
 
 /* TABLETAS */
 @media (max-width: 900px) {
-  .admin-combos {
+  .admin-combos-contenedor {
     width: calc(100% - 24px);
     padding: 14px;
   }
 
-  .admin-combos form {
-    padding: 15px;
-  }
-
-  .admin-combos .tabla-container {
+  .admin-combos-contenedor-tabla {
+    width: calc(100% - 24px);
     padding: 12px;
   }
 }
 
 /* CELULARES */
 @media (max-width: 600px) {
-  .admin-combos {
+  .admin-combos-contenedor {
     width: calc(100% - 16px);
     margin: 8rem auto 20px;
     padding: 10px;
-    gap: 14px;
+    gap: 6px;
   }
 
-  .admin-combos h1,
-  .admin-combos h2 {
+  .admin-combos-contenedor h1,
+  .admin-combos-contenedor-tabla h2 {
     font-size: 20px;
   }
 
-  .admin-combos h3 {
+  .admin-combos-contenedor h3 {
     font-size: 15px;
   }
 
-  .admin-combos form {
-    padding: 12px;
-  }
-
-  .admin-combos label {
+  .admin-combos-contenedor label {
     font-size: 13px;
   }
 
-  .admin-combos .acciones-formulario {
-    flex-direction: column;
+  .admin-combos-contenedor input:not([type="checkbox"]),
+  .admin-combos-contenedor select,
+  .admin-combos-contenedor textarea {
+    font-size: 14px;
   }
 
-  .admin-combos .tabla-container {
-    width: 100%;
+  .admin-combos-contenedor label.modalidad {
+    align-items: flex-start;
+    line-height: 1.5;
+  }
+
+  .admin-combos-contenedor button {
+    padding: 10px;
+  }
+
+  .admin-combos-contenedor-tabla {
+    width: calc(100% - 16px);
     padding: 8px;
     margin-top: 5px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 
-  .admin-combos .tabla-container h3 {
+  .admin-combos-contenedor-tabla h2 {
     font-size: 18px;
   }
 
-  .admin-combos .tabla-container table {
+  .admin-combos-contenedor-tabla table {
     min-width: 1200px;
   }
 
-  .admin-combos .tabla-container th,
-  .admin-combos .tabla-container td {
+  .admin-combos-contenedor-tabla th,
+  .admin-combos-contenedor-tabla td {
     padding: 7px;
     font-size: 12px;
   }
 
-  .admin-combos .tabla-container .imagen-tabla {
+  .admin-combos-contenedor-tabla .combo-imagen {
     width: 60px;
     height: 50px;
   }
 
-  .admin-combos .acciones-tabla button {
+  .admin-combos-contenedor-tabla button {
     min-width: 65px;
     padding: 6px 8px;
   }
