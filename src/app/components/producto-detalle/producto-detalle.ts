@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -34,6 +33,7 @@ export class ProductoDetalleComponent implements OnInit {
 
     this.productosService.getProductos().subscribe({
       next: (res: any[]) => {
+
         const encontrado = res.find((p: any) =>
           String(p.id ?? '') === String(idRuta) ||
           String(p.docId ?? '') === String(idRuta)
@@ -43,6 +43,60 @@ export class ProductoDetalleComponent implements OnInit {
           console.error('No se encontró el producto:', idRuta);
           return;
         }
+
+        console.log('Datos originales de Firebase:', encontrado);
+
+        // CONVERTIR VALORES A NÚMEROS
+        const convertirNumero = (valor: any): number => {
+          if (typeof valor === 'number') {
+            return Number.isFinite(valor) ? valor : 0;
+          }
+
+          if (valor === null || valor === undefined || valor === '') {
+            return 0;
+          }
+
+          if (typeof valor === 'string') {
+            const texto = valor.trim();
+
+            // Admite valores escritos como "80.000" o "$80.000".
+            const limpio = texto.replace(/[^\d,.-]/g, '');
+
+            if (!limpio) {
+              return 0;
+            }
+
+            const normalizado = limpio.includes(',')
+              ? limpio.replace(/\./g, '').replace(',', '.')
+              : limpio.replace(/\./g, '');
+
+            const numero = Number(normalizado);
+
+            return Number.isFinite(numero) ? numero : 0;
+          }
+
+          const numero = Number(valor);
+
+          return Number.isFinite(numero) ? numero : 0;
+        };
+
+        // BUSCAR EL PRIMER CAMPO QUE TENGA UN VALOR DEFINIDO
+        const obtenerCampo = (
+          objeto: any,
+          campos: string[]
+        ): any => {
+          for (const campo of campos) {
+            if (
+              objeto[campo] !== undefined &&
+              objeto[campo] !== null &&
+              objeto[campo] !== ''
+            ) {
+              return objeto[campo];
+            }
+          }
+
+          return 0;
+        };
 
         // COMPATIBILIDAD CON PRODUCTOS ANTIGUOS
         const vendeContado = encontrado.vendeContado ??
@@ -58,7 +112,7 @@ export class ProductoDetalleComponent implements OnInit {
             encontrado.tipo === 'ambos'
           );
 
-        const precioContado = Number(
+        const precioContado = convertirNumero(
           encontrado.precioContado ??
           (
             encontrado.tipo !== 'credito'
@@ -67,7 +121,7 @@ export class ProductoDetalleComponent implements OnInit {
           )
         );
 
-        const precioCredito = Number(
+        const precioCredito = convertirNumero(
           encontrado.precioCredito ??
           (
             encontrado.tipo !== 'contado'
@@ -76,16 +130,37 @@ export class ProductoDetalleComponent implements OnInit {
           )
         );
 
+        // GALERÍA DE IMÁGENES
         const imagenes = Array.isArray(encontrado.imagenes)
           ? encontrado.imagenes
           : [];
 
-        const quincenal = Number(encontrado.quincenal ?? 0);
-        const mensual = Number(encontrado.mensual ?? 0);
+        // VALORES DE LAS CUOTAS
+        // Se comprueban también nombres alternativos por compatibilidad.
+        const quincenal = convertirNumero(
+          obtenerCampo(encontrado, [
+            'quincenal',
+            'valorQuincenal',
+            'cuotaQuincenal',
+            'pagoQuincenal'
+          ])
+        );
 
-        // COMPATIBILIDAD CON EL NÚMERO DE CUOTAS ANTIGUO
-        const numeroCuotasQuincenal = Number(
-          encontrado.numeroCuotasQuincenal ??
+        const mensual = convertirNumero(
+          obtenerCampo(encontrado, [
+            'mensual',
+            'valorMensual',
+            'cuotaMensual',
+            'pagoMensual'
+          ])
+        );
+
+        // NÚMERO DE CUOTAS QUINCENALES
+        const numeroCuotasQuincenal = convertirNumero(
+          obtenerCampo(encontrado, [
+            'numeroCuotasQuincenal',
+            'cuotasQuincenales'
+          ]) ||
           (
             encontrado.frecuenciaPago === 'quincenal'
               ? encontrado.numeroCuotas ?? 0
@@ -93,8 +168,12 @@ export class ProductoDetalleComponent implements OnInit {
           )
         );
 
-        const numeroCuotasMensual = Number(
-          encontrado.numeroCuotasMensual ??
+        // NÚMERO DE CUOTAS MENSUALES
+        const numeroCuotasMensual = convertirNumero(
+          obtenerCampo(encontrado, [
+            'numeroCuotasMensual',
+            'cuotasMensuales'
+          ]) ||
           (
             encontrado.frecuenciaPago === 'mensual'
               ? encontrado.numeroCuotas ?? 0
@@ -102,30 +181,31 @@ export class ProductoDetalleComponent implements OnInit {
           )
         );
 
+        // CONSTRUIR EL PRODUCTO PARA LA VISTA
         this.producto = {
           ...encontrado,
-          vendeContado,
-          vendeCredito,
+          vendeContado: Boolean(vendeContado),
+          vendeCredito: Boolean(vendeCredito),
           precioContado,
           precioCredito,
-          inicial: Number(encontrado.inicial ?? 0),
+          inicial: convertirNumero(encontrado.inicial),
           quincenal,
           mensual,
           numeroCuotasQuincenal,
           numeroCuotasMensual,
-          descuento: Number(encontrado.descuento ?? 0),
+          descuento: convertirNumero(encontrado.descuento),
           imagenes,
           imagenActiva: imagenes[0] || encontrado.imagen || ''
         };
 
-        // SELECCIONAR LA MODALIDAD DISPONIBLE
-        if (vendeCredito && !vendeContado) {
+        // ELEGIR LA MODALIDAD INICIAL
+        if (this.producto.vendeCredito && !this.producto.vendeContado) {
           this.modalidadSeleccionada = 'credito';
         } else {
           this.modalidadSeleccionada = 'contado';
         }
 
-        // SELECCIONAR UNA FRECUENCIA REALMENTE DISPONIBLE
+        // ELEGIR UNA FRECUENCIA DISPONIBLE
         if (quincenal > 0) {
           this.frecuenciaSeleccionada = 'quincenal';
         } else if (mensual > 0) {
@@ -134,12 +214,22 @@ export class ProductoDetalleComponent implements OnInit {
           this.frecuenciaSeleccionada = 'quincenal';
         }
 
-        console.log('Producto cargado:', this.producto);
+        console.log('Producto preparado para los detalles:', this.producto);
+        console.log('Cuota quincenal:', this.producto.quincenal);
+        console.log('Cuota mensual:', this.producto.mensual);
+        console.log('Vende a crédito:', this.producto.vendeCredito);
       },
+
       error: err => {
         console.error('Error cargando el detalle del producto:', err);
       }
     });
+  }
+
+  // COMPROBAR SI EXISTE ALGUNA FRECUENCIA DE PAGO
+  tieneFrecuenciasDisponibles(): boolean {
+    return Number(this.producto?.quincenal ?? 0) > 0 ||
+           Number(this.producto?.mensual ?? 0) > 0;
   }
 
   // CAMBIAR ENTRE CONTADO Y CRÉDITO
@@ -156,26 +246,35 @@ export class ProductoDetalleComponent implements OnInit {
     if (modalidad === 'credito' && this.producto.vendeCredito) {
       this.modalidadSeleccionada = 'credito';
 
-      // Si no hay frecuencia seleccionada disponible, elegir una válida.
+      // Si la frecuencia actual no existe, seleccionar la disponible.
       if (
         this.frecuenciaSeleccionada === 'quincenal' &&
         Number(this.producto.quincenal) <= 0
       ) {
         this.frecuenciaSeleccionada =
-          Number(this.producto.mensual) > 0 ? 'mensual' : 'quincenal';
+          Number(this.producto.mensual) > 0
+            ? 'mensual'
+            : 'quincenal';
       } else if (
         this.frecuenciaSeleccionada === 'mensual' &&
         Number(this.producto.mensual) <= 0
       ) {
         this.frecuenciaSeleccionada =
-          Number(this.producto.quincenal) > 0 ? 'quincenal' : 'mensual';
+          Number(this.producto.quincenal) > 0
+            ? 'quincenal'
+            : 'mensual';
       }
     }
   }
 
-  // CAMBIAR FRECUENCIA DEL CRÉDITO
-  seleccionarFrecuencia(frecuencia: 'quincenal' | 'mensual'): void {
-    if (!this.producto || this.modalidadSeleccionada !== 'credito') {
+  // CAMBIAR LA FRECUENCIA DEL CRÉDITO
+  seleccionarFrecuencia(
+    frecuencia: 'quincenal' | 'mensual'
+  ): void {
+    if (
+      !this.producto ||
+      this.modalidadSeleccionada !== 'credito'
+    ) {
       return;
     }
 
@@ -209,7 +308,7 @@ export class ProductoDetalleComponent implements OnInit {
     return Number(p.precioContado ?? p.precio ?? 0);
   }
 
-  // CALCULAR PRECIO SEGÚN MODALIDAD
+  // CALCULAR EL PRECIO SEGÚN LA MODALIDAD
   precioFinal(
     p: any,
     modalidad: 'contado' | 'credito' = 'contado'
@@ -220,7 +319,7 @@ export class ProductoDetalleComponent implements OnInit {
         : (p.precioContado ?? p.precio ?? 0)
     );
 
-    // El descuento se aplica solamente al precio de contado.
+    // El descuento solo se aplica al contado.
     if (modalidad === 'credito') {
       return precioBase;
     }
@@ -234,23 +333,19 @@ export class ProductoDetalleComponent implements OnInit {
 
   // VALOR DE LA CUOTA SELECCIONADA
   obtenerValorCuota(p: any): number {
-    if (this.frecuenciaSeleccionada === 'mensual') {
-      return Number(p.mensual ?? 0);
-    }
-
-    return Number(p.quincenal ?? 0);
+    return this.frecuenciaSeleccionada === 'mensual'
+      ? Number(p.mensual ?? 0)
+      : Number(p.quincenal ?? 0);
   }
 
   // NÚMERO DE CUOTAS DE LA FRECUENCIA SELECCIONADA
   obtenerNumeroCuotas(p: any): number {
-    if (this.frecuenciaSeleccionada === 'mensual') {
-      return Number(p.numeroCuotasMensual ?? 0);
-    }
-
-    return Number(p.numeroCuotasQuincenal ?? 0);
+    return this.frecuenciaSeleccionada === 'mensual'
+      ? Number(p.numeroCuotasMensual ?? 0)
+      : Number(p.numeroCuotasQuincenal ?? 0);
   }
 
-  // NOMBRE DE LA FRECUENCIA
+  // NOMBRE DE LA FRECUENCIA SELECCIONADA
   obtenerNombreFrecuencia(): string {
     return this.frecuenciaSeleccionada === 'mensual'
       ? 'mensual'
@@ -266,11 +361,11 @@ export class ProductoDetalleComponent implements OnInit {
     });
   }
 
-  // GENERAR MENSAJE Y ENLACE DE WHATSAPP
+  // GENERAR EL MENSAJE Y EL ENLACE DE WHATSAPP
   obtenerLinkWhatsApp(p: any): string {
     let modalidad = this.modalidadSeleccionada;
 
-    // Asegurar que la modalidad seleccionada esté disponible.
+    // Asegurar que la modalidad esté disponible.
     if (modalidad === 'contado' && !p.vendeContado) {
       modalidad = 'credito';
     }
@@ -309,7 +404,8 @@ export class ProductoDetalleComponent implements OnInit {
       }
 
       if (numeroCuotas > 0) {
-        mensaje += ` Número de cuotas ${frecuencia}: ${numeroCuotas}.`;
+        mensaje +=
+          ` Número de cuotas ${frecuencia}: ${numeroCuotas}.`;
       }
 
       if (valorCuota <= 0) {
@@ -321,4 +417,3 @@ export class ProductoDetalleComponent implements OnInit {
     return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
   }
 }
-

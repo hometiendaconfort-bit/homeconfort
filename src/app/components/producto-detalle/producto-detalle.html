@@ -3,7 +3,6 @@
 
   <!-- GALERÍA DE IMÁGENES -->
   <div class="detalle-galeria">
-
     <div class="miniaturas-vertical">
 
       <button type="button" class="volver" (click)="volver()">
@@ -29,7 +28,6 @@
         loading="lazy"
       >
     </div>
-
   </div>
 
   <!-- INFORMACIÓN DEL PRODUCTO -->
@@ -86,8 +84,10 @@
 
       <!-- PRECIO DE CONTADO -->
       <div
-        *ngIf="producto.vendeContado &&
-               (!producto.vendeCredito || modalidadSeleccionada === 'contado')"
+        *ngIf="
+          producto.vendeContado &&
+          (!producto.vendeCredito || modalidadSeleccionada === 'contado')
+        "
       >
 
         <h3>Precio de contado</h3>
@@ -114,8 +114,10 @@
 
       <!-- INFORMACIÓN A CRÉDITO -->
       <div
-        *ngIf="producto.vendeCredito &&
-               (!producto.vendeContado || modalidadSeleccionada === 'credito')"
+        *ngIf="
+          producto.vendeCredito &&
+          (!producto.vendeContado || modalidadSeleccionada === 'credito')
+        "
       >
 
         <h3>Precio a crédito</h3>
@@ -129,21 +131,10 @@
           {{ producto.inicial | currency:'COP':'symbol':'1.0-0' }}
         </p>
 
-        <!-- FRECUENCIA SELECCIONADA -->
-        <p *ngIf="obtenerValorCuota(producto) > 0">
-          <strong>Pago {{ obtenerNombreFrecuencia() }}:</strong>
-          {{ obtenerValorCuota(producto) | currency:'COP':'symbol':'1.0-0' }}
-        </p>
-
-        <p *ngIf="obtenerNumeroCuotas(producto) > 0">
-          <strong>Número de cuotas {{ obtenerNombreFrecuencia() }}:</strong>
-          {{ obtenerNumeroCuotas(producto) }}
-        </p>
-
-        <!-- ELEGIR FRECUENCIA DE PAGO -->
+        <!-- SELECTOR DE FRECUENCIA -->
         <div
           class="selector-frecuencia"
-          *ngIf="producto.quincenal > 0 || producto.mensual > 0"
+          *ngIf="tieneFrecuenciasDisponibles()"
         >
 
           <p>¿Cómo prefieres pagar tus cuotas?</p>
@@ -207,6 +198,17 @@
           </div>
 
         </div>
+
+        <!-- CUOTA DE LA FRECUENCIA ELEGIDA -->
+        <p *ngIf="obtenerValorCuota(producto) > 0">
+          <strong>Pago {{ obtenerNombreFrecuencia() }}:</strong>
+          {{ obtenerValorCuota(producto) | currency:'COP':'symbol':'1.0-0' }}
+        </p>
+
+        <p *ngIf="obtenerNumeroCuotas(producto) > 0">
+          <strong>Número de cuotas:</strong>
+          {{ obtenerNumeroCuotas(producto) }}
+        </p>
 
       </div>
 
