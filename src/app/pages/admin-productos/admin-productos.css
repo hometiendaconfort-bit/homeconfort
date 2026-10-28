@@ -1,12 +1,8 @@
-/* =========================
-   CONTENEDOR DEL FORMULARIO
-   ========================= */
 
 .admin-productos {
   width: 400px;
-  max-width: 100%;
-  margin-top: 7rem !important;
-  margin: auto;
+  max-width: calc(100% - 24px);
+  margin: 7rem auto 20px;
   padding: 15px;
   box-sizing: border-box;
   display: flex;
@@ -18,7 +14,7 @@
   border-radius: 10px;
 }
 
-/* TÍTULO */
+/* TÍTULOS */
 
 .admin-productos h1 {
   text-align: center;
@@ -33,9 +29,7 @@
   color: #333;
 }
 
-/* =========================
-   CAMPOS DEL FORMULARIO
-   ========================= */
+/* CAMPOS DEL FORMULARIO */
 
 .admin-productos div {
   margin-bottom: 4px;
@@ -89,9 +83,11 @@
   cursor: pointer;
 }
 
-/* =========================
-   BOTÓN GUARDAR
-   ========================= */
+/* SECCIÓN DE FINANCIACIÓN */
+
+.admin-productos h3 + div {
+  margin-bottom: 8px;
+}
 
 .admin-productos button {
   width: 100%;
@@ -106,6 +102,8 @@
   color: #333;
   transition: background-color 0.2s ease;
 }
+
+/* BOTÓN GUARDAR */
 
 .admin-productos button.guardar-producto {
   width: 100%;
@@ -123,9 +121,13 @@
   background-color: #45a049;
 }
 
-/* =========================
-   CONTENEDOR DE LA TABLA
-   ========================= */
+/* BOTÓN LIMPIAR */
+
+.admin-productos button:not(.guardar-producto) {
+  transition: background-color 0.2s ease;
+}
+
+/* CONTENEDOR DE LA TABLA */
 
 .tabla-container {
   width: 95%;
@@ -171,9 +173,7 @@
   background-color: #f9f9f9;
 }
 
-/* =========================
-   DESCRIPCIÓN
-   ========================= */
+/* DESCRIPCIÓN */
 
 .descripcion {
   width: 300px;
@@ -182,9 +182,7 @@
   word-break: break-word;
 }
 
-/* =========================
-   IMÁGENES
-   ========================= */
+/* IMÁGENES */
 
 .producto-imagen {
   max-width: 250px;
@@ -216,9 +214,7 @@
   border-radius: 6px;
 }
 
-/* =========================
-   ACCIONES
-   ========================= */
+/* ACCIONES */
 
 .acciones {
   display: flex;
@@ -262,17 +258,13 @@
   background-color: #a71d15;
 }
 
-/* =========================
-   CELULAR
-   ========================= */
+/* CELULARES Y TABLETAS PEQUEÑAS */
 
 @media (max-width: 600px) {
-
   .admin-productos {
     width: calc(100% - 24px);
     max-width: 400px;
-    margin-top: 10rem !important;
-    margin: 20px auto;
+    margin: 10rem auto 20px;
     padding: 12px;
   }
 
@@ -301,66 +293,7 @@
   }
 
   .tabla-container table {
-    min-width: 950px;
-  }
-
-  .tabla-container th,
-  .tabla-container td {
-    padding: 6px;
-    font-size: 12px;
-  }
-
-  .tabla-container img {
-    max-width: 70px;
-    max-height: 60px;
-  }
-
-  .acciones {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .acciones button {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-
-  .admin-productos {
-    width: calc(100% - 24px);
-    max-width: 400px;
-    margin-top: 10rem !important;
-    margin: auto;
-    padding: 12px;
-  }
-
-  .admin-productos h1 {
-    font-size: 20px;
-  }
-
-  .admin-productos h3 {
-    font-size: 15px;
-  }
-
-  .admin-productos label {
-    font-size: 13px;
-  }
-
-  .admin-productos input:not([type="checkbox"]),
-  .admin-productos select,
-  .admin-productos textarea {
-    font-size: 14px;
-  }
-
-  .tabla-container {
-    width: calc(100% - 16px);
-    margin: 20px auto;
-    overflow-x: auto;
-  }
-
-  .tabla-container table {
-    min-width: 950px;
+    min-width: 1200px;
   }
 
   .tabla-container th,

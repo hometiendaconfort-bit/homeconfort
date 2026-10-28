@@ -1,320 +1,425 @@
 
-<section class="admin-productos" id="admin-productos">
+<div class="admin-productos">
 
-  <h1>Administración de Productos</h1>
+  <h2>{{ docIdEditando ? 'Editar producto' : 'Agregar producto' }}</h2>
 
-  <div>
-    <label>ID</label>
-    <input type="number" [(ngModel)]="id" name="id">
+  <!-- MENSAJE DE ERROR -->
+  <div *ngIf="mensajeError" class="mensaje-error" role="alert">
+    {{ mensajeError }}
   </div>
 
-  <div>
-    <label>Nombre</label>
-    <input type="text" [(ngModel)]="nombre" name="nombre">
-  </div>
+  <!-- FORMULARIO -->
+  <form (ngSubmit)="guardarProducto()">
 
-  <div>
-    <label>Formas de venta</label>
-
-    <label>
+    <!-- IDENTIFICACIÓN -->
+    <div class="campo">
+      <label for="id">ID del producto</label>
       <input
-        type="checkbox"
-        [(ngModel)]="vendeContado"
-        name="vendeContado">
-      Contado
-    </label>
+        id="id"
+        type="text"
+        name="id"
+        [(ngModel)]="id"
+        placeholder="Ej. cama-001"
+      >
+    </div>
 
-    <label>
+    <div class="campo">
+      <label for="nombre">Nombre del producto *</label>
       <input
-        type="checkbox"
-        [(ngModel)]="vendeCredito"
-        name="vendeCredito">
-      Crédito
-    </label>
-  </div>
+        id="nombre"
+        type="text"
+        name="nombre"
+        [(ngModel)]="nombre"
+        placeholder="Nombre del producto"
+        required
+      >
+    </div>
 
-  <div *ngIf="vendeContado">
-    <label>Precio de contado</label>
-    <input
-      type="number"
-      [(ngModel)]="precioContado"
-      name="precioContado"
-      min="1">
-  </div>
+    <!-- MODALIDADES -->
+    <h3>Modalidades de venta</h3>
 
-  <div *ngIf="vendeCredito">
-    <label>Precio a crédito</label>
-    <input
-      type="number"
-      [(ngModel)]="precioCredito"
-      name="precioCredito"
-      min="1">
-  </div>
+    <div class="modalidades">
+      <label>
+        <input
+          type="checkbox"
+          name="vendeContado"
+          [(ngModel)]="vendeContado"
+        >
+        Vende de contado
+      </label>
 
-  <div *ngIf="vendeCredito">
-    <label>Inicial</label>
-    <input
-      type="number"
-      [(ngModel)]="inicial"
-      name="inicial"
-      min="0">
-  </div>
+      <label>
+        <input
+          type="checkbox"
+          name="vendeCredito"
+          [(ngModel)]="vendeCredito"
+        >
+        Vende a crédito
+      </label>
+    </div>
 
-  <!-- Frecuencia de pago del crédito -->
-  <div *ngIf="vendeCredito">
-    <label for="frecuenciaPago">Frecuencia de pago</label>
+    <!-- PRECIOS -->
+    <div class="campo" *ngIf="vendeContado">
+      <label for="precioContado">Precio de contado (COP) *</label>
+      <input
+        id="precioContado"
+        type="number"
+        name="precioContado"
+        [(ngModel)]="precioContado"
+        min="1"
+        step="1"
+        required
+      >
+    </div>
 
-    <select
-      id="frecuenciaPago"
-      name="frecuenciaPago"
-      [(ngModel)]="frecuenciaPago">
+    <div class="campo" *ngIf="vendeCredito">
+      <label for="precioCredito">Precio a crédito (COP) *</label>
+      <input
+        id="precioCredito"
+        type="number"
+        name="precioCredito"
+        [(ngModel)]="precioCredito"
+        min="1"
+        step="1"
+        required
+      >
+    </div>
 
-      <option value="quincenal">Quincenal</option>
-      <option value="mensual">Mensual</option>
+    <!-- FINANCIACIÓN -->
+    <div *ngIf="vendeCredito" class="financiacion">
 
-    </select>
-  </div>
+      <h3>Financiación a crédito</h3>
 
-  <!-- Valor de la cuota -->
-  <div *ngIf="vendeCredito">
-    <label for="valorCuota">
-      {{ frecuenciaPago === 'mensual'
-        ? 'Valor de la cuota mensual'
-        : 'Valor de la cuota quincenal' }}
-    </label>
+      <div class="campo">
+        <label for="inicial">Cuota inicial (COP)</label>
+        <input
+          id="inicial"
+          type="number"
+          name="inicial"
+          [(ngModel)]="inicial"
+          min="0"
+          step="1"
+        >
+      </div>
 
-    <input
-      id="valorCuota"
-      type="number"
-      [(ngModel)]="quincenal"
-      name="valorCuota"
-      min="1">
-  </div>
+      <!-- OPCIÓN QUINCENAL -->
+      <section class="opcion-pago">
+        <h4>Pago quincenal</h4>
 
-  <!-- Número de cuotas -->
-  <div *ngIf="vendeCredito">
-    <label for="numeroCuotas">Número de cuotas</label>
+        <div class="campo">
+          <label for="quincenal">Valor de cada cuota quincenal (COP)</label>
+          <input
+            id="quincenal"
+            type="number"
+            name="quincenal"
+            [(ngModel)]="quincenal"
+            min="0"
+            step="1"
+            placeholder="Ej. 80000"
+          >
+        </div>
 
-    <input
-      id="numeroCuotas"
-      type="number"
-      [(ngModel)]="numeroCuotas"
-      name="numeroCuotas"
-      min="1"
-      step="1">
-  </div>
+        <div class="campo">
+          <label for="numeroCuotasQuincenal">Número de cuotas quincenales</label>
+          <input
+            id="numeroCuotasQuincenal"
+            type="number"
+            name="numeroCuotasQuincenal"
+            [(ngModel)]="numeroCuotasQuincenal"
+            min="1"
+            step="1"
+            [required]="vendeCredito && (quincenal ?? 0) > 0"
+            placeholder="Ej. 24"
+          >
+        </div>
+      </section>
 
-  <div>
-    <label for="categoria">Categoría</label>
+      <!-- OPCIÓN MENSUAL -->
+      <section class="opcion-pago">
+        <h4>Pago mensual</h4>
 
-    <select
-      id="categoria"
-      name="categoria"
-      [(ngModel)]="categoria">
+        <div class="campo">
+          <label for="mensual">Valor de cada cuota mensual (COP)</label>
+          <input
+            id="mensual"
+            type="number"
+            name="mensual"
+            [(ngModel)]="mensual"
+            min="0"
+            step="1"
+            placeholder="Ej. 160000"
+          >
+        </div>
 
-      <option value="">Selecciona una categoría</option>
-      <option value="colchon">Colchón</option>
-      <option value="espaldaryBaseCama">Espaldar y basecama</option>
-      <option value="almohada">Almohada</option>
-      <option value="armario">Armario</option>
-      <option value="comedor">Comedor</option>
-      <option value="peinador">Peinador</option>
-      <option value="sala">Sala</option>
-      <option value="lujo">Lujo</option>
-      <option value="accesorios">Accesorios</option>
+        <div class="campo">
+          <label for="numeroCuotasMensual">Número de cuotas mensuales</label>
+          <input
+            id="numeroCuotasMensual"
+            type="number"
+            name="numeroCuotasMensual"
+            [(ngModel)]="numeroCuotasMensual"
+            min="1"
+            step="1"
+            [required]="vendeCredito && (mensual ?? 0) > 0"
+            placeholder="Ej. 12"
+          >
+        </div>
+      </section>
 
-    </select>
-  </div>
+      <p class="ayuda">
+        Puedes registrar las dos alternativas. El cliente podrá elegir
+        entre el pago quincenal y el mensual en el detalle del producto.
+      </p>
 
-  <div>
-    <label>Color</label>
-    <input
-      type="text"
-      [(ngModel)]="color"
-      name="color">
-  </div>
+    </div>
 
-  <div>
-    <label>Descuento (%)</label>
-    <input
-      type="number"
-      [(ngModel)]="descuento"
-      name="descuento"
-      min="0"
-      max="100">
-  </div>
+    <!-- INFORMACIÓN GENERAL -->
+    <h3>Información del producto</h3>
 
-  <div>
-    <label>Imagen principal</label>
-    <input
-      type="text"
-      [(ngModel)]="imagen"
-      name="imagen">
-  </div>
+    <div class="campo">
+      <label for="categoria">Categoría</label>
+      <input
+        id="categoria"
+        type="text"
+        name="categoria"
+        [(ngModel)]="categoria"
+        placeholder="Ej. Camas, colchones, salas"
+      >
+    </div>
 
-  <div>
-    <label>Imágenes adicionales</label>
+    <div class="campo">
+      <label for="color">Color</label>
+      <input
+        id="color"
+        type="text"
+        name="color"
+        [(ngModel)]="color"
+        placeholder="Color del producto"
+      >
+    </div>
 
-    <input
-      type="text"
-      [(ngModel)]="imagenesTexto"
-      name="imagenesTexto"
-      placeholder="/assets/img/1.jpg, /assets/img/2.jpg">
+    <div class="campo">
+      <label for="descuento">Descuento de contado (%)</label>
+      <input
+        id="descuento"
+        type="number"
+        name="descuento"
+        [(ngModel)]="descuento"
+        min="0"
+        max="100"
+        step="1"
+      >
+    </div>
 
-    <small>Separa las direcciones con comas.</small>
-  </div>
+    <div class="campo">
+      <label for="imagen">Imagen principal (URL)</label>
+      <input
+        id="imagen"
+        type="text"
+        name="imagen"
+        [(ngModel)]="imagen"
+        placeholder="https://..."
+      >
+    </div>
 
-  <div>
-    <label>Descripción</label>
-    <textarea
-      [(ngModel)]="descripcion"
-      name="descripcion">
-    </textarea>
-  </div>
+    <div class="campo">
+      <label for="imagenesTexto">Imágenes adicionales (URLs separadas por comas)</label>
+      <textarea
+        id="imagenesTexto"
+        name="imagenesTexto"
+        [(ngModel)]="imagenesTexto"
+        rows="3"
+        placeholder="https://imagen1.jpg, https://imagen2.jpg"
+      ></textarea>
+    </div>
 
-  <button
-    type="button"
-    class="guardar-producto"
-    (click)="guardarProducto()">
+    <div class="vista-previa" *ngIf="imagen">
+      <p>Vista previa de la imagen principal:</p>
+      <img [src]="imagen" [alt]="nombre || 'Vista previa del producto'">
+    </div>
 
-    {{ docIdEditando ? 'Actualizar producto' : 'Guardar producto' }}
+    <div class="campo">
+      <label for="descripcion">Descripción</label>
+      <textarea
+        id="descripcion"
+        name="descripcion"
+        [(ngModel)]="descripcion"
+        rows="4"
+        placeholder="Describe las características del producto"
+      ></textarea>
+    </div>
 
-  </button>
+    <!-- BOTONES -->
+    <div class="acciones-formulario">
+      <button type="submit" [disabled]="guardando">
+        {{
+          guardando
+            ? 'Guardando...'
+            : docIdEditando
+              ? 'Actualizar producto'
+              : 'Guardar producto'
+        }}
+      </button>
 
-  <button
-    *ngIf="docIdEditando"
-    type="button"
-    (click)="limpiarFormulario()">
+      <button
+        type="button"
+        class="btn-limpiar"
+        (click)="limpiarFormulario()"
+        [disabled]="guardando"
+      >
+        Cancelar / Limpiar
+      </button>
+    </div>
 
-    Cancelar edición
+  </form>
 
-  </button>
+  <!-- TABLA DE PRODUCTOS -->
+  <div class="tabla-container">
 
-</section>
+    <h3>Productos registrados</h3>
 
-<hr>
+    <p *ngIf="productoss.length === 0">
+      No hay productos registrados.
+    </p>
 
-<div class="tabla-container">
+    <table *ngIf="productoss.length > 0">
 
-  <h2>Lista de productos</h2>
+      <thead>
+        <tr>
+          <th>Imagen</th>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Modalidades</th>
+          <th>Contado</th>
+          <th>Crédito</th>
+          <th>Inicial</th>
+          <th>Cuota quincenal</th>
+          <th>Cuotas quincenales</th>
+          <th>Cuota mensual</th>
+          <th>Cuotas mensuales</th>
+          <th>Categoría</th>
+          <th>Color</th>
+          <th>Descuento</th>
+          <th>Descripción</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
 
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Categoría</th>
-        <th>Contado</th>
-        <th>Crédito</th>
-        <th>Inicial</th>
-        <th>Frecuencia</th>
-        <th>Valor cuota</th>
-        <th>Número de cuotas</th>
-        <th>Color</th>
-        <th>Modalidad</th>
-        <th>Descuento</th>
-        <th>Imagen</th>
-        <th>Imágenes</th>
-        <th>Descripción</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
+      <tbody>
+        <tr *ngFor="let producto of productoss">
 
-    <tbody>
-      <tr *ngFor="let producto of productoss">
-
-        <td>{{ producto.id }}</td>
-
-        <td>{{ producto.nombre }}</td>
-
-        <td>{{ producto.categoria }}</td>
-
-        <td>
-          {{ producto.precioContado ??
-             (producto.tipo !== 'credito' ? producto.precio : null)
-             | currency:'COP' }}
-        </td>
-
-        <td>
-          {{ producto.precioCredito ??
-             (producto.tipo !== 'contado' ? producto.precio : null)
-             | currency:'COP' }}
-        </td>
-
-        <td>{{ producto.inicial | currency:'COP' }}</td>
-
-        <td>
-          <ng-container *ngIf="producto.vendeCredito ?? (producto.tipo !== 'contado')">
-            {{ producto.frecuenciaPago === 'mensual'
-              ? 'Mensual'
-              : 'Quincenal' }}
-          </ng-container>
-          <ng-container *ngIf="!(producto.vendeCredito ?? (producto.tipo !== 'contado'))">
-            —
-          </ng-container>
-        </td>
-
-        <td>
-          <ng-container *ngIf="producto.frecuenciaPago === 'mensual'; else cuotaQuincenal">
-            {{ producto.mensual | currency:'COP' }}
-          </ng-container>
-
-          <ng-template #cuotaQuincenal>
-            {{ producto.quincenal | currency:'COP' }}
-          </ng-template>
-        </td>
-
-        <td>
-          {{ producto.numeroCuotas || '—' }}
-        </td>
-
-        <td>{{ producto.color }}</td>
-
-        <td>{{ producto.tipo }}</td>
-
-        <td>{{ producto.descuento }}%</td>
-
-        <td class="producto-imagen">
-          <img
-            *ngIf="producto.imagen"
-            [src]="producto.imagen"
-            [alt]="producto.nombre"
-            class="imagen-admin">
-        </td>
-
-        <td class="producto-imagen">
-          <div class="imagenes-adicionales">
+          <td>
             <img
-              *ngFor="let imagen of producto.imagenes"
-              [src]="imagen"
+              *ngIf="producto.imagen"
+              [src]="producto.imagen"
               [alt]="producto.nombre"
-              class="imagen-admin">
-          </div>
-        </td>
+              class="imagen-tabla"
+              loading="lazy"
+            >
+          </td>
 
-        <td class="descripcion">
-          {{ producto.descripcion }}
-        </td>
+          <td>{{ producto.id || '—' }}</td>
 
-        <td class="acciones">
-          <button
-            type="button"
-            class="editar-boton"
-            (click)="editar(producto)">
-            Editar
-          </button>
+          <td>{{ producto.nombre }}</td>
 
-          <button
-            type="button"
-            class="eliminar-boton"
-            (click)="eliminar(producto.docId)">
-            Eliminar
-          </button>
-        </td>
+          <td>
+            <span *ngIf="producto.vendeContado ?? (producto.tipo === 'contado' || producto.tipo === 'ambos' || (!producto.tipo && producto.precio != null))">
+              Contado
+            </span>
 
-      </tr>
-    </tbody>
-  </table>
+            <span *ngIf="producto.vendeCredito ?? (producto.tipo === 'credito' || producto.tipo === 'ambos')">
+              Crédito
+            </span>
+          </td>
+
+          <td>
+           <ng-container *ngIf="producto.vendeContado === true || (producto.vendeContado == null && (producto.tipo === 'contado' || producto.tipo === 'ambos' || (!producto.tipo && producto.precio != null))); else sinContado">
+            {{
+                (producto.precioContado ?? producto.precio)
+                  | currency:'COP':'symbol':'1.0-0'
+              }}
+            </ng-container>
+            <ng-template #sinContado>—</ng-template>
+          </td>
+
+          <td>
+            <ng-container *ngIf="producto.vendeCredito ?? (producto.tipo === 'credito' || producto.tipo === 'ambos'); else sinCredito">
+              {{
+                (producto.precioCredito ?? producto.precio)
+                  | currency:'COP':'symbol':'1.0-0'
+              }}
+            </ng-container>
+            <ng-template #sinCredito>—</ng-template>
+          </td>
+
+          <td>
+            {{
+              producto.inicial
+                ? (producto.inicial | currency:'COP':'symbol':'1.0-0')
+                : '—'
+            }}
+          </td>
+
+          <td>
+            {{
+              producto.quincenal
+                ? (producto.quincenal | currency:'COP':'symbol':'1.0-0')
+                : '—'
+            }}
+          </td>
+
+          <td>
+            {{
+              producto.numeroCuotasQuincenal ??
+              (producto.frecuenciaPago !== 'mensual' ? producto.numeroCuotas : 0) ??
+              '—'
+            }}
+          </td>
+
+          <td>
+            {{
+              producto.mensual
+                ? (producto.mensual | currency:'COP':'symbol':'1.0-0')
+                : '—'
+            }}
+          </td>
+
+          <td>
+            {{
+              producto.numeroCuotasMensual ??
+              (producto.frecuenciaPago === 'mensual' ? producto.numeroCuotas : 0) ??
+              '—'
+            }}
+          </td>
+
+          <td>{{ producto.categoria || '—' }}</td>
+          <td>{{ producto.color || '—' }}</td>
+          <td>{{ producto.descuento || 0 }}%</td>
+          <td>{{ producto.descripcion || '—' }}</td>
+
+          <td class="acciones-tabla">
+            <button
+              type="button"
+              class="btn-editar"
+              (click)="editar(producto)"
+            >
+              Editar
+            </button>
+
+            <button
+              type="button"
+              class="btn-eliminar"
+              (click)="eliminar(producto.docId)"
+            >
+              Eliminar
+            </button>
+          </td>
+
+        </tr>
+      </tbody>
+
+    </table>
+
+  </div>
 
 </div>
-

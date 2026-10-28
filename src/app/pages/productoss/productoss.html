@@ -80,7 +80,7 @@
 
         </div>
 
-        <!-- INFORMACION DEL PRODUCTO -->
+        <!-- INFORMACIÓN DEL PRODUCTO -->
         <div class="producto-info">
 
           <h3>{{ p.nombre }}</h3>
@@ -113,7 +113,6 @@
                 (change)="seleccionarModalidad(p, 'credito')">
 
               Crédito
-
             </label>
 
             <label
@@ -127,15 +126,14 @@
                 (change)="seleccionarModalidad(p, 'contado')">
 
               Contado
-
             </label>
 
           </div>
 
-          <!-- BLOQUE PRECIOS -->
+          <!-- BLOQUE DE PRECIOS -->
           <div class="bloque-precios">
 
-            <!-- PRECIO Y FINANCIACION A CREDITO -->
+            <!-- PRECIO Y FINANCIACIÓN A CRÉDITO -->
             <ng-container
               *ngIf="obtenerModalidad(p) === 'credito' && p.vendeCredito">
 
@@ -144,28 +142,61 @@
                 {{ precioFinal(p, 'credito') | currency:'COP':'symbol-narrow':'1.0-0' }}
               </p>
 
-              <p *ngIf="p.inicial != null && p.inicial > 0">
+              <p *ngIf="p.inicial > 0">
                 Inicial:
                 {{ p.inicial | currency:'COP':'symbol-narrow':'1.0-0' }}
               </p>
 
-              <!-- CUOTA SEGUN LA FRECUENCIA -->
-              <p
-                *ngIf="p.frecuenciaPago === 'mensual'
-                  ? p.mensual > 0
-                  : p.quincenal > 0">
+              <!-- SELECTOR DE FRECUENCIA -->
+              <div
+                class="selector-frecuencia"
+                *ngIf="p.quincenal > 0 || p.mensual > 0">
 
-                Cuota {{ p.frecuenciaPago === 'mensual' ? 'mensual' : 'quincenal' }}:
+                <p><strong>¿Cómo prefieres pagar?</strong></p>
 
-                {{ (p.frecuenciaPago === 'mensual'
-                  ? p.mensual
-                  : p.quincenal) | currency:'COP':'symbol-narrow':'1.0-0' }}
+                <div class="opciones-frecuencia">
 
+                  <label
+                    *ngIf="p.quincenal > 0"
+                    [class.seleccionada]="obtenerFrecuencia(p) === 'quincenal'">
+
+                    <input
+                      type="radio"
+                      [name]="'frecuencia-' + p.id"
+                      value="quincenal"
+                      [checked]="obtenerFrecuencia(p) === 'quincenal'"
+                      (change)="seleccionarFrecuencia(p, 'quincenal')">
+
+                    Quincenal
+                  </label>
+
+                  <label
+                    *ngIf="p.mensual > 0"
+                    [class.seleccionada]="obtenerFrecuencia(p) === 'mensual'">
+
+                    <input
+                      type="radio"
+                      [name]="'frecuencia-' + p.id"
+                      value="mensual"
+                      [checked]="obtenerFrecuencia(p) === 'mensual'"
+                      (change)="seleccionarFrecuencia(p, 'mensual')">
+
+                    Mensual
+                  </label>
+
+                </div>
+              </div>
+
+              <!-- VALOR DE LA CUOTA SELECCIONADA -->
+              <p *ngIf="obtenerValorCuota(p) > 0">
+                Cuota {{ obtenerFrecuencia(p) }}:
+                {{ obtenerValorCuota(p) | currency:'COP':'symbol-narrow':'1.0-0' }}
               </p>
 
-              <!-- NUMERO DE CUOTAS -->
-              <p *ngIf="p.numeroCuotas > 0">
-                Número de cuotas: {{ p.numeroCuotas }}
+              <!-- NÚMERO DE CUOTAS DE LA FRECUENCIA SELECCIONADA -->
+              <p *ngIf="obtenerNumeroCuotas(p) > 0">
+                Número de cuotas {{ obtenerFrecuencia(p) }}:
+                {{ obtenerNumeroCuotas(p) }}
               </p>
 
             </ng-container>
@@ -179,7 +210,6 @@
                 *ngIf="(p.descuento > 0 || p.oferta) && precioFinal(p, 'contado') < precioOriginal(p)">
 
                 {{ precioOriginal(p) | currency:'COP':'symbol-narrow':'1.0-0' }}
-
               </p>
 
               <p class="precio">
@@ -214,7 +244,6 @@
             rel="noopener noreferrer">
 
             Consultar por WhatsApp
-
           </a>
 
         </div>

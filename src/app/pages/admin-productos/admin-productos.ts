@@ -7,271 +7,385 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-admin-productos',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admin-productos.html',
-  styleUrl: './admin-productos.css',
+  styleUrl: './admin-productos.css'
 })
 export class AdminProductos implements OnInit {
 
   productoss: any[] = [];
-  docIdEditando = '';
+  docIdEditando: string | null = null;
 
-  id = 0;
+  id = '';
   nombre = '';
-
-  precioContado = 0;
-  precioCredito = 0;
 
   vendeContado = true;
   vendeCredito = false;
 
-  inicial = 0;
+  precioContado: number | null = null;
+  precioCredito: number | null = null;
 
-  // Valor de la cuota seleccionada.
-  // Se conserva el nombre para no alterar innecesariamente
-  // la estructura que ya utiliza el proyecto.
-  quincenal = 0;
+  inicial: number | null = 0;
 
-  // Frecuencia y número de cuotas del crédito.
-  frecuenciaPago: 'quincenal' | 'mensual' = 'quincenal';
-  numeroCuotas = 0;
+  // AHORA SE GUARDAN LAS DOS FRECUENCIAS
+  quincenal: number | null = 0;
+  mensual: number | null = 0;
+
+  // CADA FRECUENCIA PUEDE TENER SU PROPIO PLAZO
+  numeroCuotasQuincenal: number | null = 0;
+  numeroCuotasMensual: number | null = 0;
 
   categoria = '';
   descripcion = '';
   color = '';
-  descuento = 0;
+  descuento: number | null = 0;
 
-  imagen = '/assets/img/';
+  imagen = '';
   imagenesTexto = '';
 
-  constructor(private productos: Productos) {}
+  guardando = false;
+  mensajeError = '';
 
-  async ngOnInit() {
-    await this.cargarProductos();
+  constructor(private productosService: Productos) {}
+
+  ngOnInit(): void {
+    this.cargarProductos();
   }
 
-  async guardarProducto() {
+  // CARGAR PRODUCTOS DE FIREBASE
+  async cargarProductos(): Promise<void> {
+    try {
+      this.productoss = await this.productosService.obtenerProductos();
+    } catch (error) {
+      console.error('Error cargando productos:', error);
+      this.mensajeError = 'No se pudieron cargar los productos.';
+    }
+  }
+
+  // GUARDAR UN PRODUCTO NUEVO O ACTUALIZAR UNO EXISTENTE
+  async guardarProducto(): Promise<void> {
+
+    this.mensajeError = '';
+
+    if (!this.nombre.trim()) {
+      this.mensajeError = 'Escribe el nombre del producto.';
+      return;
+    }
+
+    if (!this.vendeContado && !this.vendeCredito) {
+      this.mensajeError = 'Selecciona contado, crédito o ambas modalidades.';
+      return;
+    }
+
+    if (
+      this.vendeContado &&
+      (this.precioContado == null || this.precioContado <= 0)
+    ) {
+      this.mensajeError = 'Ingresa un precio de contado válido.';
+      return;
+    }
+
+    if (
+      this.vendeCredito &&
+      (this.precioCredito == null || this.precioCredito <= 0)
+    ) {
+      this.mensajeError = 'Ingresa un precio a crédito válido.';
+      return;
+    }
+
+    if (
+      this.vendeCredito &&
+      (this.inicial == null || this.inicial < 0)
+    ) {
+      this.mensajeError = 'La cuota inicial no puede ser negativa.';
+      return;
+    }
+
+    if (
+      this.vendeCredito &&
+      Number(this.quincenal) < 0
+    ) {
+      this.mensajeError = 'La cuota quincenal no puede ser negativa.';
+      return;
+    }
+
+    if (
+      this.vendeCredito &&
+      Number(this.mensual) < 0
+    ) {
+      this.mensajeError = 'La cuota mensual no puede ser negativa.';
+      return;
+    }
+
+    if (
+      this.vendeCredito &&
+      Number(this.quincenal) > 0 &&
+      (
+        !Number.isInteger(Number(this.numeroCuotasQuincenal)) ||
+        Number(this.numeroCuotasQuincenal) < 1
+      )
+    ) {
+      this.mensajeError =
+        'Indica un número válido de cuotas quincenales.';
+      return;
+    }
+
+    if (
+      this.vendeCredito &&
+      Number(this.mensual) > 0 &&
+      (
+        !Number.isInteger(Number(this.numeroCuotasMensual)) ||
+        Number(this.numeroCuotasMensual) < 1
+      )
+    ) {
+      this.mensajeError =
+        'Indica un número válido de cuotas mensuales.';
+      return;
+    }
+
+    if (
+      this.vendeCredito &&
+      Number(this.quincenal) <= 0 &&
+      Number(this.mensual) <= 0
+    ) {
+      this.mensajeError =
+        'Ingresa al menos una cuota quincenal o mensual.';
+      return;
+    }
+
+    if (
+      this.descuento != null &&
+      (this.descuento < 0 || this.descuento > 100)
+    ) {
+      this.mensajeError = 'El descuento debe estar entre 0 y 100.';
+      return;
+    }
+
+    const imagenes = this.imagenesTexto
+      .split(',')
+      .map(url => url.trim())
+      .filter(url => url.length > 0);
+
+    // CONSERVO LOS CAMPOS NUEVOS Y LOS DE COMPATIBILIDAD
+    const producto: any = {
+      id: this.id.trim(),
+      nombre: this.nombre.trim(),
+
+      vendeContado: this.vendeContado,
+      vendeCredito: this.vendeCredito,
+
+      tipo:
+        this.vendeContado && this.vendeCredito
+          ? 'ambos'
+          : this.vendeCredito
+            ? 'credito'
+            : 'contado',
+
+      precioContado: this.vendeContado
+        ? Number(this.precioContado)
+        : 0,
+
+      precioCredito: this.vendeCredito
+        ? Number(this.precioCredito)
+        : 0,
+
+      // PRECIO ANTIGUO PARA COMPATIBILIDAD
+      precio: this.vendeContado
+        ? Number(this.precioContado)
+        : Number(this.precioCredito),
+
+      inicial: this.vendeCredito
+        ? Number(this.inicial ?? 0)
+        : 0,
+
+      quincenal: this.vendeCredito
+        ? Number(this.quincenal ?? 0)
+        : 0,
+
+      mensual: this.vendeCredito
+        ? Number(this.mensual ?? 0)
+        : 0,
+
+      numeroCuotasQuincenal: this.vendeCredito
+        ? Number(this.numeroCuotasQuincenal ?? 0)
+        : 0,
+
+      numeroCuotasMensual: this.vendeCredito
+        ? Number(this.numeroCuotasMensual ?? 0)
+        : 0,
+
+      // CAMPO ANTIGUO PARA COMPONENTES QUE AÚN LO USEN
+      numeroCuotas: this.vendeCredito
+        ? Number(
+            this.numeroCuotasQuincenal ||
+            this.numeroCuotasMensual ||
+            0
+          )
+        : 0,
+
+      categoria: this.categoria.trim(),
+      descripcion: this.descripcion.trim(),
+      color: this.color.trim(),
+      descuento: Number(this.descuento ?? 0),
+      imagen: this.imagen.trim(),
+      imagenes
+    };
+
+    this.guardando = true;
 
     try {
-
-      if (!this.vendeContado && !this.vendeCredito) {
-        alert('Selecciona al menos una modalidad de venta');
-        return;
-      }
-
-      if (this.vendeContado && this.precioContado <= 0) {
-        alert('Ingresa un precio de contado válido');
-        return;
-      }
-
-      if (this.vendeCredito && this.precioCredito <= 0) {
-        alert('Ingresa un precio a crédito válido');
-        return;
-      }
-
-      if (this.vendeCredito && this.inicial < 0) {
-        alert('La inicial no puede ser negativa');
-        return;
-      }
-
-      if (this.vendeCredito && this.quincenal <= 0) {
-        alert('Ingresa un valor de cuota válido');
-        return;
-      }
-
-      if (
-        this.vendeCredito &&
-        (!Number.isInteger(this.numeroCuotas) || this.numeroCuotas < 1)
-      ) {
-        alert('Ingresa un número de cuotas válido');
-        return;
-      }
-
-      const imagenes = this.imagenesTexto
-        .split(',')
-        .map(img => img.trim())
-        .filter(img => img !== '');
-
-      const tipo = this.vendeContado && this.vendeCredito
-        ? 'ambos'
-        : this.vendeContado
-          ? 'contado'
-          : 'credito';
-
-      // Mantener el campo precio para compatibilidad
-      // con los productos registrados anteriormente.
-      const precio = this.vendeContado
-        ? this.precioContado
-        : this.precioCredito;
-
-      const producto = {
-        id: this.id,
-        nombre: this.nombre,
-        precio,
-
-        precioContado: this.vendeContado
-          ? this.precioContado
-          : null,
-
-        precioCredito: this.vendeCredito
-          ? this.precioCredito
-          : null,
-
-        vendeContado: this.vendeContado,
-        vendeCredito: this.vendeCredito,
-
-        inicial: this.vendeCredito
-          ? this.inicial
-          : 0,
-
-        // Guardar el valor en el campo correspondiente.
-        quincenal: this.vendeCredito &&
-          this.frecuenciaPago === 'quincenal'
-          ? this.quincenal
-          : 0,
-
-        mensual: this.vendeCredito &&
-          this.frecuenciaPago === 'mensual'
-          ? this.quincenal
-          : 0,
-
-        frecuenciaPago: this.vendeCredito
-          ? this.frecuenciaPago
-          : null,
-
-        numeroCuotas: this.vendeCredito
-          ? this.numeroCuotas
-          : 0,
-
-        categoria: this.categoria,
-        descripcion: this.descripcion,
-        color: this.color,
-        tipo,
-        descuento: this.descuento,
-        imagen: this.imagen,
-        imagenes
-      };
-
       if (this.docIdEditando) {
-
-        await this.productos.editarProducto(
+        await this.productosService.editarProducto(
           this.docIdEditando,
           producto
         );
-
-        alert('Producto actualizado correctamente');
-
       } else {
-
-        await this.productos.agregarProducto(producto);
-
-        alert('Producto guardado correctamente');
+        await this.productosService.agregarProducto(producto);
       }
 
       await this.cargarProductos();
       this.limpiarFormulario();
 
     } catch (error) {
-
-      console.error(error);
-      alert('Error al guardar el producto');
+      console.error('Error guardando producto:', error);
+      this.mensajeError =
+        'No se pudo guardar el producto. Revisa la conexión e inténtalo nuevamente.';
+    } finally {
+      this.guardando = false;
     }
   }
 
-  async cargarProductos() {
-
-    this.productoss = await this.productos.obtenerProductos();
-  }
-
-  async eliminar(docId: string) {
-
-    const confirmar = confirm('¿Deseas eliminar este producto?');
-
-    if (!confirmar) {
-      return;
-    }
-
-    await this.productos.eliminarProducto(docId);
-    await this.cargarProductos();
-  }
-
-  editar(producto: any) {
+  // CARGAR LOS DATOS DE UN PRODUCTO PARA EDITAR
+  editar(producto: any): void {
 
     this.docIdEditando = producto.docId;
 
-    this.id = producto.id;
-    this.nombre = producto.nombre;
+    this.id = producto.id ?? '';
+    this.nombre = producto.nombre ?? '';
 
-    // Detectar productos antiguos que solo tienen precio y tipo.
     this.vendeContado = producto.vendeContado ??
-      (producto.tipo === 'contado' || producto.tipo === 'ambos');
+      (
+        producto.tipo === 'contado' ||
+        producto.tipo === 'ambos' ||
+        (!producto.tipo && producto.precio != null)
+      );
 
     this.vendeCredito = producto.vendeCredito ??
-      (producto.tipo === 'credito' || producto.tipo === 'ambos');
+      (
+        producto.tipo === 'credito' ||
+        producto.tipo === 'ambos'
+      );
 
     this.precioContado = producto.precioContado ??
-      (producto.tipo !== 'credito' ? producto.precio : 0);
+      (
+        producto.tipo !== 'credito'
+          ? producto.precio ?? null
+          : null
+      );
 
     this.precioCredito = producto.precioCredito ??
-      (producto.tipo !== 'contado' ? producto.precio : 0);
+      (
+        producto.tipo !== 'contado'
+          ? producto.precio ?? null
+          : null
+      );
 
-    this.inicial = producto.inicial ?? 0;
+    this.inicial = Number(producto.inicial ?? 0);
+    this.quincenal = Number(producto.quincenal ?? 0);
+    this.mensual = Number(producto.mensual ?? 0);
 
-    // Recuperar la frecuencia de los productos nuevos.
-    // Los antiguos quedan en quincenal por defecto.
-    this.frecuenciaPago =
-      producto.frecuenciaPago === 'mensual'
-        ? 'mensual'
-        : 'quincenal';
+    // COMPATIBILIDAD CON PRODUCTOS GUARDADOS ANTERIORMENTE
+    this.numeroCuotasQuincenal = Number(
+      producto.numeroCuotasQuincenal ??
+      (
+        producto.frecuenciaPago !== 'mensual'
+          ? producto.numeroCuotas ?? 0
+          : 0
+      )
+    );
 
-    // Cargar el valor según la frecuencia guardada.
-    this.quincenal = this.frecuenciaPago === 'mensual'
-      ? (producto.mensual ?? 0)
-      : (producto.quincenal ?? 0);
-
-    this.numeroCuotas = producto.numeroCuotas ?? 0;
+    this.numeroCuotasMensual = Number(
+      producto.numeroCuotasMensual ??
+      (
+        producto.frecuenciaPago === 'mensual'
+          ? producto.numeroCuotas ?? 0
+          : 0
+      )
+    );
 
     this.categoria = producto.categoria ?? '';
     this.descripcion = producto.descripcion ?? '';
     this.color = producto.color ?? '';
-    this.descuento = producto.descuento ?? 0;
-
-    this.imagen = producto.imagen ?? '/assets/img/';
+    this.descuento = Number(producto.descuento ?? 0);
+    this.imagen = producto.imagen ?? '';
 
     this.imagenesTexto = Array.isArray(producto.imagenes)
       ? producto.imagenes.join(', ')
       : '';
 
-    document.getElementById('admin-productos')?.scrollIntoView({
+    this.mensajeError = '';
+
+    window.scrollTo({
+      top: 0,
       behavior: 'smooth'
     });
   }
 
-  limpiarFormulario() {
+  // ELIMINAR PRODUCTO
+  async eliminar(docId: string): Promise<void> {
 
-    this.docIdEditando = '';
+    if (!docId) {
+      return;
+    }
 
-    this.id = 0;
+    if (!confirm('¿Seguro que deseas eliminar este producto?')) {
+      return;
+    }
+
+    try {
+      await this.productosService.eliminarProducto(docId);
+      await this.cargarProductos();
+
+      if (this.docIdEditando === docId) {
+        this.limpiarFormulario();
+      }
+    } catch (error) {
+      console.error('Error eliminando producto:', error);
+      this.mensajeError = 'No se pudo eliminar el producto.';
+    }
+  }
+
+  // LIMPIAR FORMULARIO
+  limpiarFormulario(): void {
+
+    this.docIdEditando = null;
+
+    this.id = '';
     this.nombre = '';
-
-    this.precioContado = 0;
-    this.precioCredito = 0;
 
     this.vendeContado = true;
     this.vendeCredito = false;
 
-    this.inicial = 0;
-    this.quincenal = 0;
+    this.precioContado = null;
+    this.precioCredito = null;
 
-    this.frecuenciaPago = 'quincenal';
-    this.numeroCuotas = 0;
+    this.inicial = 0;
+
+    this.quincenal = 0;
+    this.mensual = 0;
+
+    this.numeroCuotasQuincenal = 0;
+    this.numeroCuotasMensual = 0;
 
     this.categoria = '';
     this.descripcion = '';
     this.color = '';
     this.descuento = 0;
 
-    this.imagen = '/assets/img/';
+    this.imagen = '';
     this.imagenesTexto = '';
+
+    this.mensajeError = '';
   }
 }
+

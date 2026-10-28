@@ -6,7 +6,7 @@
 
     <div class="miniaturas-vertical">
 
-      <button class="volver" (click)="volver()">
+      <button type="button" class="volver" (click)="volver()">
         Volver
       </button>
 
@@ -37,12 +37,10 @@
 
     <h1>{{ producto.nombre }}</h1>
 
-    <!-- TEXTO ADICIONAL -->
     <p *ngIf="producto.texto">
       {{ producto.texto }}
     </p>
 
-    <!-- DESCRIPCIÓN -->
     <p class="descripcion">
       {{ producto.descripcion }}
     </p>
@@ -55,26 +53,17 @@
 
         <h3>Precio de contado</h3>
 
-        <!-- PRECIO ORIGINAL -->
         <p
           *ngIf="producto.descuento > 0"
           class="precio-tachado"
         >
-          {{
-            precioOriginal(producto)
-              | currency:'COP':'symbol':'1.0-0'
-          }}
+          {{ precioOriginal(producto) | currency:'COP':'symbol':'1.0-0' }}
         </p>
 
-        <!-- PRECIO FINAL -->
         <p class="precio-final">
-          {{
-            precioFinal(producto, 'contado')
-              | currency:'COP':'symbol':'1.0-0'
-          }}
+          {{ precioFinal(producto, 'contado') | currency:'COP':'symbol':'1.0-0' }}
         </p>
 
-        <!-- DESCUENTO -->
         <span
           *ngIf="producto.descuento > 0"
           class="descuento"
@@ -89,39 +78,24 @@
 
         <h3>Precio a crédito</h3>
 
-        <!-- PRECIO A CRÉDITO -->
         <p class="precio-final">
-          {{
-            precioFinal(producto, 'credito')
-              | currency:'COP':'symbol':'1.0-0'
-          }}
+          {{ precioFinal(producto, 'credito') | currency:'COP':'symbol':'1.0-0' }}
         </p>
 
-        <!-- CUOTA INICIAL -->
         <p *ngIf="producto.inicial > 0">
           <strong>Cuota inicial:</strong>
-          {{
-            producto.inicial
-              | currency:'COP':'symbol':'1.0-0'
-          }}
+          {{ producto.inicial | currency:'COP':'symbol':'1.0-0' }}
         </p>
 
-        <!-- CUOTA MENSUAL O QUINCENAL -->
+        <!-- FRECUENCIA SELECCIONADA -->
         <p *ngIf="obtenerValorCuota(producto) > 0">
-          <strong>
-            Pago {{ obtenerNombreFrecuencia(producto) }}:
-          </strong>
-
-          {{
-            obtenerValorCuota(producto)
-              | currency:'COP':'symbol':'1.0-0'
-          }}
+          <strong>Pago {{ obtenerNombreFrecuencia() }}:</strong>
+          {{ obtenerValorCuota(producto) | currency:'COP':'symbol':'1.0-0' }}
         </p>
 
-        <!-- NÚMERO DE CUOTAS -->
-        <p *ngIf="producto.numeroCuotas > 0">
+        <p *ngIf="obtenerNumeroCuotas(producto) > 0">
           <strong>Número de cuotas:</strong>
-          {{ producto.numeroCuotas }}
+          {{ obtenerNumeroCuotas(producto) }}
         </p>
 
       </div>
@@ -136,11 +110,9 @@
 
       <p>¿Cómo deseas comprar?</p>
 
-      <!-- CONTADO -->
       <label
         [class.seleccionada]="modalidadSeleccionada === 'contado'"
       >
-
         <input
           type="radio"
           name="modalidadDetalle"
@@ -148,16 +120,12 @@
           [checked]="modalidadSeleccionada === 'contado'"
           (change)="seleccionarModalidad('contado')"
         >
-
         <span>De contado</span>
-
       </label>
 
-      <!-- CRÉDITO -->
       <label
         [class.seleccionada]="modalidadSeleccionada === 'credito'"
       >
-
         <input
           type="radio"
           name="modalidadDetalle"
@@ -165,14 +133,79 @@
           [checked]="modalidadSeleccionada === 'credito'"
           (change)="seleccionarModalidad('credito')"
         >
-
         <span>A crédito</span>
-
       </label>
 
     </div>
 
-    <!-- BOTÓN DE WHATSAPP -->
+    <!-- ELEGIR FRECUENCIA DE PAGO -->
+    <div
+      class="selector-frecuencia"
+      *ngIf="producto.vendeCredito && modalidadSeleccionada === 'credito' &&
+             (producto.quincenal > 0 || producto.mensual > 0)"
+    >
+
+      <p>¿Cómo prefieres pagar tus cuotas?</p>
+
+      <div class="opciones-frecuencia">
+
+        <!-- PAGO QUINCENAL -->
+        <label
+          *ngIf="producto.quincenal > 0"
+          class="opcion-frecuencia"
+          [class.seleccionada]="frecuenciaSeleccionada === 'quincenal'"
+        >
+
+          <input
+            type="radio"
+            name="frecuenciaDetalle"
+            value="quincenal"
+            [checked]="frecuenciaSeleccionada === 'quincenal'"
+            (change)="seleccionarFrecuencia('quincenal')"
+          >
+
+          <span>Quincenal</span>
+
+          <small>
+            {{ producto.quincenal | currency:'COP':'symbol':'1.0-0' }}
+            <ng-container *ngIf="producto.numeroCuotasQuincenal > 0">
+              · {{ producto.numeroCuotasQuincenal }} cuotas
+            </ng-container>
+          </small>
+
+        </label>
+
+        <!-- PAGO MENSUAL -->
+        <label
+          *ngIf="producto.mensual > 0"
+          class="opcion-frecuencia"
+          [class.seleccionada]="frecuenciaSeleccionada === 'mensual'"
+        >
+
+          <input
+            type="radio"
+            name="frecuenciaDetalle"
+            value="mensual"
+            [checked]="frecuenciaSeleccionada === 'mensual'"
+            (change)="seleccionarFrecuencia('mensual')"
+          >
+
+          <span>Mensual</span>
+
+          <small>
+            {{ producto.mensual | currency:'COP':'symbol':'1.0-0' }}
+            <ng-container *ngIf="producto.numeroCuotasMensual > 0">
+              · {{ producto.numeroCuotasMensual }} cuotas
+            </ng-container>
+          </small>
+
+        </label>
+
+      </div>
+
+    </div>
+
+    <!-- BOTÓN WHATSAPP -->
     <a
       [href]="obtenerLinkWhatsApp(producto)"
       target="_blank"
@@ -185,4 +218,3 @@
   </div>
 
 </div>
-

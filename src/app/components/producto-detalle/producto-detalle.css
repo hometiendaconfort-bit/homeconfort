@@ -6,7 +6,7 @@
 /* CONTENEDOR PRINCIPAL */
 .detalle-container {
   width: 100%;
-  margin: 5rem 3px 4px;
+  margin: 5rem 0 4px;
   padding: 25px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
@@ -40,7 +40,7 @@
   object-fit: contain;
 }
 
-/* MINIATURAS VERTICALES */
+/* MINIATURAS */
 .miniaturas-vertical {
   display: flex;
   flex-direction: column;
@@ -135,7 +135,7 @@
   color: #333;
 }
 
-/* PRECIO ORIGINAL TACHADO */
+/* PRECIO ORIGINAL */
 .precio-tachado {
   margin: 5px 0;
   text-decoration: line-through;
@@ -152,7 +152,7 @@
   overflow-wrap: anywhere;
 }
 
-/* CUOTA INICIAL Y PAGOS MENSUALES O QUINCENALES */
+/* CUOTAS */
 .precios > div > p:not(.precio-final):not(.precio-tachado) {
   margin: 8px 0;
   font-size: 16px;
@@ -187,8 +187,9 @@
   overflow-wrap: anywhere;
 }
 
-/* SELECTOR DE CONTADO Y CRÉDITO */
-.selector-modalidad {
+/* SELECTOR DE MODALIDAD */
+.selector-modalidad,
+.selector-frecuencia {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -198,7 +199,8 @@
   border-radius: 10px;
 }
 
-.selector-modalidad > p {
+.selector-modalidad > p,
+.selector-frecuencia > p {
   margin: 0 0 3px;
   color: #333;
   font-size: 15px;
@@ -216,7 +218,7 @@
   color: #333;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
 .selector-modalidad label:hover {
@@ -224,7 +226,6 @@
   border-color: #496fc2;
 }
 
-/* OPCIÓN SELECCIONADA */
 .selector-modalidad label.seleccionada {
   background: #edf8f0;
   border-color: #18753a;
@@ -237,6 +238,60 @@
   flex-shrink: 0;
   accent-color: #18753a;
   cursor: pointer;
+}
+
+/* SELECTOR DE FRECUENCIA */
+.opciones-frecuencia {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.opcion-frecuencia {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 12px 8px;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  color: #333;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.opcion-frecuencia:hover {
+  background: #edf4ff;
+  border-color: #496fc2;
+}
+
+.opcion-frecuencia.seleccionada {
+  background: #edf8f0;
+  border: 2px solid #18753a;
+  padding: 11px 7px;
+}
+
+.opcion-frecuencia input[type="radio"] {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: #18753a;
+  cursor: pointer;
+}
+
+.opcion-frecuencia span {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.opcion-frecuencia small {
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 /* BOTÓN WHATSAPP */
@@ -303,7 +358,6 @@
     gap: 15px;
   }
 
-  /* MINIATURAS HORIZONTALES */
   .miniaturas-vertical {
     width: 100%;
     flex-direction: row;
@@ -327,7 +381,6 @@
     padding: 12px;
   }
 
-  /* IMAGEN PRINCIPAL */
   .imagen-principal {
     width: 100%;
     min-height: 280px;
@@ -338,7 +391,6 @@
     height: 280px;
   }
 
-  /* INFORMACIÓN */
   .detalle-info {
     padding: 20px 15px;
   }
@@ -351,7 +403,6 @@
     font-size: 16px;
   }
 
-  /* PRECIOS */
   .precios {
     gap: 12px;
     margin-top: 15px;
@@ -369,8 +420,8 @@
     font-size: 26px;
   }
 
-  /* SELECTOR */
-  .selector-modalidad {
+  .selector-modalidad,
+  .selector-frecuencia {
     gap: 7px;
     padding: 11px;
   }
@@ -380,9 +431,27 @@
     font-size: 13px;
   }
 
-  /* WHATSAPP */
+  .opciones-frecuencia {
+    gap: 7px;
+  }
+
+  .opcion-frecuencia {
+    padding: 10px 6px;
+  }
+
+  .opcion-frecuencia.seleccionada {
+    padding: 9px 5px;
+  }
+
+  .opcion-frecuencia span {
+    font-size: 13px;
+  }
+
+  .opcion-frecuencia small {
+    font-size: 11px;
+  }
+
   .btn-whatsapp {
-    width: 100%;
     padding: 14px 12px;
     font-size: 16px;
   }
@@ -411,7 +480,8 @@
     font-size: 14px;
   }
 
-  .selector-modalidad {
+  .selector-modalidad,
+  .selector-frecuencia {
     padding: 9px;
   }
 
@@ -419,6 +489,27 @@
     gap: 7px;
     padding: 9px 7px;
     font-size: 12px;
+  }
+
+  .opciones-frecuencia {
+    gap: 6px;
+  }
+
+  .opcion-frecuencia {
+    gap: 5px;
+    padding: 9px 5px;
+  }
+
+  .opcion-frecuencia.seleccionada {
+    padding: 8px 4px;
+  }
+
+  .opcion-frecuencia span {
+    font-size: 12px;
+  }
+
+  .opcion-frecuencia small {
+    font-size: 10px;
   }
 
   .btn-whatsapp {

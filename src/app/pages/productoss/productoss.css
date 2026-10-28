@@ -2,12 +2,11 @@
 /* CONTENEDOR PRINCIPAL */
 .principal {
   width: 100%;
-  margin-top: 6rem;
   max-width: 1600px;
-  margin: 0 auto;
+  margin: 6rem auto 0;
   padding: 16px;
   box-sizing: border-box;
-  border-top: white 2px solid;
+  border-top: 2px solid white;
 }
 
 .principal h2 {
@@ -22,10 +21,9 @@
 .filtros {
   display: flex;
   flex-wrap: wrap;
-  margin: 4rem;
   justify-content: center;
   gap: 8px;
-  margin-bottom: 20px;
+  margin: 4rem 0 20px;
 }
 
 .filtros button {
@@ -123,10 +121,7 @@
   padding: 7px 2px 2px;
 }
 
-.producto-info .categoria {
-  display: none;
-}
-
+.producto-info .categoria,
 .producto-info .color {
   display: none;
 }
@@ -177,6 +172,7 @@
 
 .selector-modalidad input {
   margin: 0;
+  accent-color: #173b63;
 }
 
 /* PRECIOS Y FINANCIACIÓN */
@@ -221,6 +217,54 @@
   color: #b42318;
   font-weight: bold;
   font-size: 11px;
+}
+
+/* SELECTOR DE FRECUENCIA */
+.selector-frecuencia {
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid #e0e5eb;
+  border-radius: 8px;
+  background: #f7f9fc;
+}
+
+.selector-frecuencia > p {
+  margin: 0 0 7px;
+  color: #333;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.opciones-frecuencia {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.opciones-frecuencia label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border: 1px solid #d5dce5;
+  border-radius: 7px;
+  background: #fff;
+  color: #333;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.opciones-frecuencia label.seleccionada {
+  background: #e8f0fa;
+  border-color: #173b63;
+  color: #173b63;
+  font-weight: bold;
+}
+
+.opciones-frecuencia input {
+  margin: 0;
+  accent-color: #173b63;
 }
 
 /* BOTONES */
@@ -314,7 +358,7 @@
   }
 
   .filtros button {
-    padding: 2px 4px;
+    padding: 5px 7px;
     font-size: 11px;
   }
 
@@ -378,7 +422,6 @@
     font-size: 10px;
     line-height: 1.35;
     margin: 4px 0;
-    overflow-wrap: anywhere;
   }
 
   .bloque-precios p.precio {
@@ -394,6 +437,25 @@
     font-size: 10px;
   }
 
+  .selector-frecuencia {
+    padding: 6px;
+    margin: 6px 0;
+  }
+
+  .selector-frecuencia > p {
+    font-size: 10px;
+    margin-bottom: 5px;
+  }
+
+  .opciones-frecuencia {
+    gap: 4px;
+  }
+
+  .opciones-frecuencia label {
+    padding: 5px;
+    font-size: 10px;
+  }
+
   .btn-detalle,
   .btn-whatsapp {
     padding: 8px 4px;
@@ -405,3 +467,4 @@
     margin-top: 5px;
   }
 }
+

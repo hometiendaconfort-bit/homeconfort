@@ -15,8 +15,8 @@ export class ProductoDetalleComponent implements OnInit {
 
   producto: any = null;
 
-  // GUARDO LA MODALIDAD SELECCIONADA
   modalidadSeleccionada: 'contado' | 'credito' = 'contado';
+  frecuenciaSeleccionada: 'quincenal' | 'mensual' = 'quincenal';
 
   constructor(
     private route: ActivatedRoute,
@@ -25,7 +25,6 @@ export class ProductoDetalleComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-
     const idRuta = this.route.snapshot.paramMap.get('id');
 
     if (!idRuta) {
@@ -35,8 +34,6 @@ export class ProductoDetalleComponent implements OnInit {
 
     this.productosService.getProductos().subscribe({
       next: (res: any[]) => {
-
-        // BUSCO EL PRODUCTO POR ID O POR ID DEL DOCUMENTO
         const encontrado = res.find((p: any) =>
           String(p.id ?? '') === String(idRuta) ||
           String(p.docId ?? '') === String(idRuta)
@@ -44,11 +41,10 @@ export class ProductoDetalleComponent implements OnInit {
 
         if (!encontrado) {
           console.error('No se encontró el producto:', idRuta);
-          console.log('Productos recibidos:', res);
           return;
         }
 
-        // ADAPTO LOS PRODUCTOS NUEVOS Y ANTIGUOS
+        // COMPATIBILIDAD CON PRODUCTOS ANTIGUOS
         const vendeContado = encontrado.vendeContado ??
           (
             encontrado.tipo === 'contado' ||
@@ -80,60 +76,94 @@ export class ProductoDetalleComponent implements OnInit {
           ? encontrado.imagenes
           : [];
 
-        // CONSERVO LOS DATOS Y ADAPTO LA FINANCIACIÓN
+        const quincenal = Number(encontrado.quincenal ?? 0);
+        const mensual = Number(encontrado.mensual ?? 0);
+
+        // COMPATIBILIDAD CON EL NÚMERO DE CUOTAS ANTIGUO
+        const numeroCuotasQuincenal = Number(
+          encontrado.numeroCuotasQuincenal ??
+          (encontrado.frecuenciaPago === 'quincenal'
+            ? encontrado.numeroCuotas ?? 0
+            : 0)
+        );
+
+        const numeroCuotasMensual = Number(
+          encontrado.numeroCuotasMensual ??
+          (encontrado.frecuenciaPago === 'mensual'
+            ? encontrado.numeroCuotas ?? 0
+            : 0)
+        );
+
         this.producto = {
           ...encontrado,
           vendeContado,
           vendeCredito,
           precioContado,
           precioCredito,
-
           inicial: Number(encontrado.inicial ?? 0),
-          quincenal: Number(encontrado.quincenal ?? 0),
-          mensual: Number(encontrado.mensual ?? 0),
-
-          // LOS PRODUCTOS ANTIGUOS USAN PAGO QUINCENAL
-          frecuenciaPago:
-            encontrado.frecuenciaPago === 'mensual'
-              ? 'mensual'
-              : 'quincenal',
-
-          numeroCuotas: Number(encontrado.numeroCuotas ?? 0),
-
+          quincenal,
+          mensual,
+          numeroCuotasQuincenal,
+          numeroCuotasMensual,
           descuento: Number(encontrado.descuento ?? 0),
           imagenes,
           imagenActiva: imagenes[0] || encontrado.imagen || ''
         };
 
-        // SELECCIONO UNA MODALIDAD DISPONIBLE
-        if (this.producto.vendeCredito && !this.producto.vendeContado) {
+        // SELECCIONAR MODALIDAD DISPONIBLE
+        if (vendeCredito && !vendeContado) {
           this.modalidadSeleccionada = 'credito';
         } else {
           this.modalidadSeleccionada = 'contado';
         }
 
+        // ELEGIR UNA FRECUENCIA DISPONIBLE
+        if (mensual > 0 && quincenal <= 0) {
+          this.frecuenciaSeleccionada = 'mensual';
+        } else {
+          this.frecuenciaSeleccionada = 'quincenal';
+        }
+
         console.log('Producto cargado:', this.producto);
       },
-
       error: err => {
         console.error('Error cargando el detalle del producto:', err);
       }
     });
   }
 
-  // CAMBIAR LA MODALIDAD DE COMPRA
+  // CAMBIAR ENTRE CONTADO Y CRÉDITO
   seleccionarModalidad(modalidad: 'contado' | 'credito'): void {
-
     if (modalidad === 'contado' && this.producto?.vendeContado) {
       this.modalidadSeleccionada = 'contado';
     }
 
     if (modalidad === 'credito' && this.producto?.vendeCredito) {
       this.modalidadSeleccionada = 'credito';
+
+      if (this.obtenerValorCuota(this.producto) <= 0) {
+        this.frecuenciaSeleccionada =
+          this.producto.mensual > 0 ? 'mensual' : 'quincenal';
+      }
     }
   }
 
-  // CAMBIAR LA IMAGEN PRINCIPAL
+  // CAMBIAR FRECUENCIA DEL CRÉDITO
+  seleccionarFrecuencia(frecuencia: 'quincenal' | 'mensual'): void {
+    if (!this.producto) {
+      return;
+    }
+
+    if (frecuencia === 'quincenal' && this.producto.quincenal > 0) {
+      this.frecuenciaSeleccionada = 'quincenal';
+    }
+
+    if (frecuencia === 'mensual' && this.producto.mensual > 0) {
+      this.frecuenciaSeleccionada = 'mensual';
+    }
+  }
+
+  // CAMBIAR IMAGEN PRINCIPAL
   cambiarImagen(p: any, img: string): void {
     p.imagenActiva = img;
   }
@@ -143,56 +173,55 @@ export class ProductoDetalleComponent implements OnInit {
     this.location.back();
   }
 
-  // OBTENER EL PRECIO ORIGINAL ANTES DEL DESCUENTO
+  // PRECIO ORIGINAL ANTES DEL DESCUENTO
   precioOriginal(p: any): number {
     return Number(p.precioContado ?? p.precio ?? 0);
   }
 
-  // CALCULAR EL PRECIO SEGÚN LA MODALIDAD
+  // CALCULAR PRECIO SEGÚN MODALIDAD
   precioFinal(
     p: any,
     modalidad: 'contado' | 'credito' = 'contado'
   ): number {
-
     const precioBase = Number(
       modalidad === 'credito'
         ? (p.precioCredito ?? p.precio ?? 0)
         : (p.precioContado ?? p.precio ?? 0)
     );
 
-    // EL CRÉDITO NO LLEVA DESCUENTO
     if (modalidad === 'credito') {
       return precioBase;
     }
 
-    // CALCULAR EL DESCUENTO DE CONTADO
     const descuento = Number(p.descuento ?? 0);
 
-    if (descuento > 0) {
-      return precioBase - (precioBase * descuento / 100);
-    }
-
-    return precioBase;
+    return descuento > 0
+      ? precioBase - (precioBase * descuento / 100)
+      : precioBase;
   }
 
-  // OBTENER EL VALOR DE LA CUOTA SEGÚN SU FRECUENCIA
+  // VALOR DE LA CUOTA SELECCIONADA
   obtenerValorCuota(p: any): number {
-
-    if (p.frecuenciaPago === 'mensual') {
-      return Number(p.mensual ?? 0);
-    }
-
-    return Number(p.quincenal ?? 0);
+    return this.frecuenciaSeleccionada === 'mensual'
+      ? Number(p.mensual ?? 0)
+      : Number(p.quincenal ?? 0);
   }
 
-  // OBTENER EL NOMBRE DE LA FRECUENCIA
-  obtenerNombreFrecuencia(p: any): string {
-    return p.frecuenciaPago === 'mensual'
+  // NÚMERO DE CUOTAS DE LA FRECUENCIA SELECCIONADA
+  obtenerNumeroCuotas(p: any): number {
+    return this.frecuenciaSeleccionada === 'mensual'
+      ? Number(p.numeroCuotasMensual ?? 0)
+      : Number(p.numeroCuotasQuincenal ?? 0);
+  }
+
+  // NOMBRE DE LA FRECUENCIA
+  obtenerNombreFrecuencia(): string {
+    return this.frecuenciaSeleccionada === 'mensual'
       ? 'mensual'
       : 'quincenal';
   }
 
-  // FORMATEAR VALORES PARA WHATSAPP
+  // FORMATEAR PRECIO EN PESOS COLOMBIANOS
   private formatearPrecio(valor: number): string {
     return Number(valor || 0).toLocaleString('es-CO', {
       style: 'currency',
@@ -201,12 +230,10 @@ export class ProductoDetalleComponent implements OnInit {
     });
   }
 
-  // CREAR EL ENLACE DE WHATSAPP
+  // GENERAR MENSAJE Y ENLACE DE WHATSAPP
   obtenerLinkWhatsApp(p: any): string {
-
     let modalidad = this.modalidadSeleccionada;
 
-    // EVITAR UNA MODALIDAD NO DISPONIBLE
     if (modalidad === 'contado' && !p.vendeContado) {
       modalidad = 'credito';
     }
@@ -216,7 +243,6 @@ export class ProductoDetalleComponent implements OnInit {
     }
 
     const precio = this.precioFinal(p, modalidad);
-
     const nombreModalidad = modalidad === 'contado'
       ? 'de contado'
       : 'a crédito';
@@ -226,24 +252,24 @@ export class ProductoDetalleComponent implements OnInit {
       `Quiero comprarlo ${nombreModalidad}. ` +
       `Precio: ${this.formatearPrecio(precio)}.`;
 
-    // AGREGAR LOS DATOS DE FINANCIACIÓN
     if (modalidad === 'credito') {
-
       if (Number(p.inicial) > 0) {
         mensaje +=
           ` Cuota inicial: ${this.formatearPrecio(Number(p.inicial))}.`;
       }
 
       const valorCuota = this.obtenerValorCuota(p);
-      const frecuencia = this.obtenerNombreFrecuencia(p);
+      const frecuencia = this.obtenerNombreFrecuencia();
+      const numeroCuotas = this.obtenerNumeroCuotas(p);
 
       if (valorCuota > 0) {
         mensaje +=
           ` Pago ${frecuencia}: ${this.formatearPrecio(valorCuota)}.`;
       }
 
-      if (Number(p.numeroCuotas) > 0) {
-        mensaje += ` Número de cuotas: ${p.numeroCuotas}.`;
+      if (numeroCuotas > 0) {
+        mensaje +=
+          ` Número de cuotas ${frecuencia}: ${numeroCuotas}.`;
       }
     }
 
