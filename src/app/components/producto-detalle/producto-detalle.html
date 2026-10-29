@@ -43,6 +43,37 @@
       {{ producto.descripcion }}
     </p>
 
+    <!-- SELECTOR DE COLORES -->
+    <div
+      class="selector-colores"
+      *ngIf="producto.variantesColor?.length"
+    >
+
+      <p>
+        Color:
+        <strong>
+          {{ producto.colorSeleccionado || 'Selecciona un color' }}
+        </strong>
+      </p>
+
+      <div class="opciones-colores">
+
+        <button
+          type="button"
+          class="opcion-color"
+          *ngFor="let variante of producto.variantesColor; let i = index"
+          [class.seleccionado]="esVarianteActiva(producto, i)"
+          [style.background-color]="obtenerColorCSS(variante.color)"
+          [attr.aria-label]="'Seleccionar color ' + variante.color"
+          [attr.aria-pressed]="esVarianteActiva(producto, i)"
+          [title]="variante.color"
+          (click)="seleccionarColor(producto, i)"
+        >
+        </button>
+
+      </div>
+    </div>
+
     <!-- SELECTOR DE MODALIDAD -->
     <div
       class="selector-modalidad"

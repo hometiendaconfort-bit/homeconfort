@@ -4,6 +4,13 @@ import { Productos } from '../../services/productos';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+interface VarianteColor {
+  color: string;
+  imagen: string;
+  imagenes: string[];
+  imagenesTexto: string;
+}
+
 @Component({
   selector: 'app-admin-productos',
   standalone: true,
@@ -12,9 +19,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './admin-productos.css'
 })
 export class AdminProductos implements OnInit {
-
   productoss: any[] = [];
-
   docIdEditando: string | null = null;
 
   id: string | number = '';
@@ -35,12 +40,15 @@ export class AdminProductos implements OnInit {
 
   categoria = '';
   descripcion = '';
-  color = '';
-
   descuento: number | null = 0;
 
-  imagen = '/assets/img/';
+  // Campos antiguos para mantener compatibilidad.
+  color = '';
+  imagen = '';
   imagenesTexto = '';
+
+  // Variantes de colores y sus galerías.
+  variantesColor: VarianteColor[] = [];
 
   guardando = false;
   mensajeError = '';
@@ -48,6 +56,7 @@ export class AdminProductos implements OnInit {
   constructor(private productosService: Productos) {}
 
   ngOnInit(): void {
+    this.agregarVarianteColor();
     this.cargarProductos();
   }
 
@@ -60,8 +69,90 @@ export class AdminProductos implements OnInit {
     }
   }
 
+  agregarVarianteColor(): void {
+    this.variantesColor.push({
+      color: '',
+      imagen: '',
+      imagenes: [],
+      imagenesTexto: ''
+    });
+  }
+
+  eliminarVarianteColor(indice: number): void {
+    if (this.variantesColor.length <= 1) {
+      this.mensajeError = 'Debe quedar al menos un color.';
+      return;
+    }
+
+    this.variantesColor.splice(indice, 1);
+    this.mensajeError = '';
+  }
+
+  // Estas funciones se utilizan desde el HTML.
+  mostrarCuotasQuincenales(): boolean {
+    return Number(this.quincenal) > 0;
+  }
+
+  mostrarCuotasMensuales(): boolean {
+    return Number(this.mensual) > 0;
+  }
+
+  private obtenerImagenes(
+    texto: string,
+    imagenPrincipal: string
+  ): string[] {
+    const adicionales = String(texto ?? '')
+      .split(',')
+      .map(url => url.trim())
+      .filter(url => url.length > 0);
+
+    const principal = String(imagenPrincipal ?? '').trim();
+
+    return [...new Set([
+      ...(principal ? [principal] : []),
+      ...adicionales
+    ])];
+  }
+
+  private prepararVariantesColor(): VarianteColor[] {
+    return this.variantesColor.map(variante => {
+      const colorTexto = String(variante.color ?? '').trim();
+      const imagenPrincipal = String(variante.imagen ?? '').trim();
+
+      const imagenes = this.obtenerImagenes(
+        variante.imagenesTexto,
+        imagenPrincipal
+      );
+
+      return {
+        color: colorTexto,
+        imagen: imagenPrincipal,
+        imagenes,
+        imagenesTexto: imagenes
+          .filter(url => url !== imagenPrincipal)
+          .join(', ')
+      };
+    });
+  }
+
+  obtenerColores(producto: any): string {
+    if (
+      Array.isArray(producto.variantesColor) &&
+      producto.variantesColor.length > 0
+    ) {
+      return producto.variantesColor
+        .map((variante: any) => variante.color)
+        .filter((color: string) => !!color)
+        .join(', ') || '—';
+    }
+
+    return producto.color || '—';
+  }
+
   async guardarProducto(): Promise<void> {
     this.mensajeError = '';
+
+    if (this.guardando) return;
 
     const idTexto = String(this.id ?? '').trim();
     const nombreTexto = String(this.nombre ?? '').trim();
@@ -72,7 +163,8 @@ export class AdminProductos implements OnInit {
     }
 
     if (!this.vendeContado && !this.vendeCredito) {
-      this.mensajeError = 'Selecciona contado, crédito o ambas modalidades.';
+      this.mensajeError =
+        'Selecciona contado, crédito o ambas modalidades.';
       return;
     }
 
@@ -100,12 +192,18 @@ export class AdminProductos implements OnInit {
       return;
     }
 
-    if (this.vendeCredito && Number(this.quincenal) < 0) {
+    if (
+      this.vendeCredito &&
+      (this.quincenal == null || Number(this.quincenal) < 0)
+    ) {
       this.mensajeError = 'La cuota quincenal no puede ser negativa.';
       return;
     }
 
-    if (this.vendeCredito && Number(this.mensual) < 0) {
+    if (
+      this.vendeCredito &&
+      (this.mensual == null || Number(this.mensual) < 0)
+    ) {
       this.mensajeError = 'La cuota mensual no puede ser negativa.';
       return;
     }
@@ -118,7 +216,8 @@ export class AdminProductos implements OnInit {
         Number(this.numeroCuotasQuincenal) < 1
       )
     ) {
-      this.mensajeError = 'Indica un número válido de cuotas quincenales.';
+      this.mensajeError =
+        'Indica un número válido de cuotas quincenales.';
       return;
     }
 
@@ -130,7 +229,8 @@ export class AdminProductos implements OnInit {
         Number(this.numeroCuotasMensual) < 1
       )
     ) {
-      this.mensajeError = 'Indica un número válido de cuotas mensuales.';
+      this.mensajeError =
+        'Indica un número válido de cuotas mensuales.';
       return;
     }
 
@@ -139,7 +239,8 @@ export class AdminProductos implements OnInit {
       Number(this.quincenal) <= 0 &&
       Number(this.mensual) <= 0
     ) {
-      this.mensajeError = 'Ingresa al menos una cuota quincenal o mensual.';
+      this.mensajeError =
+        'Ingresa al menos una cuota quincenal o mensual.';
       return;
     }
 
@@ -151,10 +252,39 @@ export class AdminProductos implements OnInit {
       return;
     }
 
-    const imagenes = String(this.imagenesTexto ?? '')
-      .split(',')
-      .map(url => url.trim())
-      .filter(url => url.length > 0);
+    if (this.variantesColor.length === 0) {
+      this.mensajeError = 'Agrega al menos un color.';
+      return;
+    }
+
+    for (let i = 0; i < this.variantesColor.length; i++) {
+      const variante = this.variantesColor[i];
+
+      if (!String(variante.color ?? '').trim()) {
+        this.mensajeError = `Escribe el nombre del color ${i + 1}.`;
+        return;
+      }
+
+      if (!String(variante.imagen ?? '').trim()) {
+        this.mensajeError =
+          `Agrega la imagen principal del color ${i + 1}.`;
+        return;
+      }
+    }
+
+    const variantes = this.prepararVariantesColor();
+
+    const coloresNormalizados = variantes.map(
+      variante => variante.color.toLocaleLowerCase()
+    );
+
+    if (new Set(coloresNormalizados).size !== coloresNormalizados.length) {
+      this.mensajeError =
+        'No repitas el mismo color. Cada color debe tener un nombre diferente.';
+      return;
+    }
+
+    const variantePrincipal = variantes[0];
 
     const producto: any = {
       id: idTexto,
@@ -195,17 +325,24 @@ export class AdminProductos implements OnInit {
         : 0,
 
       numeroCuotas: this.vendeCredito
-        ? Number(this.numeroCuotasQuincenal || this.numeroCuotasMensual || 0)
+        ? Number(
+            this.numeroCuotasQuincenal ||
+            this.numeroCuotasMensual ||
+            0
+          )
         : 0,
 
       categoria: String(this.categoria ?? '').trim(),
       descripcion: String(this.descripcion ?? '').trim(),
-      color: String(this.color ?? '').trim(),
-
       descuento: Number(this.descuento ?? 0),
 
-      imagen: String(this.imagen ?? '').trim(),
-      imagenes
+      // Nuevo formato de colores y galerías.
+      variantesColor: variantes,
+
+      // Compatibilidad con el catálogo antiguo.
+      color: variantePrincipal.color,
+      imagen: variantePrincipal.imagen,
+      imagenes: variantePrincipal.imagenes
     };
 
     this.guardando = true;
@@ -222,13 +359,10 @@ export class AdminProductos implements OnInit {
 
       await this.cargarProductos();
       this.limpiarFormulario();
-
     } catch (error) {
       console.error('Error guardando producto:', error);
-
       this.mensajeError =
         'No se pudo guardar el producto. Revisa la conexión e inténtalo nuevamente.';
-
     } finally {
       this.guardando = false;
     }
@@ -287,27 +421,75 @@ export class AdminProductos implements OnInit {
 
     this.categoria = String(producto.categoria ?? '');
     this.descripcion = String(producto.descripcion ?? '');
-    this.color = String(producto.color ?? '');
-
     this.descuento = Number(producto.descuento ?? 0);
 
-    this.imagen = String(producto.imagen ?? '');
+    if (
+      Array.isArray(producto.variantesColor) &&
+      producto.variantesColor.length > 0
+    ) {
+      this.variantesColor = producto.variantesColor.map(
+        (variante: any) => {
+          const imagenPrincipal = String(variante.imagen ?? '');
 
+          const textoImagenes = Array.isArray(variante.imagenes)
+            ? variante.imagenes.join(', ')
+            : String(variante.imagenesTexto ?? '');
+
+          const imagenes = this.obtenerImagenes(
+            textoImagenes,
+            imagenPrincipal
+          );
+
+          return {
+            color: String(variante.color ?? ''),
+            imagen: imagenPrincipal,
+            imagenes,
+            imagenesTexto: imagenes
+              .filter(url => url !== imagenPrincipal)
+              .join(', ')
+          };
+        }
+      );
+    } else {
+      // Adaptar productos antiguos a una variante.
+      const imagenPrincipal = String(producto.imagen ?? '');
+
+      const imagenes = this.obtenerImagenes(
+        Array.isArray(producto.imagenes)
+          ? producto.imagenes.join(', ')
+          : '',
+        imagenPrincipal
+      );
+
+      this.variantesColor = [{
+        color: String(producto.color ?? ''),
+        imagen: imagenPrincipal,
+        imagenes,
+        imagenesTexto: imagenes
+          .filter(url => url !== imagenPrincipal)
+          .join(', ')
+      }];
+    }
+
+    if (this.variantesColor.length === 0) {
+      this.agregarVarianteColor();
+    }
+
+    this.color = String(producto.color ?? '');
+    this.imagen = String(producto.imagen ?? '');
     this.imagenesTexto = Array.isArray(producto.imagenes)
       ? producto.imagenes.join(', ')
       : '';
 
     this.mensajeError = '';
 
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async eliminar(docId: string): Promise<void> {
     if (!docId) {
-      this.mensajeError = 'No se encontró el identificador del producto.';
+      this.mensajeError =
+        'No se encontró el identificador del producto.';
       return;
     }
 
@@ -317,13 +499,11 @@ export class AdminProductos implements OnInit {
 
     try {
       await this.productosService.eliminarProducto(docId);
-
       await this.cargarProductos();
 
       if (this.docIdEditando === docId) {
         this.limpiarFormulario();
       }
-
     } catch (error) {
       console.error('Error eliminando producto:', error);
       this.mensajeError = 'No se pudo eliminar el producto.';
@@ -351,12 +531,14 @@ export class AdminProductos implements OnInit {
 
     this.categoria = '';
     this.descripcion = '';
-    this.color = '';
-
     this.descuento = 0;
 
+    this.color = '';
     this.imagen = '';
     this.imagenesTexto = '';
+
+    this.variantesColor = [];
+    this.agregarVarianteColor();
 
     this.mensajeError = '';
   }

@@ -1,596 +1,634 @@
 
+/* ========================================
+   FONDO GENERAL Y CONTENEDOR PRINCIPAL
+======================================== */
+
 :host {
   display: block;
-  width: 100%;
-  min-height: 100%;
-  --espacio-superior: 140px;
+  min-height: 100vh;
+  background: #ffffff;
+  color: #1f2937;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-/* CONTENEDOR PRINCIPAL */
 .detalle-container {
   width: 100%;
-  margin: 6.3rem 3px 4px;
-  padding: 25px;
+  max-width: 1250px;
+  min-height: 100vh;
+  margin-top: 9rem !important;
+  margin-bottom: 1rem !important;
+  margin: 0 auto;
+  padding: 30px 24px 50px;
   box-sizing: border-box;
 
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
-  align-items: stretch;
-  gap: 35px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  align-items: start;
+  gap: 38px;
 
   background: #ffffff;
-  border-radius: 16px;
+  color: #1f2937;
 }
 
-/* GALERÍA */
+.detalle-container *,
+.detalle-container *::before,
+.detalle-container *::after {
+  box-sizing: border-box;
+}
+
+/* ========================================
+   GALERÍA
+======================================== */
+
 .detalle-galeria {
-  display: flex;
-  align-items: flex-start;
-  gap: 18px;
+  width: 100%;
   min-width: 0;
+
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+
+  background: #ffffff;
 }
 
-/* MINIATURAS */
+/* ========================================
+   MINIATURAS Y BOTÓN VOLVER
+======================================== */
+
 .miniaturas-vertical {
-  width: 76px;
-  flex-shrink: 0;
+  width: 100%;
+  min-width: 0;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
+
+  background: #ffffff;
 }
 
-.miniaturas-vertical img {
-  width: 68px;
-  height: 68px;
-  flex-shrink: 0;
-
-  object-fit: cover;
-  border: 2px solid #e0e0e0;
-  border-radius: 10px;
-  cursor: pointer;
-
-  transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.miniaturas-vertical img:hover {
-  border-color: #0d6efd;
-  transform: scale(1.04);
-}
-
-.miniaturas-vertical img.activa {
-  border-color: #0d6efd;
-}
-
-/* BOTÓN VOLVER */
 .volver {
   width: 100%;
-  margin-bottom: 8px;
-  padding: 12px 16px;
+  min-height: 38px;
+  padding: 8px 5px;
 
-  background: #173b63;
-  color: #ffffff;
-  border: none;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
 
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
+  background: #ffffff;
+  color: #123b66;
 
-  transition: background 0.2s ease;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .volver:hover {
-  background: #0b5ed7;
+  background: #123b66;
+  border-color: #123b66;
+  color: #ffffff;
 }
 
-/* IMAGEN PRINCIPAL */
+.miniaturas-vertical img {
+  display: block;
+  width: 100%;
+  height: 78px;
+  padding: 3px;
+
+  object-fit: contain;
+  object-position: center;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.miniaturas-vertical img:hover {
+  border-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.miniaturas-vertical img.activa {
+  border: 2px solid #174a7e;
+  box-shadow: 0 0 0 2px rgba(23, 74, 126, 0.12);
+}
+
+/* ========================================
+   IMAGEN PRINCIPAL
+======================================== */
+
 .imagen-principal {
-  flex: 1;
+  width: 100%;
   min-width: 0;
-  min-height: 450px;
+  height: 490px;
+  padding: 18px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 10px;
-  box-sizing: border-box;
+  overflow: hidden;
 
   background: #ffffff;
-  border: 1px solid #eeeeee;
+  border: 1px solid #e5e7eb;
   border-radius: 14px;
 }
 
 .imagen-principal img {
   display: block;
   width: 100%;
-  max-width: 520px;
-  height: 450px;
+  height: 100%;
 
-  object-fit: fill;
-  border-radius: 10px;
+  object-fit: contain;
+  object-position: center;
+
+  background: #ffffff;
 }
 
-/* INFORMACIÓN DEL COMBO */
+/* ========================================
+   INFORMACIÓN DEL COMBO
+======================================== */
+
 .detalle-info {
+  width: 100%;
   min-width: 0;
+  padding: 8px 0;
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: stretch;
+  gap: 16px;
 
-  padding: 32px;
-  box-sizing: border-box;
-
-  background: #f7f8fa;
-  border: 1px solid #eeeeee;
-  border-radius: 14px;
+  background: #ffffff;
 }
 
 .detalle-info h1 {
-  margin: 0 0 18px;
+  margin: 0;
 
-  color: #202124;
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1.3;
+  color: #123b66;
+  font-size: clamp(25px, 2.5vw, 34px);
+  line-height: 1.2;
+  font-weight: 750;
 
   overflow-wrap: anywhere;
 }
 
-/* DESCRIPCIÓN */
 .descripcion {
   margin: 0;
-  color: #5f6368;
-  font-size: 16px;
+
+  color: #5b6472;
+  font-size: 15px;
   line-height: 1.7;
+
   overflow-wrap: anywhere;
 }
 
-/* SELECTOR DE MODALIDAD: CONTADO / CRÉDITO */
-.selector-modalidad {
+/* ========================================
+   ALMOHADAS INCLUIDAS
+======================================== */
+
+.combo-almohadas {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 9px;
+
+  margin: 0;
+  padding: 12px 14px;
+
+  color: #17603a;
+  background: #effaf3;
+  border: 1px solid #c9efd5;
+  border-radius: 9px;
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.icono-almohada {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #d5f5df;
+  border-radius: 50%;
+
+  color: #16733c;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* ========================================
+   SELECTOR CONTADO / CRÉDITO
+======================================== */
+
+.selector-modalidad {
   width: 100%;
-  margin-top: 22px;
+  padding: 5px;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+
+  background: #f1f5f9;
+  border-radius: 10px;
 }
 
 .selector-modalidad button {
-  flex: 1;
   min-width: 0;
   min-height: 44px;
   padding: 10px;
 
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #333333;
+  border: 1px solid transparent;
+  border-radius: 7px;
 
-  font-size: 15px;
-  font-weight: 600;
+  background: transparent;
+  color: #475569;
+
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
 
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .selector-modalidad button:hover {
-  border-color: #0d6efd;
+  color: #123b66;
 }
 
 .selector-modalidad button.activo {
-  background: #e8f0ff;
-  color: #2453a4;
-  border-color: #496fc2;
+  color: #ffffff;
+  background: #123b66;
+  box-shadow: 0 2px 6px rgba(18, 59, 102, 0.18);
 }
 
-/* PRECIOS */
+/* ========================================
+   SECCIÓN DE PRECIOS
+======================================== */
+
 .precios {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  margin-top: 26px;
+  width: 100%;
   min-width: 0;
+  background: #ffffff;
 }
 
-/* LOS DOS BLOQUES COMPARTEN LA MISMA POSICIÓN */
-.precios .precio-modalidad {
-  grid-column: 1;
-  grid-row: 1;
-
+.precio-modalidad {
+  width: 100%;
   min-width: 0;
-  min-height: 205px;
-  height: auto;
-
   padding: 18px;
-  box-sizing: border-box;
 
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  align-self: start;
+  gap: 10px;
 
   background: #ffffff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
 }
 
-/* OCULTAR SIN ELIMINAR EL ESPACIO */
-.precios .precio-modalidad.invisible {
-  visibility: hidden;
-  pointer-events: none;
+/* Solo se muestra la modalidad seleccionada */
+
+.precio-modalidad.invisible {
+  display: none;
 }
 
-/* TEXTOS DE PRECIOS */
-.precios p {
-  margin: 6px 0;
-  color: #444444;
-  font-size: 15px;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-}
-
-/* PRECIO FINAL */
-.precios .precio-final {
-  margin: 8px 0 10px;
-  color: #111827;
-  font-size: 30px;
-  font-weight: 800;
-  line-height: 1.3;
-  overflow-wrap: anywhere;
-}
-
-/* PRECIO ANTERIOR TACHADO */
-.precios .precio-anterior {
+.precio-modalidad > p {
   margin: 0;
-  color: #888888;
-  font-size: 17px;
+
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.5;
+
+  overflow-wrap: anywhere;
+}
+
+/* Precio anterior */
+
+.precio-modalidad .precio-anterior {
+  color: #8a929e;
+  font-size: 15px;
   text-decoration: line-through;
 }
 
-/* DESCUENTO */
-.descuento {
-  display: inline-block;
-  align-self: flex-start;
+/* Precio final */
 
-  margin-top: 8px;
-  padding: 6px 11px;
+.precio-modalidad .precio-final,
+.detalle-info > .precio-final {
+  margin: 0;
 
-  background: #fee2e2;
-  color: #b91c1c;
+  color: #123b66;
+  font-size: clamp(25px, 2.6vw, 32px);
+  line-height: 1.2;
+  font-weight: 800;
 
+  overflow-wrap: anywhere;
+}
+
+/* Descuento */
+
+.precio-modalidad .descuento {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 5px 10px;
+
+  color: #a32121;
+  background: #feecec;
   border-radius: 6px;
-  font-size: 14px;
+
+  font-size: 13px;
   font-weight: 700;
 }
 
-/* SELECTOR DE FRECUENCIA: QUINCENAL / MENSUAL */
+/* ========================================
+   SELECTOR DE FRECUENCIA
+======================================== */
+
 .selector-frecuencia {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
   width: 100%;
-  margin: 12px 0 8px;
+  margin-top: 5px;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .selector-frecuencia button {
-  flex: 1 1 120px;
   min-width: 0;
-  min-height: 40px;
-  padding: 9px 12px;
+  min-height: 42px;
+  padding: 9px 7px;
 
-  border: 1px solid #d1d5db;
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
-  background: #ffffff;
-  color: #374151;
 
-  font-size: 14px;
-  font-weight: 600;
+  background: #ffffff;
+  color: #475569;
+
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
   cursor: pointer;
 
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
 .selector-frecuencia button:hover {
-  border-color: #0d6efd;
+  border-color: #174a7e;
+  color: #174a7e;
 }
 
 .selector-frecuencia button.activo {
-  background: #e8f0ff;
-  color: #2453a4;
-  border-color: #496fc2;
+  border-color: #174a7e;
+  background: #eaf2fb;
+  color: #123b66;
 }
 
-/* INFORMACIÓN DE CUOTAS */
+/* ========================================
+   INFORMACIÓN DE CUOTAS
+======================================== */
+
 .informacion-cuotas {
+  width: 100%;
+  margin-top: 5px;
+  padding-top: 13px;
+
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  width: 100%;
-  margin-top: 4px;
+  gap: 9px;
+
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
 }
 
 .informacion-cuotas p {
-  margin: 4px 0;
+  margin: 0;
+
   color: #374151;
   font-size: 14px;
   line-height: 1.5;
+
   overflow-wrap: anywhere;
 }
 
-/* BOTÓN WHATSAPP */
+/* ========================================
+   BOTÓN WHATSAPP
+======================================== */
+
 .btn-whatsapp {
-  display: block;
-  width: fit-content;
-  max-width: 100%;
+  width: 100%;
+  min-height: 50px;
+  padding: 14px 18px;
 
-  margin-top: 24px;
-  padding: 15px 24px;
-  box-sizing: border-box;
-
-  background: #25d366;
-  color: #ffffff;
-
-  border: none;
-  border-radius: 10px;
-
-  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 
-  font-size: 16px;
+  border: none;
+  border-radius: 9px;
+
+  background: #16864a;
+  color: #ffffff;
+
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.4;
+  text-decoration: none;
+
   overflow-wrap: anywhere;
 
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .btn-whatsapp:hover {
-  background: #1fbd5b;
-  transform: translateY(-2px);
+  background: #116d3b;
+  box-shadow: 0 4px 12px rgba(22, 134, 74, 0.2);
+  transform: translateY(-1px);
 }
 
-/* TABLET Y PORTÁTILES PEQUEÑOS */
-@media (max-width: 1000px) {
-  :host {
-    --espacio-superior: 120px;
-  }
+/* ========================================
+   TABLET
+======================================== */
 
+@media (max-width: 900px) {
   .detalle-container {
-    width: calc(100% - 30px);
-    gap: 24px;
-    padding: 18px;
-  }
-
-  .detalle-galeria {
-    gap: 12px;
-  }
-
-  .miniaturas-vertical {
-    width: 62px;
-    gap: 10px;
-  }
-
-  .miniaturas-vertical img {
-    width: 56px;
-    height: 56px;
-  }
-
-  .imagen-principal {
-    min-height: 350px;
-  }
-
-  .imagen-principal img {
-    height: 350px;
-  }
-
-  .detalle-info {
-    padding: 24px;
-  }
-
-  .detalle-info h1 {
-    font-size: 27px;
-  }
-
-  .precios .precio-final {
-    font-size: 26px;
-  }
-
-  .precios .precio-modalidad {
-    min-height: 205px;
-  }
-}
-
-/* CELULARES Y TABLETS VERTICALES */
-@media (max-width: 768px) {
-  :host {
-    --espacio-superior: 100px;
-  }
-
-  .detalle-container {
-    width: calc(100% - 24px);
-    max-width: 600px;
-    margin: 3.3rem auto 3px;
-    padding: 14px;
-
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
     gap: 22px;
-    border-radius: 12px;
+    padding: 24px 18px 40px;
   }
 
-  /* GALERÍA */
   .detalle-galeria {
-    flex-direction: column-reverse;
-    gap: 12px;
+    grid-template-columns: 62px minmax(0, 1fr);
+    gap: 11px;
   }
 
-  /* MINIATURAS HORIZONTALES */
-  .miniaturas-vertical {
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-
-    overflow-x: auto;
-    overflow-y: hidden;
-
-    padding: 5px 2px 10px;
-    box-sizing: border-box;
-    -webkit-overflow-scrolling: touch;
+  .imagen-principal {
+    height: 390px;
+    padding: 12px;
   }
 
   .miniaturas-vertical img {
-    width: 62px;
-    height: 62px;
+    height: 68px;
   }
 
-  /* BOTÓN VOLVER */
-  .volver {
-    width: auto;
-    min-width: 80px;
-    flex-shrink: 0;
-    margin: 0;
-    padding: 11px 13px;
-  }
-
-  /* IMAGEN PRINCIPAL */
-  .imagen-principal {
-    width: 100%;
-    min-height: 0;
-    height: 320px;
-    padding: 8px;
-  }
-
-  .imagen-principal img {
-    width: 100%;
-    max-width: 100%;
-    height: 300px;
-  }
-
-  /* INFORMACIÓN */
   .detalle-info {
-    padding: 22px 18px;
+    gap: 13px;
+  }
+
+  .precio-modalidad {
+    padding: 15px;
+  }
+}
+
+/* ========================================
+   CELULARES
+======================================== */
+
+@media (max-width: 650px) {
+  .detalle-container {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding: 16px 14px 35px;
+  }
+
+  .detalle-galeria {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .miniaturas-vertical {
+    gap: 9px;
+  }
+
+  .volver {
+    min-height: 36px;
+    padding: 7px 3px;
+    font-size: 12px;
+  }
+
+  .miniaturas-vertical img {
+    height: 64px;
+    padding: 2px;
+    border-radius: 7px;
+  }
+
+  .imagen-principal {
+    height: clamp(260px, 72vw, 390px);
+    padding: 10px;
+    border-radius: 11px;
+  }
+
+  .detalle-info {
+    gap: 14px;
+    padding: 0;
   }
 
   .detalle-info h1 {
-    margin-bottom: 14px;
     font-size: 26px;
   }
 
   .descripcion {
-    font-size: 15px;
-    line-height: 1.65;
-  }
-
-  /* SELECTOR DE MODALIDAD */
-  .selector-modalidad {
-    margin-top: 18px;
-    gap: 8px;
-  }
-
-  .selector-modalidad button {
-    min-height: 42px;
     font-size: 14px;
+    line-height: 1.6;
   }
 
-  /* PRECIOS */
-  .precios {
-    margin-top: 20px;
-  }
-
-  .precios .precio-modalidad {
-    min-height: 190px;
-    padding: 15px;
-  }
-
-  .precios p {
-    font-size: 15px;
-  }
-
-  .precios .precio-final {
-    font-size: 27px;
-  }
-
-  .precios .precio-anterior {
-    font-size: 16px;
-  }
-
-  /* FRECUENCIA */
-  .selector-frecuencia {
-    gap: 7px;
-    margin-top: 10px;
-  }
-
-  .selector-frecuencia button {
-    flex-basis: 110px;
-    min-height: 40px;
+  .combo-almohadas {
+    padding: 10px 12px;
     font-size: 13px;
   }
 
-  .informacion-cuotas p {
-    font-size: 14px;
+  .selector-modalidad button {
+    min-height: 43px;
+    font-size: 13px;
   }
 
-  /* WHATSAPP */
+  .precio-modalidad {
+    padding: 15px;
+    gap: 9px;
+  }
+
+  .precio-modalidad .precio-final,
+  .detalle-info > .precio-final {
+    font-size: 28px;
+  }
+
+  .precio-modalidad > p,
+  .informacion-cuotas p {
+    font-size: 13px;
+  }
+
+  .selector-frecuencia button {
+    padding: 8px 5px;
+    font-size: 11px;
+  }
+
   .btn-whatsapp {
-    width: 100%;
-    margin-top: 20px;
-    padding: 14px 12px;
-    font-size: 16px;
+    min-height: 48px;
+    font-size: 14px;
   }
 }
 
-/* CELULARES PEQUEÑOS */
-@media (max-width: 480px) {
+/* ========================================
+   CELULARES PEQUEÑOS
+======================================== */
+
+@media (max-width: 380px) {
   .detalle-container {
-    width: calc(100% - 16px);
-    margin-top: 10rem !important;
-    padding: 9px;
-    gap: 16px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .detalle-galeria {
+    grid-template-columns: 50px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .miniaturas-vertical img {
+    height: 56px;
   }
 
   .imagen-principal {
-    height: 260px;
-  }
-
-  .imagen-principal img {
-    height: 240px;
-  }
-
-  .detalle-info {
-    padding: 17px 14px;
+    height: 255px;
+    padding: 7px;
   }
 
   .detalle-info h1 {
     font-size: 23px;
   }
 
-  .selector-modalidad button {
-    padding: 8px 5px;
-    font-size: 13px;
-  }
-
-  .precios .precio-modalidad {
-    min-height: 180px;
+  .precio-modalidad {
     padding: 12px;
   }
 
-  .precios .precio-final {
-    font-size: 23px;
-  }
-
-  .selector-frecuencia button {
-    flex-basis: 100px;
-    padding: 8px 7px;
-    font-size: 12px;
-  }
-
-  .informacion-cuotas p {
-    font-size: 13px;
-  }
-
-  .btn-whatsapp {
-    font-size: 15px;
+  .selector-frecuencia {
+    gap: 6px;
   }
 }
+

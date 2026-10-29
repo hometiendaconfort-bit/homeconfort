@@ -2,20 +2,30 @@
 import { Injectable } from '@angular/core';
 import {
   addDoc,
-  collection,
-  deleteDoc,
-  doc,
   getDocs,
-  updateDoc
+  deleteDoc,
+  updateDoc,
+  doc,
+  collection
 } from 'firebase/firestore';
+
 import { db } from '../config/firebase';
+
+interface ColoresCombo {
+  baseColor: string;
+  colchonColor: string;
+  espaldarColor: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class Combos {
 
-  // AGREGAR UN COMBO
+  // =========================
+  // AGREGAR COMBO
+  // =========================
+
   async agregarCombo(
     id: number,
     nombre: string,
@@ -35,12 +45,17 @@ export class Combos {
     mensual: number | null = null,
     cuotasMensuales: number | null = null,
     vendeQuincenal: boolean = true,
-    vendeMensual: boolean = false
+    vendeMensual: boolean = false,
+    colores: ColoresCombo = {
+      baseColor: '',
+      colchonColor: '',
+      espaldarColor: ''
+    },
+    incluyeAlmohadas: boolean = false,
+    cantidadAlmohadas: number = 0
   ): Promise<void> {
 
-    const combosRef = collection(db, 'combos');
-
-    await addDoc(combosRef, {
+    await addDoc(collection(db, 'combos'), {
       id,
       nombre,
       imagen,
@@ -48,46 +63,70 @@ export class Combos {
       colchonId,
       espaldarId,
 
-      // PRECIO ANTIGUO PARA COMPATIBILIDAD
+      baseColor: colores.baseColor,
+      colchonColor: colores.colchonColor,
+      espaldarColor: colores.espaldarColor,
+
+      // Se conserva para los registros antiguos.
       precio,
 
-      // MODALIDADES DE VENTA
       vendeContado,
       vendeCredito,
+
       precioContado: vendeContado ? precioContado : null,
       precioCredito: vendeCredito ? precioCredito : null,
       inicial: vendeCredito ? inicial : null,
 
-      // FRECUENCIA QUINCENAL
       vendeQuincenal: vendeCredito ? vendeQuincenal : false,
       quincenal:
         vendeCredito && vendeQuincenal ? quincenal : null,
       cuotasQuincenales:
-        vendeCredito && vendeQuincenal ? cuotasQuincenales : null,
+        vendeCredito && vendeQuincenal
+          ? cuotasQuincenales
+          : null,
 
-      // FRECUENCIA MENSUAL
       vendeMensual: vendeCredito ? vendeMensual : false,
       mensual:
         vendeCredito && vendeMensual ? mensual : null,
       cuotasMensuales:
-        vendeCredito && vendeMensual ? cuotasMensuales : null,
+        vendeCredito && vendeMensual
+          ? cuotasMensuales
+          : null,
+
+      // ALMOHADAS OPCIONALES
+      incluyeAlmohadas,
+      cantidadAlmohadas: incluyeAlmohadas
+        ? Math.max(0, Math.floor(Number(cantidadAlmohadas) || 0))
+        : 0,
 
       descripcion
     });
   }
 
-  // OBTENER LOS COMBOS
+  // =========================
+  // OBTENER COMBOS
+  // =========================
+
   async obtenerCombo(): Promise<any[]> {
-    const combosRef = collection(db, 'combos');
-    const snapshot = await getDocs(combosRef);
+    const snapshot = await getDocs(collection(db, 'combos'));
 
     return snapshot.docs.map(documento => ({
+      ...documento.data(),
       docId: documento.id,
-      ...documento.data()
+
+      // Compatibilidad con combos antiguos.
+      incluyeAlmohadas:
+        documento.data()['incluyeAlmohadas'] ?? false,
+
+      cantidadAlmohadas:
+        documento.data()['cantidadAlmohadas'] ?? 0
     }));
   }
 
-  // EDITAR UN COMBO
+  // =========================
+  // EDITAR COMBO
+  // =========================
+
   async editarCombo(
     docId: string,
     id: number,
@@ -108,7 +147,14 @@ export class Combos {
     mensual: number | null = null,
     cuotasMensuales: number | null = null,
     vendeQuincenal: boolean = true,
-    vendeMensual: boolean = false
+    vendeMensual: boolean = false,
+    colores: ColoresCombo = {
+      baseColor: '',
+      colchonColor: '',
+      espaldarColor: ''
+    },
+    incluyeAlmohadas: boolean = false,
+    cantidadAlmohadas: number = 0
   ): Promise<void> {
 
     const comboRef = doc(db, 'combos', docId);
@@ -121,38 +167,50 @@ export class Combos {
       colchonId,
       espaldarId,
 
-      // PRECIO ANTIGUO PARA COMPATIBILIDAD
-      precio,
+      baseColor: colores.baseColor,
+      colchonColor: colores.colchonColor,
+      espaldarColor: colores.espaldarColor,
 
-      // MODALIDADES DE VENTA
+      precio,
       vendeContado,
       vendeCredito,
+
       precioContado: vendeContado ? precioContado : null,
       precioCredito: vendeCredito ? precioCredito : null,
       inicial: vendeCredito ? inicial : null,
 
-      // FRECUENCIA QUINCENAL
       vendeQuincenal: vendeCredito ? vendeQuincenal : false,
       quincenal:
         vendeCredito && vendeQuincenal ? quincenal : null,
       cuotasQuincenales:
-        vendeCredito && vendeQuincenal ? cuotasQuincenales : null,
+        vendeCredito && vendeQuincenal
+          ? cuotasQuincenales
+          : null,
 
-      // FRECUENCIA MENSUAL
       vendeMensual: vendeCredito ? vendeMensual : false,
       mensual:
         vendeCredito && vendeMensual ? mensual : null,
       cuotasMensuales:
-        vendeCredito && vendeMensual ? cuotasMensuales : null,
+        vendeCredito && vendeMensual
+          ? cuotasMensuales
+          : null,
+
+      // ALMOHADAS OPCIONALES
+      incluyeAlmohadas,
+      cantidadAlmohadas: incluyeAlmohadas
+        ? Math.max(0, Math.floor(Number(cantidadAlmohadas) || 0))
+        : 0,
 
       descripcion
     });
   }
 
-  // ELIMINAR UN COMBO
+  // =========================
+  // ELIMINAR COMBO
+  // =========================
+
   async eliminarCombo(docId: string): Promise<void> {
-    const comboRef = doc(db, 'combos', docId);
-    await deleteDoc(comboRef);
+    await deleteDoc(doc(db, 'combos', docId));
   }
 
   productoParaVolver: string | null = null;

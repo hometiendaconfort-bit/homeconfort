@@ -8,6 +8,7 @@ import { Productos } from '../services/productos';
 
 @Component({
   selector: 'app-combo-detalle',
+  standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './combos-detalle.html',
   styleUrl: './combos-detalle.css',
@@ -39,6 +40,10 @@ export class ComboDetalleComponent implements OnInit {
 
       // OBTIENE EL ID DE LA URL
       const docId = this.route.snapshot.paramMap.get('id');
+
+      if (!docId) {
+        return;
+      }
 
       // OBTIENE LOS COMBOS Y PRODUCTOS
       const combos = await this.combos.obtenerCombo();
@@ -96,6 +101,18 @@ export class ComboDetalleComponent implements OnInit {
         comboEncontrado.vendeMensual ??
         (Number(comboEncontrado.mensual) > 0);
 
+      // ALMOHADAS: COMPATIBILIDAD CON COMBOS ANTIGUOS
+      const incluyeAlmohadas =
+        comboEncontrado.incluyeAlmohadas ?? false;
+
+      const cantidadAlmohadas =
+        incluyeAlmohadas
+          ? Math.max(
+              0,
+              Math.floor(Number(comboEncontrado.cantidadAlmohadas) || 0)
+            )
+          : 0;
+
       // PREPARA EL COMBO PARA LA VISTA
       this.combo = {
         ...comboEncontrado,
@@ -105,6 +122,8 @@ export class ComboDetalleComponent implements OnInit {
         precioCredito,
         vendeQuincenal,
         vendeMensual,
+        incluyeAlmohadas,
+        cantidadAlmohadas,
         imagenActiva: comboEncontrado.imagen
       };
 
@@ -170,7 +189,7 @@ export class ComboDetalleComponent implements OnInit {
     }
   }
 
-  // OBTIENE LA FRECUENCIA SELECCIONADA
+  // OBTIENE LA FRECUENCIA DISPONIBLE
   obtenerFrecuencia(combo: any): 'quincenal' | 'mensual' {
     if (
       this.frecuencia === 'quincenal' &&
@@ -229,6 +248,16 @@ export class ComboDetalleComponent implements OnInit {
       `Hola, estoy interesado en el combo ${combo.nombre}. ` +
       `Modalidad: ${nombreModalidad}. ` +
       `Precio: ${this.formatoPesos(precio)}.`;
+
+    // INFORMACIÓN DE ALMOHADAS
+    if (combo.incluyeAlmohadas && combo.cantidadAlmohadas > 0) {
+      const cantidad = combo.cantidadAlmohadas;
+      const textoAlmohadas = cantidad === 1
+        ? 'almohada'
+        : 'almohadas';
+
+      mensaje += ` Incluye ${cantidad} ${textoAlmohadas}.`;
+    }
 
     // INFORMACIÓN ADICIONAL DE CRÉDITO
     if (this.modalidad === 'credito') {

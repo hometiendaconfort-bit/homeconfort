@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -58,29 +59,26 @@ export class ProductoDetalleComponent implements OnInit {
 
           if (typeof valor === 'string') {
             const texto = valor.trim();
-
-            // Admite valores escritos como "80.000" o "$80.000".
             const limpio = texto.replace(/[^\d,.-]/g, '');
 
             if (!limpio) {
               return 0;
             }
 
+            // Admite precios como "80.000", "$80.000" o "80000".
             const normalizado = limpio.includes(',')
               ? limpio.replace(/\./g, '').replace(',', '.')
               : limpio.replace(/\./g, '');
 
             const numero = Number(normalizado);
-
             return Number.isFinite(numero) ? numero : 0;
           }
 
           const numero = Number(valor);
-
           return Number.isFinite(numero) ? numero : 0;
         };
 
-        // BUSCAR EL PRIMER CAMPO QUE TENGA UN VALOR DEFINIDO
+        // BUSCAR EL PRIMER CAMPO CON VALOR DEFINIDO
         const obtenerCampo = (
           objeto: any,
           campos: string[]
@@ -135,8 +133,19 @@ export class ProductoDetalleComponent implements OnInit {
           ? encontrado.imagenes
           : [];
 
+        // VARIANTES DE COLOR
+        const variantesColor = Array.isArray(encontrado.variantesColor)
+          ? encontrado.variantesColor.map((variante: any) => ({
+              ...variante,
+              imagenes: Array.isArray(variante.imagenes)
+                ? variante.imagenes
+                : variante.imagen
+                  ? [variante.imagen]
+                  : []
+            }))
+          : [];
+
         // VALORES DE LAS CUOTAS
-        // Se comprueban también nombres alternativos por compatibilidad.
         const quincenal = convertirNumero(
           obtenerCampo(encontrado, [
             'quincenal',
@@ -195,8 +204,22 @@ export class ProductoDetalleComponent implements OnInit {
           numeroCuotasMensual,
           descuento: convertirNumero(encontrado.descuento),
           imagenes,
+          variantesColor,
+          colorSeleccionado: encontrado.colorSeleccionado || '',
           imagenActiva: imagenes[0] || encontrado.imagen || ''
         };
+
+        // SELECCIONAR EL PRIMER COLOR SI EXISTEN VARIANTES
+        if (variantesColor.length > 0) {
+          const indiceInicial = variantesColor.findIndex(
+            (v: any) => v.color === this.producto.colorSeleccionado
+          );
+
+          this.seleccionarColor(
+            this.producto,
+            indiceInicial >= 0 ? indiceInicial : 0
+          );
+        }
 
         // ELEGIR LA MODALIDAD INICIAL
         if (this.producto.vendeCredito && !this.producto.vendeContado) {
@@ -226,6 +249,78 @@ export class ProductoDetalleComponent implements OnInit {
     });
   }
 
+  // OBTENER EL COLOR CSS A PARTIR DEL NOMBRE
+  obtenerColorCSS(color: string): string {
+    const nombre = (color || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ');
+
+    const coloresCSS: Record<string, string> = {
+      blanco: '#ffffff',
+      negro: '#171717',
+      gris: '#808080',
+      'gris claro': '#d3d3d3',
+      'gris oscuro': '#454545',
+      cafe: '#795548',
+      marron: '#795548',
+      beige: '#d8c3a5',
+      rojo: '#e53935',
+      azul: '#1976d2',
+      verde: '#388e3c',
+      rosado: '#e8a0b4',
+      rosa: '#e8a0b4',
+      dorado: '#c9a227',
+      plateado: '#c0c0c0',
+      morado: '#800080',
+      amarillo: '#fdd835',
+      naranja: '#ef6c00'
+    };
+
+    return coloresCSS[nombre] || '#d9d9d9';
+  }
+
+  // COMPROBAR SI UNA VARIANTE ESTÁ SELECCIONADA
+  esVarianteActiva(p: any, indice: number): boolean {
+    return Number(p?.indiceColorSeleccionado ?? -1) === indice;
+  }
+
+  // SELECCIONAR COLOR Y ACTUALIZAR LA GALERÍA
+  seleccionarColor(p: any, indice: number): void {
+    if (!p || !Array.isArray(p.variantesColor)) {
+      return;
+    }
+
+    const variante = p.variantesColor[indice];
+
+    if (!variante) {
+      return;
+    }
+
+    p.indiceColorSeleccionado = indice;
+    p.colorSeleccionado = variante.color || '';
+
+    const imagenesColor = Array.isArray(variante.imagenes)
+      ? variante.imagenes.filter((img: any) => typeof img === 'string' && img.trim())
+      : [];
+
+    // Usar la imagen principal de la variante si está disponible.
+    const imagenPrincipal = variante.imagen || imagenesColor[0];
+
+    if (imagenPrincipal) {
+      p.imagenActiva = imagenPrincipal;
+    }
+
+    // Actualizar las miniaturas con las imágenes de ese color.
+    if (imagenesColor.length > 0) {
+      p.imagenes = imagenesColor;
+    } else if (imagenPrincipal) {
+      p.imagenes = [imagenPrincipal];
+    }
+  }
+
   // COMPROBAR SI EXISTE ALGUNA FRECUENCIA DE PAGO
   tieneFrecuenciasDisponibles(): boolean {
     return Number(this.producto?.quincenal ?? 0) > 0 ||
@@ -246,7 +341,6 @@ export class ProductoDetalleComponent implements OnInit {
     if (modalidad === 'credito' && this.producto.vendeCredito) {
       this.modalidadSeleccionada = 'credito';
 
-      // Si la frecuencia actual no existe, seleccionar la disponible.
       if (
         this.frecuenciaSeleccionada === 'quincenal' &&
         Number(this.producto.quincenal) <= 0
@@ -365,7 +459,6 @@ export class ProductoDetalleComponent implements OnInit {
   obtenerLinkWhatsApp(p: any): string {
     let modalidad = this.modalidadSeleccionada;
 
-    // Asegurar que la modalidad esté disponible.
     if (modalidad === 'contado' && !p.vendeContado) {
       modalidad = 'credito';
     }
@@ -378,6 +471,10 @@ export class ProductoDetalleComponent implements OnInit {
 
     let mensaje =
       `Hola, estoy interesado en el producto ${p.nombre}. `;
+
+    if (p.colorSeleccionado) {
+      mensaje += `Color seleccionado: ${p.colorSeleccionado}. `;
+    }
 
     if (modalidad === 'contado') {
       mensaje +=

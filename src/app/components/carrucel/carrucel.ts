@@ -17,14 +17,14 @@ export class Carrucel implements OnInit {
 
   links = [
     { nombre: 'Colchones',  img: '/assets/img/colchonfondologo2.jpeg',   ruta: '/categoria/colchon' },
-    { nombre: 'Espaldar y Base camas', img: '/assets/img/basecamalink.jpeg',  ruta: '/categoria/espaldaryBaseCama' },
-    { nombre: 'Almohadas y Más',  img: '/assets/img/almohadalink.jpeg',  ruta: '/categoria/almohada' },
+    { nombre: 'Espaldar y Base camas', img: '/assets/img/basecamalink.jpeg',  ruta: '/categoria/espaldaroBaseCama' },
     { nombre: 'Armarios',   img: '/assets/img/armariolink.jpeg',   ruta: '/categoria/armario' },
     { nombre: 'Comedores',  img: '/assets/img/comedorlink.jpeg', ruta: '/categoria/comedor' },
     { nombre: 'Peinadores', img: '/assets/img/peinadorlogolink.jpg',  ruta: '/categoria/peinador' },
     { nombre: 'Salas',      img: '/assets/img/salalink.jpeg',     ruta: '/categoria/sala' },
-    { nombre: 'Camas',  img: '/assets/img/camaslink.jpeg', ruta: '/categoria/lujo' },
-    { nombre: 'Joyas',  img: '/assets/img/joyaslink.jpeg', ruta: '/categoria/accesorios' }
+    { nombre: 'Camas',  img: '/assets/img/camaslink.jpeg', ruta: '/categoria/cama' },
+    { nombre: 'Almohadas y Más',  img: '/assets/img/almohadalink.jpeg',  ruta: '/categoria/almohada' },
+    { nombre: 'Joyas',  img: '/assets/img/joyaslink.jpeg', ruta: '/categoria/joyas' }
   ];
 
   constructor(

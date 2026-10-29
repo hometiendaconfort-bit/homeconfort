@@ -1,6 +1,5 @@
-
 .home{
-    margin-top: 8rem;
+    margin-top: 8rem !important;
 }
 
 @media (max-width: 480px) {

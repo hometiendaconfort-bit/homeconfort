@@ -5,18 +5,25 @@ import { FormsModule } from '@angular/forms';
 import { Productos } from '../services/productos';
 import { Combos } from '../services/combos';
 
+interface VarianteColor {
+  color: string;
+  imagen: string;
+  imagenes?: string[];
+  imagenesTexto?: string;
+}
+
 @Component({
   selector: 'app-admin-combos',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './admin-combos.html',
-  styleUrl: './admin-combos.css',
+  styleUrl: './admin-combos.css'
 })
 export class AdminCombos implements OnInit {
 
   combolista: any[] = [];
-
   productoss: any[] = [];
+
   bases: any[] = [];
   colchones: any[] = [];
   espaldares: any[] = [];
@@ -29,34 +36,33 @@ export class AdminCombos implements OnInit {
   colchonId: string = '';
   espaldarId: string = '';
 
-  // MODALIDADES DE VENTA
+  baseColor: string = '';
+  colchonColor: string = '';
+  espaldarColor: string = '';
+
+  // Almohadas opcionales.
+  incluyeAlmohadas: boolean = false;
+  cantidadAlmohadas: number = 0;
+
   vendeContado: boolean = true;
   vendeCredito: boolean = false;
 
-  // FRECUENCIAS DE CRÉDITO
   vendeQuincenal: boolean = true;
   vendeMensual: boolean = false;
 
-  // PRECIOS
   precioContado: number | null = 0;
   precioCredito: number | null = 0;
-
   inicial: number | null = 0;
 
-  // CUOTAS QUINCENALES
   quincenal: number | null = 0;
   cuotasQuincenales: number | null = 1;
 
-  // CUOTAS MENSUALES
   mensual: number | null = 0;
   cuotasMensuales: number | null = 1;
 
-  // PRECIO ANTIGUO PARA COMPATIBILIDAD
   precioCombo: number = 0;
-
   descripcionCombo: string = '';
 
-  // ID DEL DOCUMENTO QUE SE ESTÁ EDITANDO
   docIdEditando: string = '';
 
   get comboEditando(): boolean {
@@ -70,10 +76,8 @@ export class AdminCombos implements OnInit {
 
   async ngOnInit(): Promise<void> {
     try {
-      // CARGAR PRODUCTOS
       this.productoss = await this.productos.obtenerProductos();
 
-      // SEPARAR PRODUCTOS POR CATEGORÍA
       this.bases = this.productoss.filter(
         producto => producto.categoria === 'basecama'
       );
@@ -86,9 +90,6 @@ export class AdminCombos implements OnInit {
         producto => producto.categoria === 'espaldar'
       );
 
-      console.log('Productos para combos:', this.productoss);
-
-      // CARGAR COMBOS
       await this.cargarCombos();
 
     } catch (error) {
@@ -96,11 +97,101 @@ export class AdminCombos implements OnInit {
     }
   }
 
-  // GUARDAR O ACTUALIZAR COMBO
+  // Devuelve los colores disponibles de un producto.
+  // También admite productos antiguos que solo tengan "color".
+  obtenerVariantes(productoId: string): VarianteColor[] {
+    if (!productoId) {
+      return [];
+    }
+
+    const producto = this.productoss.find(
+      item => item.docId === productoId
+    );
+
+    if (!producto) {
+      return [];
+    }
+
+    if (
+      Array.isArray(producto.variantesColor) &&
+      producto.variantesColor.length > 0
+    ) {
+      return producto.variantesColor;
+    }
+
+    if (producto.color) {
+      return [{
+        color: producto.color,
+        imagen: producto.imagen || '',
+        imagenes: Array.isArray(producto.imagenes)
+          ? producto.imagenes
+          : [],
+        imagenesTexto: producto.imagenesTexto || ''
+      }];
+    }
+
+    return [];
+  }
+
+  obtenerVarianteSeleccionada(
+    productoId: string,
+    color: string
+  ): VarianteColor | null {
+    return this.obtenerVariantes(productoId)
+      .find(variante => variante.color === color) ?? null;
+  }
+
+  obtenerProductoSeleccionado(productoId: string): any {
+    return this.productoss.find(
+      producto => producto.docId === productoId
+    ) ?? null;
+  }
+
+  // Selecciona el primer color cuando cambia el producto.
+  cambioProducto(tipo: 'base' | 'colchon' | 'espaldar'): void {
+    if (tipo === 'base') {
+      const variantes = this.obtenerVariantes(this.baseId);
+      this.baseColor = variantes.length > 0
+        ? variantes[0].color
+        : '';
+    }
+
+    if (tipo === 'colchon') {
+      const variantes = this.obtenerVariantes(this.colchonId);
+      this.colchonColor = variantes.length > 0
+        ? variantes[0].color
+        : '';
+    }
+
+    if (tipo === 'espaldar') {
+      const variantes = this.obtenerVariantes(this.espaldarId);
+      this.espaldarColor = variantes.length > 0
+        ? variantes[0].color
+        : '';
+    }
+  }
+
   async guardarCombo(): Promise<void> {
     try {
       if (!this.nombreCombo.trim()) {
         alert('Escribe el nombre del combo');
+        return;
+      }
+
+      if (!this.baseId || !this.colchonId) {
+        alert('Selecciona la base y el colchón del combo');
+        return;
+      }
+
+      // Validar la cantidad de almohadas.
+      if (
+        this.incluyeAlmohadas &&
+        (
+          !Number.isInteger(Number(this.cantidadAlmohadas)) ||
+          Number(this.cantidadAlmohadas) < 1
+        )
+      ) {
+        alert('Ingresa una cantidad válida de almohadas');
         return;
       }
 
@@ -153,7 +244,9 @@ export class AdminCombos implements OnInit {
           this.cuotasQuincenales <= 0
         )
       ) {
-        alert('Ingresa un valor quincenal y una cantidad de cuotas quincenales válidos');
+        alert(
+          'Ingresa un valor y una cantidad de cuotas quincenales válidos'
+        );
         return;
       }
 
@@ -168,34 +261,51 @@ export class AdminCombos implements OnInit {
           this.cuotasMensuales <= 0
         )
       ) {
-        alert('Ingresa un valor mensual y una cantidad de cuotas mensuales válidos');
+        alert(
+          'Ingresa un valor y una cantidad de cuotas mensuales válidos'
+        );
         return;
       }
 
-      // CONSERVAR COMPATIBILIDAD CON COMBOS ANTIGUOS
       this.precioCombo = this.vendeContado
         ? this.precioContado!
         : this.precioCredito!;
 
-      // SI UNA FRECUENCIA NO SE OFRECE, NO GUARDAR SUS VALORES
-      const valorQuincenal = this.vendeCredito && this.vendeQuincenal
-        ? this.quincenal
-        : null;
+      const valorQuincenal =
+        this.vendeCredito && this.vendeQuincenal
+          ? this.quincenal
+          : null;
 
-      const cantidadQuincenal = this.vendeCredito && this.vendeQuincenal
-        ? Number(this.cuotasQuincenales)
-        : null;
+      const cantidadQuincenal =
+        this.vendeCredito && this.vendeQuincenal
+          ? Number(this.cuotasQuincenales)
+          : null;
 
-      const valorMensual = this.vendeCredito && this.vendeMensual
-        ? this.mensual
-        : null;
+      const valorMensual =
+        this.vendeCredito && this.vendeMensual
+          ? this.mensual
+          : null;
 
-      const cantidadMensual = this.vendeCredito && this.vendeMensual
-        ? Number(this.cuotasMensuales)
-        : null;
+      const cantidadMensual =
+        this.vendeCredito && this.vendeMensual
+          ? Number(this.cuotasMensuales)
+          : null;
+
+      const colores = {
+        baseColor: this.baseColor || '',
+        colchonColor: this.colchonColor || '',
+        espaldarColor: this.espaldarId
+          ? this.espaldarColor || ''
+          : ''
+      };
+
+      // Normalizar los datos de las almohadas.
+      const incluyeAlmohadas = this.incluyeAlmohadas;
+      const cantidadAlmohadas = incluyeAlmohadas
+        ? Number(this.cantidadAlmohadas)
+        : 0;
 
       if (this.docIdEditando) {
-        // ACTUALIZAR COMBO EXISTENTE
         await this.combos.editarCombo(
           this.docIdEditando,
           this.idCombo,
@@ -216,13 +326,15 @@ export class AdminCombos implements OnInit {
           valorMensual,
           cantidadMensual,
           this.vendeQuincenal,
-          this.vendeMensual
+          this.vendeMensual,
+          colores,
+          incluyeAlmohadas,
+          cantidadAlmohadas
         );
 
         alert('Combo actualizado');
 
       } else {
-        // CREAR COMBO NUEVO
         await this.combos.agregarCombo(
           this.idCombo,
           this.nombreCombo,
@@ -242,7 +354,10 @@ export class AdminCombos implements OnInit {
           valorMensual,
           cantidadMensual,
           this.vendeQuincenal,
-          this.vendeMensual
+          this.vendeMensual,
+          colores,
+          incluyeAlmohadas,
+          cantidadAlmohadas
         );
 
         alert('Combo guardado');
@@ -257,57 +372,47 @@ export class AdminCombos implements OnInit {
     }
   }
 
-  // CARGAR COMBOS Y ADAPTAR LOS ANTIGUOS
   async cargarCombos(): Promise<void> {
     const combos = await this.combos.obtenerCombo();
 
     this.combolista = combos.map((combo: any) => {
-      const vendeContado =
-        combo.vendeContado ??
+      const vendeContado = combo.vendeContado ??
         (
           combo.tipo === 'contado' ||
           combo.tipo === 'ambos' ||
           combo.tipo == null
         );
 
-      const vendeCredito =
-        combo.vendeCredito ??
+      const vendeCredito = combo.vendeCredito ??
         (
           combo.tipo === 'credito' ||
           combo.tipo === 'ambos'
         );
 
-      // LOS COMBOS ANTIGUOS TENÍAN CUOTA QUINCENAL
-      const vendeQuincenal =
-        combo.vendeQuincenal ??
+      const vendeQuincenal = combo.vendeQuincenal ??
         (combo.quincenal != null && Number(combo.quincenal) > 0);
 
-      const vendeMensual =
-        combo.vendeMensual ??
+      const vendeMensual = combo.vendeMensual ??
         (combo.mensual != null && Number(combo.mensual) > 0);
 
       return {
         ...combo,
+        incluyeAlmohadas: combo.incluyeAlmohadas ?? false,
+        cantidadAlmohadas: combo.cantidadAlmohadas ?? 0,
         vendeContado,
         vendeCredito,
         vendeQuincenal,
         vendeMensual,
-
-        precioContado:
-          combo.precioContado ??
+        precioContado: combo.precioContado ??
           (combo.tipo !== 'credito' ? combo.precio : null),
-
-        precioCredito:
-          combo.precioCredito ??
+        precioCredito: combo.precioCredito ??
           (combo.tipo !== 'contado' ? combo.precio : null)
       };
     });
   }
 
-  // CARGAR DATOS PARA EDITAR
   editar(combo: any): void {
     this.docIdEditando = combo.docId;
-
     this.idCombo = combo.id ?? 0;
     this.nombreCombo = combo.nombre ?? '';
     this.imagenCombo = combo.imagen ?? '/assets/img/';
@@ -316,33 +421,44 @@ export class AdminCombos implements OnInit {
     this.colchonId = combo.colchonId ?? '';
     this.espaldarId = combo.espaldarId ?? '';
 
-    this.vendeContado =
-      combo.vendeContado ??
+    this.baseColor = combo.baseColor ?? '';
+    this.colchonColor = combo.colchonColor ?? '';
+    this.espaldarColor = combo.espaldarColor ?? '';
+
+    if (!this.baseColor) {
+      this.cambioProducto('base');
+    }
+
+    if (!this.colchonColor) {
+      this.cambioProducto('colchon');
+    }
+
+    if (!this.espaldarColor) {
+      this.cambioProducto('espaldar');
+    }
+
+    // Recuperar las almohadas guardadas.
+    this.incluyeAlmohadas = combo.incluyeAlmohadas ?? false;
+    this.cantidadAlmohadas = combo.cantidadAlmohadas ?? 0;
+
+    this.vendeContado = combo.vendeContado ??
       (combo.tipo === 'credito' ? false : true);
 
-    this.vendeCredito =
-      combo.vendeCredito ??
-      (
-        combo.tipo === 'credito' ||
-        combo.tipo === 'ambos'
-      );
+    this.vendeCredito = combo.vendeCredito ??
+      (combo.tipo === 'credito' || combo.tipo === 'ambos');
 
-    this.precioContado =
-      combo.precioContado ??
+    this.precioContado = combo.precioContado ??
       (combo.tipo !== 'credito' ? combo.precio ?? 0 : 0);
 
-    this.precioCredito =
-      combo.precioCredito ??
+    this.precioCredito = combo.precioCredito ??
       (combo.tipo !== 'contado' ? combo.precio ?? 0 : 0);
 
     this.inicial = combo.inicial ?? 0;
 
-    this.vendeQuincenal =
-      combo.vendeQuincenal ??
+    this.vendeQuincenal = combo.vendeQuincenal ??
       (combo.quincenal != null && Number(combo.quincenal) > 0);
 
-    this.vendeMensual =
-      combo.vendeMensual ??
+    this.vendeMensual = combo.vendeMensual ??
       (combo.mensual != null && Number(combo.mensual) > 0);
 
     this.quincenal = combo.quincenal ?? 0;
@@ -355,7 +471,6 @@ export class AdminCombos implements OnInit {
     this.descripcionCombo = combo.descripcion ?? '';
   }
 
-  // LIMPIAR FORMULARIO Y SALIR DE EDICIÓN
   limpiarFormulario(): void {
     this.docIdEditando = '';
 
@@ -367,6 +482,14 @@ export class AdminCombos implements OnInit {
     this.colchonId = '';
     this.espaldarId = '';
 
+    this.baseColor = '';
+    this.colchonColor = '';
+    this.espaldarColor = '';
+
+    // Restablecer las almohadas.
+    this.incluyeAlmohadas = false;
+    this.cantidadAlmohadas = 0;
+
     this.vendeContado = true;
     this.vendeCredito = false;
 
@@ -375,7 +498,6 @@ export class AdminCombos implements OnInit {
 
     this.precioContado = 0;
     this.precioCredito = 0;
-
     this.inicial = 0;
 
     this.quincenal = 0;
@@ -388,7 +510,6 @@ export class AdminCombos implements OnInit {
     this.descripcionCombo = '';
   }
 
-  // ELIMINAR COMBO
   async eliminar(docId: string): Promise<void> {
     const confirmar = confirm('¿Deseas eliminar este combo?');
 
@@ -400,7 +521,6 @@ export class AdminCombos implements OnInit {
       await this.combos.eliminarCombo(docId);
       await this.cargarCombos();
 
-      // SI SE ELIMINA EL COMBO QUE SE EDITABA, LIMPIAR
       if (this.docIdEditando === docId) {
         this.limpiarFormulario();
       }
@@ -411,4 +531,3 @@ export class AdminCombos implements OnInit {
     }
   }
 }
-

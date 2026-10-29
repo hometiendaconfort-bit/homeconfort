@@ -4,10 +4,22 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { ProductosService } from '../../services/producto.service';
 import { SearchService } from '../../services/search.service';
-import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  Observable
+} from 'rxjs';
 
 type Modalidad = 'contado' | 'credito';
 type Frecuencia = 'quincenal' | 'mensual';
+
+interface VarianteColor {
+  color: string;
+  imagen: string;
+  imagenes: string[];
+  imagenesTexto?: string;
+}
 
 @Component({
   selector: 'app-productoss',
@@ -22,11 +34,10 @@ export class Productoss implements OnInit {
   colores: string[] = [];
   slug: string | null = null;
 
-  // MODALIDAD SELECCIONADA PARA CADA PRODUCTO
   modalidadProducto: { [id: string]: Modalidad } = {};
-
-  // FRECUENCIA SELECCIONADA PARA CADA PRODUCTO
   frecuenciaProducto: { [id: string]: Frecuencia } = {};
+  varianteSeleccionada: { [id: string]: number } = {};
+  imagenSeleccionada: { [id: string]: string } = {};
 
   tipoSeleccionado$ = new BehaviorSubject<string>('todos');
   colorSeleccionado$ = new BehaviorSubject<string>('todos');
@@ -45,11 +56,30 @@ export class Productoss implements OnInit {
 
   ngOnInit(): void {
 
-    this.slug = this.route.snapshot.paramMap.get('slug');
+    // Lee la categoría desde /categoria/:slug.
+    // También admite una categoría enviada por query params.
+    this.route.paramMap.subscribe(params => {
+      this.slug =
+        params.get('slug') ||
+        params.get('categoria');
 
-    // LEER EL FILTRO DE MODALIDAD DESDE LA URL
-    this.route.queryParams.subscribe(params => {
-      const tipo = params['tipo'];
+      this.actualizarProductosFiltrados();
+    });
+
+    this.route.queryParamMap.subscribe(params => {
+      // Permite usar también ?categoria=colchon o ?slug=colchon.
+      if (
+        params.has('categoria') ||
+        params.has('slug')
+      ) {
+        this.slug =
+          params.get('categoria') ||
+          params.get('slug');
+
+        this.actualizarProductosFiltrados();
+      }
+
+      const tipo = params.get('tipo');
 
       if (
         tipo === 'contado' ||
@@ -61,40 +91,78 @@ export class Productoss implements OnInit {
     });
 
     this.productosService.getProductos().subscribe({
-
       next: data => {
 
-        // ADAPTAR PRODUCTOS NUEVOS Y ANTIGUOS DE FIREBASE
         this.productos = data.map(p => {
 
-          const vendeContado = p.vendeContado ??
+          const vendeContado =
+            p.vendeContado ??
             (
               p.tipo === 'contado' ||
               p.tipo === 'ambos' ||
               (!p.tipo && p.precio != null)
             );
 
-          const vendeCredito = p.vendeCredito ??
+          const vendeCredito =
+            p.vendeCredito ??
             (
               p.tipo === 'credito' ||
               p.tipo === 'ambos'
             );
 
-          const precioContado = p.precioContado ??
+          const precioContado =
+            p.precioContado ??
             (p.tipo !== 'credito' ? p.precio ?? null : null);
 
-          const precioCredito = p.precioCredito ??
+          const precioCredito =
+            p.precioCredito ??
             (p.tipo !== 'contado' ? p.precio ?? null : null);
 
-          const imagenes = Array.isArray(p.imagenes)
-            ? p.imagenes
-            : [];
-
-          // CONSERVAR LA FRECUENCIA DE LOS PRODUCTOS ANTIGUOS
           const frecuenciaAntigua: Frecuencia =
             p.frecuenciaPago === 'mensual'
               ? 'mensual'
               : 'quincenal';
+
+          const variantesColor: VarianteColor[] =
+            Array.isArray(p.variantesColor) &&
+            p.variantesColor.length > 0
+              ? p.variantesColor.map((v: any) => {
+
+                  const imagenPrincipal =
+                    String(v.imagen ?? '').trim();
+
+                  const adicionales = Array.isArray(v.imagenes)
+                    ? v.imagenes
+                    : String(v.imagenesTexto ?? '')
+                        .split(',')
+                        .map((url: string) => url.trim())
+                        .filter(Boolean);
+
+                  const imagenes = [
+                    ...new Set(
+                      [imagenPrincipal, ...adicionales].filter(Boolean)
+                    )
+                  ];
+
+                  return {
+                    color: String(v.color ?? '').trim(),
+                    imagen: imagenPrincipal,
+                    imagenes,
+                    imagenesTexto: imagenes
+                      .filter(url => url !== imagenPrincipal)
+                      .join(', ')
+                  };
+                })
+              : [{
+                  color: String(p.color ?? '').trim(),
+                  imagen: String(p.imagen ?? '').trim(),
+                  imagenes: this.normalizarImagenesAntiguas(p),
+                  imagenesTexto: ''
+                }];
+
+          const imagenes = Array.isArray(p.imagenes)
+            ? p.imagenes
+            : [];
 
           const quincenal = Number(p.quincenal ?? 0);
           const mensual = Number(p.mensual ?? 0);
@@ -130,16 +198,29 @@ export class Productoss implements OnInit {
             numeroCuotasMensual,
             frecuenciaPago: frecuenciaAntigua,
             numeroCuotas: Number(p.numeroCuotas ?? 0),
+            variantesColor,
             imagenes,
-            imagenActiva: p.imagenActiva ||
+            imagenActiva:
+              p.imagenActiva ||
               (imagenes.length ? imagenes[0] : p.imagen)
           };
         });
 
-        // SELECCIONAR LA MODALIDAD Y FRECUENCIA INICIAL
         this.productos.forEach(p => {
 
           const id = String(p.id);
+
+          this.varianteSeleccionada[id] = 0;
+
+          const primeraVariante = p.variantesColor?.[0];
+
+          const primeraImagen =
+            primeraVariante?.imagen ||
+            p.imagenActiva ||
+            p.imagen ||
+            '';
+
+          this.imagenSeleccionada[id] = primeraImagen;
 
           if (p.vendeCredito) {
             this.modalidadProducto[id] = 'credito';
@@ -147,7 +228,6 @@ export class Productoss implements OnInit {
             this.modalidadProducto[id] = 'contado';
           }
 
-          // SI SOLO EXISTE PAGO MENSUAL, SELECCIONARLO
           if (p.mensual > 0 && p.quincenal <= 0) {
             this.frecuenciaProducto[id] = 'mensual';
           } else if (
@@ -160,63 +240,235 @@ export class Productoss implements OnInit {
           }
         });
 
-        // OBTENER LOS COLORES DISPONIBLES
         this.colores = Array.from(
-          new Set(this.productos.map(p => p.color))
-        ).filter(c => c);
+          new Set(
+            this.productos.flatMap(p =>
+              p.variantesColor?.length
+                ? p.variantesColor.map(
+                    (v: VarianteColor) => v.color
+                  )
+                : [p.color]
+            )
+          )
+        ).filter(Boolean);
 
-        // FILTRAR POR BÚSQUEDA, MODALIDAD Y COLOR
-        this.productosFiltrados$ = combineLatest([
-          this.searchService.search$,
-          this.tipoSeleccionado$,
-          this.colorSeleccionado$
-        ]).pipe(
+        // Actualiza la lista cuando llegan los productos de Firebase.
+        this.actualizarProductosFiltrados();
 
-          map(([textoBusqueda, tipo, color]) => {
-
-            const txt = (textoBusqueda || '').toLowerCase().trim();
-
-            return this.productos.filter(p => {
-
-              const categoriaOk = this.slug
-                ? p.categoria === this.slug
-                : true;
-
-              const tipoOk = tipo === 'todos'
-                ? true
-                : tipo === 'contado'
-                  ? p.vendeContado
-                  : p.vendeCredito;
-
-              const colorOk = color === 'todos'
-                ? true
-                : p.color === color;
-
-              const textoOk = !txt || (
-                (p.nombre && p.nombre.toLowerCase().includes(txt)) ||
-                (p.categoria && p.categoria.toLowerCase().includes(txt)) ||
-                (p.tipo && p.tipo.toLowerCase().includes(txt)) ||
-                (p.color && p.color.toLowerCase().includes(txt)) ||
-                (p.descripcion &&
-                  p.descripcion.toLowerCase().includes(txt))
-              );
-
-              return categoriaOk && tipoOk && colorOk && textoOk;
-            });
-          })
-        );
-
-        // RESTAURAR EL SCROLL HASTA EL PRODUCTO SELECCIONADO
-        setTimeout(() => {
-          this.restaurarProducto();
-        }, 100);
+        setTimeout(() => this.restaurarProducto(), 100);
       },
-
       error: err => console.error('Error cargando productos', err)
     });
   }
 
-  // FILTRAR PRODUCTOS POR MODALIDAD Y COLOR
+  /**
+   * Normaliza nombres para comparar categorías
+   * sin distinguir mayúsculas, tildes, guiones o espacios repetidos.
+   */
+  private normalizarCategoria(valor: unknown): string {
+    return String(valor ?? '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[_-]+/g, ' ')
+      .replace(/\s+/g, ' ');
+  }
+
+  /**
+   * Convierte el nombre del color guardado en Firebase
+   * a un color CSS para mostrarlo en el selector.
+   */
+  obtenerColorCSS(color: string): string {
+    const nombre = (color || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ');
+
+    const coloresCSS: Record<string, string> = {
+      blanco: '#ffffff',
+      negro: '#171717',
+      gris: '#808080',
+      'gris claro': '#d3d3d3',
+      'gris oscuro': '#454545',
+      cafe: '#795548',
+      marron: '#795548',
+      beige: '#d8c3a5',
+      rojo: '#e53935',
+      azul: '#1976d2',
+      verde: '#388e3c',
+      rosado: '#e8a0b4',
+      rosa: '#e8a0b4',
+      dorado: '#c9a227',
+      plateado: '#c0c0c0',
+      morado: '#800080',
+      amarillo: '#fdd835',
+      naranja: '#ef6c00'
+    };
+
+    return coloresCSS[nombre] || '#d9d9d9';
+  }
+
+  /**
+   * Mantiene activos los filtros de búsqueda, modalidad,
+   * color y categoría.
+   */
+  private actualizarProductosFiltrados(): void {
+
+    this.productosFiltrados$ = combineLatest([
+      this.searchService.search$,
+      this.tipoSeleccionado$,
+      this.colorSeleccionado$
+    ]).pipe(
+      map(([textoBusqueda, tipo, color]) => {
+
+        const txt = (textoBusqueda || '')
+          .toLowerCase()
+          .trim();
+
+        const categoriaFiltro =
+          this.normalizarCategoria(this.slug);
+
+        return this.productos.filter(p => {
+
+          const categoriaProducto =
+            this.normalizarCategoria(p.categoria);
+
+          const categoriaOk = categoriaFiltro
+            ? categoriaProducto === categoriaFiltro
+            : true;
+
+          const tipoOk =
+            tipo === 'todos'
+              ? true
+              : tipo === 'contado'
+                ? p.vendeContado
+                : p.vendeCredito;
+
+          const coloresProducto: string[] =
+            p.variantesColor?.length
+              ? p.variantesColor.map(
+                  (v: VarianteColor) => v.color
+                )
+              : [p.color];
+
+          const colorOk =
+            color === 'todos' ||
+            coloresProducto.includes(color);
+
+          const textoOk =
+            !txt ||
+            String(p.nombre ?? '')
+              .toLowerCase()
+              .includes(txt) ||
+            String(p.categoria ?? '')
+              .toLowerCase()
+              .includes(txt) ||
+            String(p.tipo ?? '')
+              .toLowerCase()
+              .includes(txt) ||
+            String(p.descripcion ?? '')
+              .toLowerCase()
+              .includes(txt) ||
+            coloresProducto.some(c =>
+              String(c ?? '').toLowerCase().includes(txt)
+            );
+
+          return (
+            categoriaOk &&
+            tipoOk &&
+            colorOk &&
+            textoOk
+          );
+        });
+      })
+    );
+  }
+
+  private normalizarImagenesAntiguas(p: any): string[] {
+    const principal = String(p.imagen ?? '').trim();
+
+    const adicionales: string[] = Array.isArray(p.imagenes)
+      ? p.imagenes
+      : [];
+
+    return [
+      ...new Set(
+        [principal, ...adicionales]
+          .map(url => String(url ?? '').trim())
+          .filter(Boolean)
+      )
+    ];
+  }
+
+  obtenerVarianteActiva(p: any): VarianteColor | null {
+    const variantes: VarianteColor[] = p.variantesColor ?? [];
+
+    if (!variantes.length) return null;
+
+    const indice = this.varianteSeleccionada[String(p.id)] ?? 0;
+
+    return variantes[indice] ?? variantes[0];
+  }
+
+  seleccionarColor(p: any, indice: number): void {
+    const variantes: VarianteColor[] = p.variantesColor ?? [];
+
+    if (!variantes[indice]) return;
+
+    const id = String(p.id);
+
+    this.varianteSeleccionada[id] = indice;
+
+    const imagen =
+      variantes[indice].imagen ||
+      variantes[indice].imagenes?.[0] ||
+      '';
+
+    this.imagenSeleccionada[id] = imagen;
+    p.imagenActiva = imagen;
+  }
+
+  esVarianteActiva(p: any, indice: number): boolean {
+    return (
+      (this.varianteSeleccionada[String(p.id)] ?? 0) === indice
+    );
+  }
+
+  obtenerImagenesActivas(p: any): string[] {
+    const variante = this.obtenerVarianteActiva(p);
+
+    if (variante) {
+      return variante.imagenes?.length
+        ? variante.imagenes
+        : variante.imagen
+          ? [variante.imagen]
+          : [];
+    }
+
+    return this.normalizarImagenesAntiguas(p);
+  }
+
+  obtenerImagenActiva(p: any): string {
+    const id = String(p.id);
+    const imagenElegida = this.imagenSeleccionada[id];
+    const imagenes = this.obtenerImagenesActivas(p);
+
+    if (imagenElegida && imagenes.includes(imagenElegida)) {
+      return imagenElegida;
+    }
+
+    return imagenes[0] || p.imagenActiva || p.imagen || '';
+  }
+
+  seleccionarImagen(p: any, imagen: string): void {
+    const id = String(p.id);
+    this.imagenSeleccionada[id] = imagen;
+    p.imagenActiva = imagen;
+  }
+
   filtrar(tipo: string, color: string): void {
     this.tipoSeleccionado$.next(tipo);
     this.colorSeleccionado$.next(color);
@@ -225,9 +477,10 @@ export class Productoss implements OnInit {
     this.colorActual = color;
   }
 
-  // CAMBIAR LA MODALIDAD DEL PRODUCTO
-  seleccionarModalidad(p: any, modalidad: Modalidad): void {
-
+  seleccionarModalidad(
+    p: any,
+    modalidad: Modalidad
+  ): void {
     const id = String(p.id);
 
     if (modalidad === 'contado' && p.vendeContado) {
@@ -239,30 +492,33 @@ export class Productoss implements OnInit {
     }
   }
 
-  // OBTENER LA MODALIDAD SELECCIONADA
   obtenerModalidad(p: any): Modalidad {
-
     const id = String(p.id);
 
     return this.modalidadProducto[id] ??
       (p.vendeCredito ? 'credito' : 'contado');
   }
 
-  // CAMBIAR LA FRECUENCIA DEL CRÉDITO
-  seleccionarFrecuencia(p: any, frecuencia: Frecuencia): void {
-
-    if (frecuencia === 'quincenal' && Number(p.quincenal) > 0) {
+  seleccionarFrecuencia(
+    p: any,
+    frecuencia: Frecuencia
+  ): void {
+    if (
+      frecuencia === 'quincenal' &&
+      Number(p.quincenal) > 0
+    ) {
       this.frecuenciaProducto[String(p.id)] = 'quincenal';
     }
 
-    if (frecuencia === 'mensual' && Number(p.mensual) > 0) {
+    if (
+      frecuencia === 'mensual' &&
+      Number(p.mensual) > 0
+    ) {
       this.frecuenciaProducto[String(p.id)] = 'mensual';
     }
   }
 
-  // OBTENER LA FRECUENCIA SELECCIONADA
   obtenerFrecuencia(p: any): Frecuencia {
-
     const id = String(p.id);
     const seleccionada = this.frecuenciaProducto[id];
 
@@ -280,68 +536,54 @@ export class Productoss implements OnInit {
       return 'quincenal';
     }
 
-    // USAR LA OTRA FRECUENCIA SI LA SELECCIONADA NO ESTÁ DISPONIBLE
-    if (Number(p.quincenal) > 0) {
-      return 'quincenal';
-    }
-
-    return 'mensual';
+    return Number(p.quincenal) > 0
+      ? 'quincenal'
+      : 'mensual';
   }
 
-  // OBTENER EL VALOR DE LA CUOTA SELECCIONADA
   obtenerValorCuota(p: any): number {
-
     return this.obtenerFrecuencia(p) === 'mensual'
       ? Number(p.mensual ?? 0)
       : Number(p.quincenal ?? 0);
   }
 
-  // OBTENER EL NÚMERO DE CUOTAS DE LA FRECUENCIA SELECCIONADA
   obtenerNumeroCuotas(p: any): number {
-
     return this.obtenerFrecuencia(p) === 'mensual'
       ? Number(p.numeroCuotasMensual ?? 0)
       : Number(p.numeroCuotasQuincenal ?? 0);
   }
 
-  // CAMBIAR LA IMAGEN PRINCIPAL DEL PRODUCTO
   cambiarImagen(p: any, img: string): void {
-    p.imagenActiva = img;
+    this.seleccionarImagen(p, img);
   }
 
-  // OBTENER EL PRECIO ORIGINAL ANTES DEL DESCUENTO
   precioOriginal(p: any): number {
     return Number(p.precioContado ?? p.precio ?? 0);
   }
 
-  // CALCULAR EL PRECIO SEGÚN LA MODALIDAD
-  // EL DESCUENTO SOLO SE APLICA A CONTADO
   precioFinal(p: any, modalidad?: string): number {
+    const modo =
+      modalidad && modalidad !== 'todos'
+        ? modalidad
+        : this.obtenerModalidad(p);
 
-    const modo = modalidad && modalidad !== 'todos'
-      ? modalidad
-      : this.obtenerModalidad(p);
-
-    const precio = modo === 'credito'
-      ? p.precioCredito
-      : p.precioContado;
+    const precio =
+      modo === 'credito'
+        ? p.precioCredito
+        : p.precioContado;
 
     const precioBase = Number(precio ?? p.precio ?? 0);
 
-    if (modo === 'credito') {
-      return precioBase;
-    }
+    if (modo === 'credito') return precioBase;
 
     const descuento = Number(p.descuento ?? 0);
 
     return p.oferta || descuento > 0
-      ? precioBase - (precioBase * descuento / 100)
+      ? precioBase - precioBase * descuento / 100
       : precioBase;
   }
 
-  // FORMATEAR VALORES EN PESOS COLOMBIANOS
   private formatearPrecio(valor: number): string {
-
     return Number(valor || 0).toLocaleString('es-CO', {
       style: 'currency',
       currency: 'COP',
@@ -349,21 +591,27 @@ export class Productoss implements OnInit {
     });
   }
 
-  // GENERAR EL MENSAJE DE WHATSAPP CON LA MODALIDAD ELEGIDA
   obtenerLinkWhatsApp(p: any): string {
-
     const modalidad = this.obtenerModalidad(p);
     const precio = this.precioFinal(p, modalidad);
+    const variante = this.obtenerVarianteActiva(p);
 
-    let mensaje =
-      `Hola, estoy interesado en ${p.nombre}. ` +
-      `Quiero comprarlo ${modalidad === 'contado' ? 'de contado' : 'a crédito'}. ` +
-      `Precio: ${this.formatearPrecio(precio)}.`;
+    let mensaje = `Hola, estoy interesado en ${p.nombre}. `;
+
+    if (variante?.color) {
+      mensaje += `Color seleccionado: ${variante.color}. `;
+    }
+
+    mensaje +=
+      `Quiero comprarlo ${
+        modalidad === 'contado' ? 'de contado' : 'a crédito'
+      }. Precio: ${this.formatearPrecio(precio)}.`;
 
     if (modalidad === 'credito') {
 
       if (Number(p.inicial) > 0) {
-        mensaje += ` Inicial: ${this.formatearPrecio(Number(p.inicial))}.`;
+        mensaje +=
+          ` Inicial: ${this.formatearPrecio(Number(p.inicial))}.`;
       }
 
       const frecuencia = this.obtenerFrecuencia(p);
@@ -384,32 +632,25 @@ export class Productoss implements OnInit {
     return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
   }
 
-  // IR AL DETALLE Y GUARDAR EL ID PARA VOLVER AL MISMO PRODUCTO
-  verDetalle(id: number): void {
-    this.productosService.productoParaVolver = id;
+  verDetalle(id: number | string): void {
+    this.productosService.productoParaVolver = id as number;
     this.router.navigate(['/productos', id]);
   }
 
-  // IDENTIFICAR CADA PRODUCTO EN LA LISTA
   productosId(_index: number, item: any): number {
     return item.id;
   }
 
-  // RESTAURAR EL SCROLL HASTA EL PRODUCTO SELECCIONADO
   restaurarProducto(): void {
-
     const id = this.productosService.productoParaVolver;
 
-    if (id == null) {
-      return;
-    }
+    if (id == null) return;
 
     let intentos = 0;
     const maxIntentos = 20;
 
     const buscarProducto = () => {
-
-      const elemento = document.getElementById('producto-' + id);
+      const elemento = document.getElementById(`producto-${id}`);
 
       if (elemento) {
         elemento.scrollIntoView({
@@ -431,4 +672,3 @@ export class Productoss implements OnInit {
     setTimeout(buscarProducto, 100);
   }
 }
-

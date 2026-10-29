@@ -68,6 +68,16 @@
       {{ combo.descripcion }}
     </p>
 
+    <!-- ALMOHADAS INCLUIDAS -->
+    <p
+      class="combo-almohadas"
+      *ngIf="combo.incluyeAlmohadas && combo.cantidadAlmohadas > 0"
+    >
+      <span class="icono-almohada" aria-hidden="true">✓</span>
+      Incluye {{ combo.cantidadAlmohadas }}
+      {{ combo.cantidadAlmohadas === 1 ? 'almohada' : 'almohadas' }}
+    </p>
+
     <!-- SELECTOR CONTADO Y CRÉDITO -->
     <div
       class="selector-modalidad"
@@ -108,18 +118,17 @@
           class="precio-anterior"
           *ngIf="combo.descuento > 0"
         >
-          {{ combo.precioContado | currency:'COP':'symbol':'1.0-0' }}
+          {{
+            (combo.precioContado ?? combo.precio)
+              | currency:'COP':'symbol':'1.0-0'
+          }}
         </p>
 
         <!-- PRECIO FINAL CON DESCUENTO -->
         <p class="precio-final">
           {{
-            (
-              combo.descuento > 0
-                ? combo.precioContado -
-                  (combo.precioContado * combo.descuento / 100)
-                : combo.precioContado
-            ) | currency:'COP':'symbol':'1.0-0'
+            obtenerPrecio(combo)
+              | currency:'COP':'symbol':'1.0-0'
           }}
         </p>
 
@@ -142,7 +151,10 @@
         <p>Precio a crédito:</p>
 
         <p class="precio-final">
-          {{ combo.precioCredito | currency:'COP':'symbol':'1.0-0' }}
+          {{
+            (combo.precioCredito ?? combo.precio)
+              | currency:'COP':'symbol':'1.0-0'
+          }}
         </p>
 
         <!-- CUOTA INICIAL -->
@@ -215,6 +227,14 @@
 
     </div>
 
+    <!-- COMPATIBILIDAD CON COMBOS ANTIGUOS -->
+    <p
+      class="precio-final"
+      *ngIf="!combo.vendeContado && !combo.vendeCredito"
+    >
+      {{ combo.precio | currency:'COP':'symbol':'1.0-0' }}
+    </p>
+
     <!-- COMPRAR POR WHATSAPP -->
     <a
       [href]="obtenerLinkWhatsApp(combo)"
@@ -228,4 +248,3 @@
   </div>
 
 </div>
-

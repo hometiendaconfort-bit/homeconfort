@@ -1,470 +1,788 @@
 
-/* CONTENEDOR PRINCIPAL */
+/* =========================================
+   CONTENEDOR PRINCIPAL
+   ========================================= */
+
 .principal {
   width: 100%;
-  max-width: 1600px;
-  margin: 6rem auto 0;
-  padding: 16px;
+  max-width: 1400px;
+  margin-top: 9rem !important;
+  margin: 0 auto;
+  padding: 20px;
   box-sizing: border-box;
-  border-top: 2px solid white;
+  color: #202a35;
 }
 
-.principal h2 {
-  text-align: center;
-  font-size: 22px;
-  margin: 10px 0 18px;
-  color: #222;
-  background: white;
+/* =========================================
+   FILTROS
+   ========================================= */
+
+.filtros-productos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-/* FILTROS */
-.filtros {
+.filtro-modalidad {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 8px;
-  margin: 4rem 0 20px;
 }
 
-.filtros button {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  background: #f6f4f4;
-  color: #2f2d2d;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.filtros button.activo {
-  background: #6a6b6c;
-  color: #fff;
-  border-color: #393a3a;
-}
-
-/* CUADRÍCULA DE PRODUCTOS */
-.productos-contenedor {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 270px));
-  justify-content: center;
-  align-items: stretch;
-  gap: 16px;
-  width: 100%;
-}
-
-/* TARJETA */
-.producto {
-  width: 100%;
-  max-width: 250px;
-  min-width: 0;
-  min-height: 490px;
-  height: auto;
-  box-sizing: border-box;
-  padding: 10px;
+.filtro-modalidad button {
+  padding: 10px 18px;
+  border: 1px solid #d6dce4;
+  border-radius: 8px;
   background: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+  color: #263648;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.filtro-modalidad button:hover,
+.filtro-modalidad button.activo {
+  background: #173f68;
+  color: #fff;
+  border-color: #173f68;
+}
+
+.filtro-color {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filtro-color label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.filtro-color select {
+  max-width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d6dce4;
+  border-radius: 8px;
+  background: #fff;
+  color: #263648;
+  font-size: 14px;
+  outline: none;
+}
+
+.filtro-color select:focus {
+  border-color: #24649c;
+}
+
+/* =========================================
+   CUADRÍCULA DE PRODUCTOS
+   ========================================= */
+
+.productos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 22px;
+  width: 100%;
+}
+
+/* =========================================
+   TARJETA DEL PRODUCTO
+   ========================================= */
+
+.producto-card {
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.2s ease;
-}
-
-.producto:hover {
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
-}
-
-/* IMAGEN */
-.producto-imagen {
-  width: 100%;
-  flex-shrink: 0;
+  min-width: 0;
+  height: 100%;
   overflow: hidden;
+  background: #fff;
+  border: 1px solid #e0e5eb;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(18, 39, 60, 0.07);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.producto-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 7px 20px rgba(18, 39, 60, 0.12);
+}
+
+/* =========================================
+   IMAGEN PRINCIPAL
+   ========================================= */
+
+.producto-imagen {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 200px;
+  width: 100%;
+  height: 200px;
+  min-height: 200px;
+  padding: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-sizing: border-box;
 }
 
 .producto-imagen > img {
   display: block;
   width: 100%;
-  height: 155px;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
-  border-radius: 8px;
-}
-
-/* MINIATURAS */
-.miniaturas {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 6px;
-  overflow-x: auto;
-}
-
-.miniaturas img {
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-  object-fit: cover;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  object-position: center;
   cursor: pointer;
 }
 
-.miniaturas img.activa {
-  border: 2px solid #173b63;
+.etiqueta-descuento {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: #b42332;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-/* INFORMACIÓN */
+/* =========================================
+   INFORMACIÓN DEL PRODUCTO
+   ========================================= */
+
 .producto-info {
   display: flex;
-  flex-direction: column;
   flex: 1;
+  flex-direction: column;
+  align-items: stretch;
   min-width: 0;
-  padding: 7px 2px 2px;
-}
-
-.producto-info .categoria,
-.producto-info .color {
-  display: none;
+  padding: 14px;
+  gap: 8px;
+  box-sizing: border-box;
 }
 
 .producto-info h3 {
-  display: flex;
-  justify-content: center;
-  font-size: 15px;
-  line-height: 1.3;
-  margin: 3px 0 6px;
-  color: #222;
-  overflow-wrap: anywhere;
-}
-
-.producto-info > p {
-  font-size: 12px;
+  margin: 0;
+  color: #173f68;
+  font-size: 17px;
   line-height: 1.35;
-  margin: 3px 0;
-  color: #555;
+  font-weight: 700;
   overflow-wrap: anywhere;
 }
 
-/* SELECTOR CONTADO / CRÉDITO */
-.selector-modalidad {
+.categoria {
+  align-self: flex-start;
+  margin: 0;
+  padding: 4px 8px;
+  border-radius: 5px;
+  background: #edf3f8;
+  color: #315979;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.descripcion {
+  display:none;
+  margin: 0;
+  overflow: hidden;
+  color: #626d79;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* =========================================
+   SELECTOR DE COLORES
+   ========================================= */
+
+.selector-colores {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+}
+
+.texto-color {
+  margin: 0;
+  color: #505c69;
+  font-size: 13px;
+}
+
+.texto-color strong {
+  color: #202a35;
+}
+
+.opciones-colores {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin: 7px 0;
-  flex-shrink: 0;
+  align-items: center;
+  gap: 9px;
 }
 
-.selector-modalidad label {
+/* Círculos de color */
+.opcion-color {
+  display: block;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid #d0d5dc;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+/* Ocultar las imágenes dentro de los botones de color */
+.opcion-color img {
+  display: none !important;
+}
+
+/* Efecto al pasar el cursor */
+.opcion-color:hover {
+  border-color: #7895b1;
+  transform: scale(1.06);
+}
+
+/* Color seleccionado */
+.opcion-color.seleccionado {
+  border: 2px solid #173f68;
+  box-shadow: 0 0 0 2px rgba(23, 63, 104, 0.2);
+}
+
+/* Accesibilidad del selector */
+.opcion-color:focus-visible {
+  outline: 2px solid #24649c;
+  outline-offset: 3px;
+}
+
+/* =========================================
+   MINIATURAS DE IMÁGENES
+   ========================================= */
+
+.miniaturas-producto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+}
+
+.miniatura {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 5px 7px;
-  border: 1px solid #ddd;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  padding: 3px;
+  overflow: hidden;
+  border: 1px solid #dce2e9;
   border-radius: 7px;
-  font-size: 11px;
+  background: #fff;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
-.selector-modalidad label.seleccionada {
-  background: #edf3f9;
-  border-color: #173b63;
-  color: #173b63;
+.miniatura img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.selector-modalidad input {
+.miniatura:hover,
+.miniatura.seleccionada {
+  border-color: #173f68;
+  box-shadow: 0 0 0 1px #173f68;
+}
+
+/* =========================================
+   BOTONES CONTADO Y CRÉDITO
+   ========================================= */
+
+.modalidades-pago {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.modalidades-pago button {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  width: 50%;
+  padding: 10px 5px;
+  border: 1px solid #173f68;
+  border-radius: 7px;
+  background: #fff;
+  color: #173f68;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.modalidades-pago button:hover,
+.modalidades-pago button.activo {
+  background: #173f68;
+  color: #fff;
+}
+
+/* =========================================
+   PRECIOS
+   ========================================= */
+
+.precios-producto {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+  padding: 11px;
+  border-radius: 8px;
+  background: #f5f8fb;
+  box-sizing: border-box;
+}
+
+.etiqueta-precio {
   margin: 0;
-  accent-color: #173b63;
-}
-
-/* PRECIOS Y FINANCIACIÓN */
-.bloque-precios {
-  min-height: 125px;
-  flex-shrink: 0;
-  margin-top: 4px;
-}
-
-.bloque-precios p {
+  color: #536475;
   font-size: 12px;
-  line-height: 1.4;
-  margin: 5px 0;
-  overflow-wrap: anywhere;
+  font-weight: 600;
 }
 
-.producto-info .precio {
-  font-size: 14px;
-  font-weight: bold;
-  color: #173b63;
-  margin: 5px 0;
-}
-
-.producto-info .precio-anterior {
-  font-size: 11px;
-  color: #888;
+.precio-anterior {
+  margin: 0;
+  color: #7c8792;
+  font-size: 13px;
   text-decoration: line-through;
 }
 
-.producto-info .descuento {
-  display: inline-block;
-  width: fit-content;
-  padding: 3px 6px;
-  border-radius: 5px;
-  background: #e5f5e9;
-  color: #18763a;
-  font-size: 10px;
-  font-weight: bold;
-}
-
-.producto-info .oferta-badge {
-  color: #b42318;
-  font-weight: bold;
-  font-size: 11px;
-}
-
-/* SELECTOR DE FRECUENCIA */
-.selector-frecuencia {
-  margin: 8px 0;
-  padding: 8px;
-  border: 1px solid #e0e5eb;
-  border-radius: 8px;
-  background: #f7f9fc;
-}
-
-.selector-frecuencia > p {
-  margin: 0 0 7px;
-  color: #333;
-  font-size: 11px;
-  line-height: 1.35;
-}
-
-.opciones-frecuencia {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.opciones-frecuencia label {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 8px;
-  border: 1px solid #d5dce5;
-  border-radius: 7px;
-  background: #fff;
-  color: #333;
-  font-size: 11px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.opciones-frecuencia label.seleccionada {
-  background: #e8f0fa;
-  border-color: #173b63;
-  color: #173b63;
-  font-weight: bold;
-}
-
-.opciones-frecuencia input {
+.precio-actual {
   margin: 0;
-  accent-color: #173b63;
-}
-
-/* BOTONES */
-.btn-detalle,
-.btn-whatsapp {
-  display: block;
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 36px;
-  padding: 9px 6px;
-  border-radius: 7px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 12px;
+  color: #173f68;
+  font-size: 21px;
   line-height: 1.3;
-  font-weight: bold;
-  cursor: pointer;
-  flex-shrink: 0;
-  white-space: normal;
+  font-weight: 800;
   overflow-wrap: anywhere;
 }
 
-.btn-detalle {
+.dato-financiacion {
+  margin: 0;
+  color: #465565;
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   BOTONES QUINCENAL Y MENSUAL
+   ========================================= */
+
+.frecuencias-pago {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 4px;
+  box-sizing: border-box;
+}
+
+.frecuencias-pago button {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  width: 50%;
+  padding: 8px 4px;
+  border: 1px solid #cbd6e1;
+  border-radius: 7px;
+  background: #fff;
+  color: #344454;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.frecuencias-pago button:hover,
+.frecuencias-pago button.activo {
+  border-color: #24649c;
+  background: #e5eff8;
+  color: #173f68;
+}
+
+.valor-cuota {
+  margin: 3px 0 0;
+  color: #173f68;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.numero-cuotas {
+  margin: 0;
+  color: #5c6875;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   BOTONES DE ACCIÓN
+   ========================================= */
+
+.acciones-producto {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
   margin-top: auto;
-  background: #173b63;
+  padding-top: 8px;
+  box-sizing: border-box;
+}
+
+.btn-detalle,
+.btn-whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.3;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.btn-detalle {
+  border-color: #173f68;
+  background: #173f68;
   color: #fff;
-  border: none;
 }
 
 .btn-detalle:hover {
-  background: #0e2946;
+  background: #102e4d;
 }
 
 .btn-whatsapp {
-  margin-top: 6px;
-  background: #25d366;
-  color: #fff;
-  border: none;
+  border-color: #218b52;
+  background: #fff;
+  color: #187744;
 }
 
 .btn-whatsapp:hover {
-  background: #1eaf55;
+  background: #eaf7ef;
 }
 
-/* TABLET */
-@media (max-width: 768px) {
-  .principal {
-    padding: 12px 8px;
-    margin-top: 3rem;
-  }
+/* =========================================
+   MENSAJE SIN PRODUCTOS
+   ========================================= */
 
-  .principal h2 {
-    font-size: 20px;
-  }
-
-  .productos-contenedor {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 230px));
-    gap: 12px;
-  }
-
-  .producto {
-    max-width: 230px;
-    min-height: 470px;
-    padding: 9px;
-  }
-
-  .producto-imagen > img {
-    height: 145px;
-  }
-
-  .bloque-precios {
-    min-height: 120px;
-  }
+.sin-productos {
+  width: 100%;
+  padding: 35px 15px;
+  color: #596675;
+  text-align: center;
+  box-sizing: border-box;
 }
 
-/* CELULAR */
-@media (max-width: 480px) {
-  .principal {
-    padding: 10px 8px;
-    margin-top: 6rem;
+.sin-productos p {
+  margin: 0;
+  font-size: 15px;
+}
+
+/* =========================================
+   TABLET
+   ========================================= */
+
+@media (max-width: 1100px) {
+  .productos-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
   }
 
-  .principal h2 {
-    font-size: 18px;
-    margin-bottom: 14px;
-  }
-
-  .filtros {
-    gap: 6px;
-    margin-top: 4rem;
-  }
-
-  .filtros button {
-    padding: 5px 7px;
-    font-size: 11px;
-  }
-
-  .productos-contenedor {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .producto {
-    max-width: none;
-    min-height: 440px;
-    height: auto;
-    padding: 7px;
-    border-radius: 9px;
-  }
-
-  .producto-imagen > img {
-    height: 110px;
-  }
-
-  .miniaturas {
-    gap: 4px;
-    margin-top: 5px;
-  }
-
-  .miniaturas img {
-    width: 27px;
-    height: 27px;
+  .producto-imagen {
+    flex-basis: 190px;
+    height: 190px;
+    min-height: 190px;
   }
 
   .producto-info {
-    padding-top: 6px;
+    padding: 12px;
+  }
+}
+
+/* =========================================
+   TABLET PEQUEÑA
+   ========================================= */
+
+@media (max-width: 800px) {
+  .principal {
+    padding: 14px;
+  }
+
+  .productos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .producto-imagen {
+    flex-basis: 175px;
+    height: 175px;
+    min-height: 175px;
   }
 
   .producto-info h3 {
-    font-size: 13px;
-    margin: 3px 0 5px;
+    font-size: 16px;
   }
 
-  .producto-info > p {
-    font-size: 10px;
-    line-height: 1.3;
-    margin: 3px 0;
+  .precio-actual {
+    font-size: 19px;
+  }
+}
+
+/* =========================================
+   CELULARES
+   ========================================= */
+
+@media (max-width: 480px) {
+  .principal {
+    padding: 9px;
   }
 
-  .selector-modalidad {
-    gap: 4px;
-    margin: 6px 0;
+  .filtros-productos {
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 16px;
   }
 
-  .selector-modalidad label {
-    padding: 5px;
-    font-size: 10px;
+  .filtro-modalidad {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 5px;
+    width: 100%;
   }
 
-  .bloque-precios {
-    min-height: 115px;
-  }
-
-  .bloque-precios p {
-    font-size: 10px;
-    line-height: 1.35;
-    margin: 4px 0;
-  }
-
-  .bloque-precios p.precio {
+  .filtro-modalidad button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 9px 4px;
     font-size: 12px;
   }
 
-  .producto-info .precio-anterior {
-    font-size: 10px;
+  .filtro-color {
+    align-items: center;
+    width: 100%;
   }
 
-  .producto-info .descuento,
-  .producto-info .oferta-badge {
-    font-size: 10px;
+  .filtro-color label {
+    font-size: 12px;
   }
 
-  .selector-frecuencia {
+  .filtro-color select {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 7px;
+    font-size: 12px;
+  }
+
+  .productos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .producto-card {
+    border-radius: 9px;
+  }
+
+  .producto-imagen {
+    flex-basis: 140px;
+    height: 140px;
+    min-height: 140px;
     padding: 6px;
-    margin: 6px 0;
   }
 
-  .selector-frecuencia > p {
+  .etiqueta-descuento {
+    top: 6px;
+    left: 6px;
+    padding: 4px 6px;
     font-size: 10px;
-    margin-bottom: 5px;
   }
 
-  .opciones-frecuencia {
-    gap: 4px;
+  .producto-info {
+    padding: 8px;
+    gap: 7px;
   }
 
-  .opciones-frecuencia label {
-    padding: 5px;
+  .producto-info h3 {
+    font-size: 14px;
+    line-height: 1.3;
+  }
+
+  .categoria {
+    padding: 3px 6px;
     font-size: 10px;
+  }
+
+  .descripcion {
+    font-size: 11px;
+    line-height: 1.4;
+    -webkit-line-clamp: 3;
+  }
+
+  .texto-color {
+    font-size: 11px;
+  }
+
+  .opciones-colores {
+    gap: 8px;
+  }
+
+  .opcion-color {
+    flex-basis: 25px;
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+  }
+
+  .miniaturas-producto {
+    gap: 5px;
+  }
+
+  .miniatura {
+    width: 37px;
+    height: 37px;
+    flex-basis: 37px;
+  }
+
+  .modalidades-pago,
+  .frecuencias-pago {
+    gap: 5px;
+  }
+
+  .modalidades-pago button {
+    padding: 9px 3px;
+    font-size: 11px;
+  }
+
+  .precios-producto {
+    padding: 8px;
+    gap: 5px;
+  }
+
+  .etiqueta-precio {
+    font-size: 10px;
+  }
+
+  .precio-anterior {
+    font-size: 11px;
+  }
+
+  .precio-actual {
+    font-size: 16px;
+  }
+
+  .dato-financiacion {
+    font-size: 11px;
+  }
+
+  .frecuencias-pago button {
+    padding: 8px 2px;
+    font-size: 10px;
+  }
+
+  .valor-cuota {
+    font-size: 12px;
+  }
+
+  .numero-cuotas {
+    font-size: 10px;
+  }
+
+  .acciones-producto {
+    gap: 6px;
   }
 
   .btn-detalle,
   .btn-whatsapp {
-    padding: 8px 4px;
-    font-size: 10px;
-    min-height: 34px;
-  }
-
-  .btn-whatsapp {
-    margin-top: 5px;
+    min-height: 36px;
+    padding: 8px 5px;
+    font-size: 11px;
   }
 }
 
+/* =========================================
+   CELULARES MUY ESTRECHOS
+   ========================================= */
+
+@media (max-width: 350px) {
+  .productos-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .producto-imagen {
+    flex-basis: 180px;
+    height: 180px;
+    min-height: 180px;
+  }
+
+  .producto-info {
+    padding: 12px;
+  }
+
+  .producto-info h3 {
+    font-size: 16px;
+  }
+
+  .precio-actual {
+    font-size: 20px;
+  }
+}

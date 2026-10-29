@@ -92,6 +92,16 @@
         {{ combo.descripcion }}
       </p>
 
+      <!-- ALMOHADAS INCLUIDAS -->
+      <p
+        class="combo-almohadas"
+        *ngIf="combo.incluyeAlmohadas && combo.cantidadAlmohadas > 0"
+      >
+        <span class="icono-almohada" aria-hidden="true">✓</span>
+        Incluye {{ combo.cantidadAlmohadas }}
+        {{ combo.cantidadAlmohadas === 1 ? 'almohada' : 'almohadas' }}
+      </p>
+
       <!-- SELECTOR DE MODALIDAD -->
       <div
         class="selector-modalidad"
@@ -183,7 +193,7 @@
 
         </div>
 
-        <!-- SOLO PAGO QUINCENAL -->
+        <!-- PAGO QUINCENAL -->
         <ng-container
           *ngIf="combo.vendeQuincenal && (!combo.vendeMensual || obtenerFrecuencia(combo) === 'quincenal')"
         >
@@ -200,7 +210,7 @@
 
         </ng-container>
 
-        <!-- SOLO PAGO MENSUAL -->
+        <!-- PAGO MENSUAL -->
         <ng-container
           *ngIf="combo.vendeMensual && (!combo.vendeQuincenal || obtenerFrecuencia(combo) === 'mensual')"
         >
@@ -231,10 +241,11 @@
       <div class="combo-botones">
 
         <button
+          type="button"
           (click)="$event.stopPropagation(); verDetalleCombo(combo.docId)"
           class="btn-detalle"
         >
-          Ver Detalle
+          Ver detalle
         </button>
 
         <a

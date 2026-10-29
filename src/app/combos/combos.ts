@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-combos',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './combos.html',
   styleUrl: './combos.css',
@@ -70,6 +71,15 @@ export class CombosComponent implements OnInit {
           combo.vendeMensual ??
           (Number(combo.mensual) > 0);
 
+        // ALMOHADAS: COMPATIBILIDAD CON COMBOS ANTIGUOS
+        const incluyeAlmohadas =
+          combo.incluyeAlmohadas ?? false;
+
+        const cantidadAlmohadas =
+          incluyeAlmohadas
+            ? Math.max(0, Math.floor(Number(combo.cantidadAlmohadas) || 0))
+            : 0;
+
         const comboAdaptado = {
           ...combo,
           vendeContado,
@@ -78,6 +88,8 @@ export class CombosComponent implements OnInit {
           precioCredito,
           vendeQuincenal,
           vendeMensual,
+          incluyeAlmohadas,
+          cantidadAlmohadas,
           imagenActiva: combo.imagen
         };
 
@@ -110,6 +122,7 @@ export class CombosComponent implements OnInit {
     }
   }
 
+  // OBTENGO UN PRODUCTO POR SU ID DE FIRESTORE
   obtenerProducto(docId: string) {
     return this.productosLista.find(
       producto => producto.docId === docId
@@ -164,6 +177,7 @@ export class CombosComponent implements OnInit {
       (combo.vendeQuincenal ? 'quincenal' : 'mensual');
   }
 
+  // ABRO EL DETALLE DEL COMBO
   verDetalleCombo(docId: string) {
     this.combos.productoParaVolver = docId;
     this.router.navigate(['/combo-detalle', docId]);
@@ -181,6 +195,7 @@ export class CombosComponent implements OnInit {
     return Number(precio) || 0;
   }
 
+  // RESTAURO LA POSICION DEL COMBO AL VOLVER DEL DETALLE
   restaurarProducto() {
     const docId = this.combos.productoParaVolver;
 
@@ -212,7 +227,8 @@ export class CombosComponent implements OnInit {
     setTimeout(buscarCombo, 100);
   }
 
-  // GENERO EL MENSAJE DE WHATSAPP CON LA MODALIDAD Y FRECUENCIA ELEGIDAS
+  // GENERO EL MENSAJE DE WHATSAPP CON MODALIDAD,
+  // FRECUENCIA DE PAGO Y ALMOHADAS INCLUIDAS
   obtenerLinkWhatsApp(combo: any): string {
     const modalidad = this.obtenerModalidad(combo);
     const precio = this.precioFinal(combo, modalidad);
@@ -223,6 +239,16 @@ export class CombosComponent implements OnInit {
     let mensaje =
       `Hola! Estoy interesado en el combo ${combo.nombre}. ` +
       `Precio de ${nombreModalidad}: ${precio.toLocaleString('es-CO')} pesos.`;
+
+    // INFORMACION DE ALMOHADAS
+    if (combo.incluyeAlmohadas && combo.cantidadAlmohadas > 0) {
+      const cantidad = combo.cantidadAlmohadas;
+      const textoAlmohadas = cantidad === 1
+        ? 'almohada'
+        : 'almohadas';
+
+      mensaje += ` Incluye ${cantidad} ${textoAlmohadas}.`;
+    }
 
     if (modalidad === 'credito') {
 
