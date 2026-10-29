@@ -558,7 +558,7 @@
 
 @media (max-width: 480px) {
   .detalle-container {
-    margin-top: 6rem;
+    margin-top: 12rem !important;
     padding: 10px;
     gap: 20px;
   }

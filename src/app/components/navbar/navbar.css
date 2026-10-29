@@ -32,11 +32,11 @@ body {
   color:#f8f5f5;
   font-size:11px;
   text-align:center;
-  padding:6px 10px;
+  padding:6px 6px;
   display:flex;
   justify-content:center;
   align-items:center;
-  gap:8px;
+  gap:7px;
   letter-spacing:0.2px;
 }
 .pay-badge{
