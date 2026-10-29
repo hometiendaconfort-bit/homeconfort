@@ -410,6 +410,7 @@
 
 @media (max-width: 420px) {
   .admin-productos {
+    margin-top: 11rem !important;
     padding: 12px;
   }
 
