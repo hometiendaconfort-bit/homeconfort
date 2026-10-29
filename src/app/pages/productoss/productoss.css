@@ -1,21 +1,18 @@
 
-/* =========================================
-   CONTENEDOR PRINCIPAL
-   ========================================= */
+:host {
+  display: block;
+  background: #fff;
+  color: #202a35;
+}
 
 .principal {
   width: 100%;
   max-width: 1400px;
-  margin-top: 9rem !important;
   margin: 0 auto;
+  margin-top: 9rem !important;
   padding: 20px;
   box-sizing: border-box;
-  color: #202a35;
 }
-
-/* =========================================
-   FILTROS
-   ========================================= */
 
 .filtros-productos {
   display: flex;
@@ -26,9 +23,11 @@
   margin-bottom: 24px;
 }
 
-.filtro-modalidad {
+.filtro-modalidad,
+.filtro-color {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
 }
 
@@ -41,7 +40,7 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background .2s, color .2s;
 }
 
 .filtro-modalidad button:hover,
@@ -49,13 +48,6 @@
   background: #173f68;
   color: #fff;
   border-color: #173f68;
-}
-
-.filtro-color {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
 }
 
 .filtro-color label {
@@ -78,10 +70,6 @@
   border-color: #24649c;
 }
 
-/* =========================================
-   CUADRÍCULA DE PRODUCTOS
-   ========================================= */
-
 .productos-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -90,32 +78,24 @@
   width: 100%;
 }
 
-/* =========================================
-   TARJETA DEL PRODUCTO
-   ========================================= */
-
 .producto-card {
   display: flex;
   flex-direction: column;
   min-width: 0;
   height: 100%;
   overflow: hidden;
+  box-sizing: border-box;
   background: #fff;
   border: 1px solid #e0e5eb;
   border-radius: 12px;
-  box-shadow: 0 3px 12px rgba(18, 39, 60, 0.07);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-sizing: border-box;
+  box-shadow: 0 3px 12px rgba(18,39,60,.07);
+  transition: transform .2s, box-shadow .2s;
 }
 
 .producto-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 7px 20px rgba(18, 39, 60, 0.12);
+  box-shadow: 0 7px 20px rgba(18,39,60,.12);
 }
-
-/* =========================================
-   IMAGEN PRINCIPAL
-   ========================================= */
 
 .producto-imagen {
   position: relative;
@@ -128,8 +108,8 @@
   min-height: 200px;
   padding: 10px;
   overflow: hidden;
-  background: #fff;
   box-sizing: border-box;
+  background: #fff;
 }
 
 .producto-imagen > img {
@@ -155,10 +135,6 @@
   font-size: 12px;
   font-weight: 700;
 }
-
-/* =========================================
-   INFORMACIÓN DEL PRODUCTO
-   ========================================= */
 
 .producto-info {
   display: flex;
@@ -192,7 +168,7 @@
 }
 
 .descripcion {
-  display:none;
+  display: none;
   margin: 0;
   overflow: hidden;
   color: #626d79;
@@ -202,10 +178,6 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
-
-/* =========================================
-   SELECTOR DE COLORES
-   ========================================= */
 
 .selector-colores {
   display: flex;
@@ -232,7 +204,6 @@
   gap: 9px;
 }
 
-/* Círculos de color */
 .opcion-color {
   display: block;
   flex: 0 0 28px;
@@ -246,38 +217,27 @@
   background: #fff;
   cursor: pointer;
   box-sizing: border-box;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
+  transition: border-color .2s, box-shadow .2s, transform .2s;
 }
 
-/* Ocultar las imágenes dentro de los botones de color */
 .opcion-color img {
   display: none !important;
 }
 
-/* Efecto al pasar el cursor */
 .opcion-color:hover {
   border-color: #7895b1;
   transform: scale(1.06);
 }
 
-/* Color seleccionado */
 .opcion-color.seleccionado {
-  border: 2px solid #173f68;
-  box-shadow: 0 0 0 2px rgba(23, 63, 104, 0.2);
+  border-color: #173f68;
+  box-shadow: 0 0 0 2px rgba(23,63,104,.2);
 }
 
-/* Accesibilidad del selector */
 .opcion-color:focus-visible {
   outline: 2px solid #24649c;
   outline-offset: 3px;
 }
-
-/* =========================================
-   MINIATURAS DE IMÁGENES
-   ========================================= */
 
 .miniaturas-producto {
   display: flex;
@@ -291,9 +251,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 48px;
   width: 48px;
   height: 48px;
-  flex: 0 0 48px;
   padding: 3px;
   overflow: hidden;
   border: 1px solid #dce2e9;
@@ -316,13 +276,9 @@
   box-shadow: 0 0 0 1px #173f68;
 }
 
-/* =========================================
-   BOTONES CONTADO Y CRÉDITO
-   ========================================= */
-
-.modalidades-pago {
+.modalidades-pago,
+.frecuencias-pago {
   display: flex;
-  flex-direction: row;
   flex-wrap: nowrap;
   align-items: stretch;
   gap: 8px;
@@ -331,24 +287,28 @@
   box-sizing: border-box;
 }
 
-.modalidades-pago button {
+.modalidades-pago button,
+.frecuencias-pago button {
   display: flex;
   flex: 1 1 0;
   align-items: center;
   justify-content: center;
-  min-width: 0;
   width: 50%;
+  min-width: 0;
+  border-radius: 7px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background .2s, color .2s;
+}
+
+.modalidades-pago button {
   padding: 10px 5px;
   border: 1px solid #173f68;
-  border-radius: 7px;
   background: #fff;
   color: #173f68;
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
-  cursor: pointer;
-  box-sizing: border-box;
-  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .modalidades-pago button:hover,
@@ -356,10 +316,6 @@
   background: #173f68;
   color: #fff;
 }
-
-/* =========================================
-   PRECIOS
-   ========================================= */
 
 .precios-producto {
   display: flex;
@@ -405,40 +361,18 @@
   overflow-wrap: anywhere;
 }
 
-/* =========================================
-   BOTONES QUINCENAL Y MENSUAL
-   ========================================= */
-
 .frecuencias-pago {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: stretch;
-  gap: 8px;
-  width: 100%;
-  min-width: 0;
   margin-top: 4px;
-  box-sizing: border-box;
 }
 
 .frecuencias-pago button {
-  display: flex;
-  flex: 1 1 0;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  width: 50%;
   padding: 8px 4px;
   border: 1px solid #cbd6e1;
-  border-radius: 7px;
   background: #fff;
   color: #344454;
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
-  cursor: pointer;
-  box-sizing: border-box;
-  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .frecuencias-pago button:hover,
@@ -464,10 +398,6 @@
   line-height: 1.4;
   overflow-wrap: anywhere;
 }
-
-/* =========================================
-   BOTONES DE ACCIÓN
-   ========================================= */
 
 .acciones-producto {
   display: flex;
@@ -499,7 +429,7 @@
   overflow-wrap: anywhere;
   cursor: pointer;
   box-sizing: border-box;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background .2s, color .2s;
 }
 
 .btn-detalle {
@@ -522,10 +452,6 @@
   background: #eaf7ef;
 }
 
-/* =========================================
-   MENSAJE SIN PRODUCTOS
-   ========================================= */
-
 .sin-productos {
   width: 100%;
   padding: 35px 15px;
@@ -538,10 +464,6 @@
   margin: 0;
   font-size: 15px;
 }
-
-/* =========================================
-   TABLET
-   ========================================= */
 
 @media (max-width: 1100px) {
   .productos-grid {
@@ -559,10 +481,6 @@
     padding: 12px;
   }
 }
-
-/* =========================================
-   TABLET PEQUEÑA
-   ========================================= */
 
 @media (max-width: 800px) {
   .principal {
@@ -589,10 +507,6 @@
   }
 }
 
-/* =========================================
-   CELULARES
-   ========================================= */
-
 @media (max-width: 480px) {
   .principal {
     padding: 9px;
@@ -605,7 +519,6 @@
   }
 
   .filtro-modalidad {
-    display: flex;
     flex-wrap: nowrap;
     gap: 5px;
     width: 100%;
@@ -619,7 +532,6 @@
   }
 
   .filtro-color {
-    align-items: center;
     width: 100%;
   }
 
@@ -675,7 +587,6 @@
   .descripcion {
     font-size: 11px;
     line-height: 1.4;
-    -webkit-line-clamp: 3;
   }
 
   .texto-color {
@@ -698,9 +609,9 @@
   }
 
   .miniatura {
+    flex-basis: 37px;
     width: 37px;
     height: 37px;
-    flex-basis: 37px;
   }
 
   .modalidades-pago,
@@ -758,10 +669,6 @@
     font-size: 11px;
   }
 }
-
-/* =========================================
-   CELULARES MUY ESTRECHOS
-   ========================================= */
 
 @media (max-width: 350px) {
   .productos-grid {
