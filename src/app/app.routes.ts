@@ -47,6 +47,11 @@ export const routes: Routes = [
    },
 
     {
+     path: 'productoss', 
+     component: Productoss
+   },
+
+    {
     path: 'carrito',
     component: CarritoPage
   },
