@@ -80,6 +80,6 @@ export class CarritoPage {
     mensaje += `TOTAL: ${this.formatearPrecio(this.obtenerTotal())}\n\n`;
     mensaje += 'Quedo atento para confirmar mi pedido.';
 
-    return `https://wa.me/573046637509?text=${encodeURIComponent(mensaje)}`;
+    return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
   }
 }
