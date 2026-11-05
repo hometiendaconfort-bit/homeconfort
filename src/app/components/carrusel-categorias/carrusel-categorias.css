@@ -47,8 +47,8 @@
 }
 
 .boton-categoria.activa {
-  background: #2563eb;
-  border-color: #2563eb;
+  background: #818282;
+  border-color: #9fa0a2;
   color: #ffffff;
 }
 
@@ -58,7 +58,7 @@
   height: 35px;
   border: none;
   border-radius: 4px;
-  background: #eeeeee;
+  background-image: url(/assets/img/fondo4.jpeg);
   color: #333333;
   font-size: 15px;
   cursor: pointer;

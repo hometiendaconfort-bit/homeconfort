@@ -1,10 +1,14 @@
 /* DISEÑO GENERAL DE MI PAGINA */
 
-html, body {
+html,
+body {
   width: 100%;
-  overflow-x:hidden;
+  min-height: 100%;
+  margin-top: 4.2rem !important;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+
   background-image: url(/assets/img/fondop.jpg);
   background-size: cover;
   background-position: center;
@@ -12,5 +16,7 @@ html, body {
   background-attachment: fixed;
 }
 
-
+* {
+  box-sizing: border-box;
+}
 

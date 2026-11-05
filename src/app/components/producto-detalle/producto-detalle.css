@@ -19,9 +19,7 @@
 
 .detalle-container {
   width: 100%;
-  max-width: 1400px;
-  margin-top: 9rem !important;
-  margin: 5rem auto 4px;
+  
   padding: 25px;
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
