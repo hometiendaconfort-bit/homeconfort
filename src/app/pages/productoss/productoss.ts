@@ -2,8 +2,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
+
 import { ProductosService } from '../../services/producto.service';
 import { SearchService } from '../../services/search.service';
+import { Carrito, ProductoCarrito } from '../../services/carrito';
+
 import {
   BehaviorSubject,
   combineLatest,
@@ -51,14 +54,15 @@ export class Productoss implements OnInit {
     private productosService: ProductosService,
     private route: ActivatedRoute,
     private searchService: SearchService,
-    private router: Router
+    private router: Router,
+    private carrito: Carrito
   ) {}
 
   ngOnInit(): void {
 
-    // Lee la categoría desde /categoria/:slug.
-    // También admite una categoría enviada por query params.
+    // LEER CATEGORÍA DESDE LA RUTA.
     this.route.paramMap.subscribe(params => {
+
       this.slug =
         params.get('slug') ||
         params.get('categoria');
@@ -66,8 +70,9 @@ export class Productoss implements OnInit {
       this.actualizarProductosFiltrados();
     });
 
+    // LEER FILTROS DESDE LA URL.
     this.route.queryParamMap.subscribe(params => {
-      // Permite usar también ?categoria=colchon o ?slug=colchon.
+
       if (
         params.has('categoria') ||
         params.has('slug')
@@ -90,7 +95,9 @@ export class Productoss implements OnInit {
       }
     });
 
+    // OBTENER PRODUCTOS DE FIREBASE.
     this.productosService.getProductos().subscribe({
+
       next: data => {
 
         this.productos = data.map(p => {
@@ -126,6 +133,7 @@ export class Productoss implements OnInit {
           const variantesColor: VarianteColor[] =
             Array.isArray(p.variantesColor) &&
             p.variantesColor.length > 0
+
               ? p.variantesColor.map((v: any) => {
 
                   const imagenPrincipal =
@@ -153,6 +161,7 @@ export class Productoss implements OnInit {
                       .join(', ')
                   };
                 })
+
               : [{
                   color: String(p.color ?? '').trim(),
                   imagen: String(p.imagen ?? '').trim(),
@@ -206,6 +215,7 @@ export class Productoss implements OnInit {
           };
         });
 
+        // CONFIGURAR VARIANTES, IMÁGENES Y MODALIDADES.
         this.productos.forEach(p => {
 
           const id = String(p.id);
@@ -240,6 +250,7 @@ export class Productoss implements OnInit {
           }
         });
 
+        // OBTENER COLORES DISPONIBLES.
         this.colores = Array.from(
           new Set(
             this.productos.flatMap(p =>
@@ -252,20 +263,19 @@ export class Productoss implements OnInit {
           )
         ).filter(Boolean);
 
-        // Actualiza la lista cuando llegan los productos de Firebase.
         this.actualizarProductosFiltrados();
 
         setTimeout(() => this.restaurarProducto(), 100);
       },
+
       error: err => console.error('Error cargando productos', err)
+
     });
   }
 
-  /**
-   * Normaliza nombres para comparar categorías
-   * sin distinguir mayúsculas, tildes, guiones o espacios repetidos.
-   */
+  // NORMALIZAR CATEGORÍAS.
   private normalizarCategoria(valor: unknown): string {
+
     return String(valor ?? '')
       .trim()
       .toLowerCase()
@@ -275,11 +285,9 @@ export class Productoss implements OnInit {
       .replace(/\s+/g, ' ');
   }
 
-  /**
-   * Convierte el nombre del color guardado en Firebase
-   * a un color CSS para mostrarlo en el selector.
-   */
+  // CONVERTIR COLOR A CSS.
   obtenerColorCSS(color: string): string {
+
     const nombre = (color || '')
       .trim()
       .toLowerCase()
@@ -311,10 +319,7 @@ export class Productoss implements OnInit {
     return coloresCSS[nombre] || '#d9d9d9';
   }
 
-  /**
-   * Mantiene activos los filtros de búsqueda, modalidad,
-   * color y categoría.
-   */
+  // ACTUALIZAR PRODUCTOS FILTRADOS.
   private actualizarProductosFiltrados(): void {
 
     this.productosFiltrados$ = combineLatest([
@@ -322,6 +327,7 @@ export class Productoss implements OnInit {
       this.tipoSeleccionado$,
       this.colorSeleccionado$
     ]).pipe(
+
       map(([textoBusqueda, tipo, color]) => {
 
         const txt = (textoBusqueda || '')
@@ -387,7 +393,9 @@ export class Productoss implements OnInit {
     );
   }
 
+  // NORMALIZAR IMÁGENES ANTIGUAS.
   private normalizarImagenesAntiguas(p: any): string[] {
+
     const principal = String(p.imagen ?? '').trim();
 
     const adicionales: string[] = Array.isArray(p.imagenes)
@@ -403,7 +411,9 @@ export class Productoss implements OnInit {
     ];
   }
 
+  // OBTENER VARIANTE ACTIVA.
   obtenerVarianteActiva(p: any): VarianteColor | null {
+
     const variantes: VarianteColor[] = p.variantesColor ?? [];
 
     if (!variantes.length) return null;
@@ -413,7 +423,9 @@ export class Productoss implements OnInit {
     return variantes[indice] ?? variantes[0];
   }
 
+  // SELECCIONAR COLOR.
   seleccionarColor(p: any, indice: number): void {
+
     const variantes: VarianteColor[] = p.variantesColor ?? [];
 
     if (!variantes[indice]) return;
@@ -431,13 +443,17 @@ export class Productoss implements OnInit {
     p.imagenActiva = imagen;
   }
 
+  // COMPROBAR VARIANTE ACTIVA.
   esVarianteActiva(p: any, indice: number): boolean {
+
     return (
       (this.varianteSeleccionada[String(p.id)] ?? 0) === indice
     );
   }
 
+  // OBTENER IMÁGENES ACTIVAS.
   obtenerImagenesActivas(p: any): string[] {
+
     const variante = this.obtenerVarianteActiva(p);
 
     if (variante) {
@@ -451,7 +467,9 @@ export class Productoss implements OnInit {
     return this.normalizarImagenesAntiguas(p);
   }
 
+  // OBTENER IMAGEN ACTIVA.
   obtenerImagenActiva(p: any): string {
+
     const id = String(p.id);
     const imagenElegida = this.imagenSeleccionada[id];
     const imagenes = this.obtenerImagenesActivas(p);
@@ -463,13 +481,18 @@ export class Productoss implements OnInit {
     return imagenes[0] || p.imagenActiva || p.imagen || '';
   }
 
+  // SELECCIONAR IMAGEN.
   seleccionarImagen(p: any, imagen: string): void {
+
     const id = String(p.id);
+
     this.imagenSeleccionada[id] = imagen;
     p.imagenActiva = imagen;
   }
 
+  // FILTRAR PRODUCTOS.
   filtrar(tipo: string, color: string): void {
+
     this.tipoSeleccionado$.next(tipo);
     this.colorSeleccionado$.next(color);
 
@@ -477,10 +500,12 @@ export class Productoss implements OnInit {
     this.colorActual = color;
   }
 
+  // SELECCIONAR MODALIDAD.
   seleccionarModalidad(
     p: any,
     modalidad: Modalidad
   ): void {
+
     const id = String(p.id);
 
     if (modalidad === 'contado' && p.vendeContado) {
@@ -492,17 +517,21 @@ export class Productoss implements OnInit {
     }
   }
 
+  // OBTENER MODALIDAD.
   obtenerModalidad(p: any): Modalidad {
+
     const id = String(p.id);
 
     return this.modalidadProducto[id] ??
       (p.vendeCredito ? 'credito' : 'contado');
   }
 
+  // SELECCIONAR FRECUENCIA.
   seleccionarFrecuencia(
     p: any,
     frecuencia: Frecuencia
   ): void {
+
     if (
       frecuencia === 'quincenal' &&
       Number(p.quincenal) > 0
@@ -518,7 +547,9 @@ export class Productoss implements OnInit {
     }
   }
 
+  // OBTENER FRECUENCIA.
   obtenerFrecuencia(p: any): Frecuencia {
+
     const id = String(p.id);
     const seleccionada = this.frecuenciaProducto[id];
 
@@ -541,27 +572,37 @@ export class Productoss implements OnInit {
       : 'mensual';
   }
 
+  // OBTENER VALOR DE CUOTA.
   obtenerValorCuota(p: any): number {
+
     return this.obtenerFrecuencia(p) === 'mensual'
       ? Number(p.mensual ?? 0)
       : Number(p.quincenal ?? 0);
   }
 
+  // OBTENER NÚMERO DE CUOTAS.
   obtenerNumeroCuotas(p: any): number {
+
     return this.obtenerFrecuencia(p) === 'mensual'
       ? Number(p.numeroCuotasMensual ?? 0)
       : Number(p.numeroCuotasQuincenal ?? 0);
   }
 
+  // CAMBIAR IMAGEN.
   cambiarImagen(p: any, img: string): void {
+
     this.seleccionarImagen(p, img);
   }
 
+  // PRECIO ORIGINAL.
   precioOriginal(p: any): number {
+
     return Number(p.precioContado ?? p.precio ?? 0);
   }
 
+  // CALCULAR PRECIO FINAL.
   precioFinal(p: any, modalidad?: string): number {
+
     const modo =
       modalidad && modalidad !== 'todos'
         ? modalidad
@@ -583,7 +624,9 @@ export class Productoss implements OnInit {
       : precioBase;
   }
 
+  // FORMATEAR PRECIO.
   private formatearPrecio(valor: number): string {
+
     return Number(valor || 0).toLocaleString('es-CO', {
       style: 'currency',
       currency: 'COP',
@@ -591,7 +634,9 @@ export class Productoss implements OnInit {
     });
   }
 
+  // ENVIAR PRODUCTO INDIVIDUAL POR WHATSAPP.
   obtenerLinkWhatsApp(p: any): string {
+
     const modalidad = this.obtenerModalidad(p);
     const precio = this.precioFinal(p, modalidad);
     const variante = this.obtenerVarianteActiva(p);
@@ -632,16 +677,88 @@ export class Productoss implements OnInit {
     return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
   }
 
+  // =====================================
+  // CARRITO DE COMPRAS
+  // =====================================
+
+  agregarAlCarrito(p: any): void {
+
+    if (!p) {
+      alert('No se pudo identificar el producto.');
+      return;
+    }
+
+    const modalidad = this.obtenerModalidad(p);
+    const frecuencia = this.obtenerFrecuencia(p);
+    const variante = this.obtenerVarianteActiva(p);
+
+    const color = variante?.color || p.color || 'Sin especificar';
+
+    const id = String(p.id ?? p.docId ?? p.nombre);
+
+    const clave = [
+      id,
+      modalidad,
+      color,
+      modalidad === 'credito' ? frecuencia : 'unico'
+    ].join('-');
+
+    const nuevoProducto: ProductoCarrito = {
+
+      clave,
+
+      // ESTE CAMPO ERA EL QUE FALTABA.
+      id: p.id ?? p.docId ?? p.nombre,
+
+      nombre: p.nombre,
+
+      imagen: this.obtenerImagenActiva(p),
+
+      color,
+
+      modalidad,
+
+      precio: this.precioFinal(p, modalidad),
+
+      inicial: modalidad === 'credito'
+        ? Number(p.inicial ?? 0)
+        : 0,
+
+      frecuencia,
+
+      valorCuota: modalidad === 'credito'
+        ? this.obtenerValorCuota(p)
+        : 0,
+
+      numeroCuotas: modalidad === 'credito'
+        ? this.obtenerNumeroCuotas(p)
+        : 0,
+
+      cantidad: 1
+    };
+
+    this.carrito.agregarProducto(nuevoProducto);
+
+    alert('¡Producto agregado al carrito!');
+  }
+
+  // VER DETALLE DEL PRODUCTO.
   verDetalle(id: number | string): void {
+
     this.productosService.productoParaVolver = id as number;
+
     this.router.navigate(['/productos', id]);
   }
 
+  // IDENTIFICAR PRODUCTOS EN LA LISTA.
   productosId(_index: number, item: any): number {
+
     return item.id;
   }
 
+  // RESTAURAR POSICIÓN DEL PRODUCTO.
   restaurarProducto(): void {
+
     const id = this.productosService.productoParaVolver;
 
     if (id == null) return;
@@ -650,15 +767,18 @@ export class Productoss implements OnInit {
     const maxIntentos = 20;
 
     const buscarProducto = () => {
+
       const elemento = document.getElementById(`producto-${id}`);
 
       if (elemento) {
+
         elemento.scrollIntoView({
           behavior: 'auto',
           block: 'center'
         });
 
         this.productosService.productoParaVolver = null;
+
         return;
       }
 
@@ -671,4 +791,5 @@ export class Productoss implements OnInit {
 
     setTimeout(buscarProducto, 100);
   }
+
 }

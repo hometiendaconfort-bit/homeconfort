@@ -190,8 +190,8 @@ border: white 2px solid;
 .bxl-whatsapp,
 .bxl-instagram,
 .bxl-facebook {
-  background: #FFFFFF !important;
-  border: 1px solid #EAE0D5 !important;
+  
+
   padding: 2px;
 }
 
@@ -211,13 +211,15 @@ border: white 2px solid;
   color: #4a4949;
 }
 
-.bx-store {
-  color: #FFFFFF;
-  background: #040404;
+.bx-store,.bx-cart {
+  color: #5b5959;
+  font-size: 20px;
   border-radius: 50%;
   border: 1px solid #FFFFFF;
-  padding: 5px;
+  padding: 2px;
 }
+
+
 
 /* =========================
    BUSCADOR MÓVIL

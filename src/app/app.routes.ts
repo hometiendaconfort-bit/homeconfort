@@ -9,7 +9,7 @@ import { Productoss } from './pages/productoss/productoss';
 import { productsResolver } from './products-resolver';
 import { ProductoDetalleComponent } from './components/producto-detalle/producto-detalle';
 import { ComboDetalleComponent } from './combos-detalle/combos-detalle';
-
+import { CarritoPage } from './pages/carrito/carrito';
 //IMPORT DE LOS SERVICIOS
 import { Productos } from './services/productos';
 import { CarrucelService } from './services/carrucel.service';
@@ -45,6 +45,11 @@ export const routes: Routes = [
      path: 'requisitos', 
      component: Requisitos
    },
+
+    {
+    path: 'carrito',
+    component: CarritoPage
+  },
 
    {
      path: 'carrucel',

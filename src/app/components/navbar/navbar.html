@@ -10,9 +10,7 @@
   <div class="nav-container">
     <!-- Izquierda: Menu + Logo -->
     <div class="nav-left">
-      <button class="menu-btn" (click)="toggleSidebar()">
-        <i class="bx bx-menu"></i>
-      </button>
+     
       <a routerLink="/login" class="logos">
         <img src="assets/img/logo2.jpeg" alt="Logo CONFORT HOME" class="logo-img">
         <span class="logo">CONFORT<br>HOME DEL EJE</span>
@@ -22,7 +20,6 @@
     <!-- Centro: Buscador arriba -->
     <div class="nav-center">
       <a routerLink="/home" class="nav-link-desktop">Inicio</a>
-      <a routerLink="/home" class="nav-link-desktop">Combos</a>
       <a routerLink="/productoss" class="nav-link-desktop">Productos</a>
     </div>
 
@@ -31,12 +28,16 @@
         <input type="text"
                placeholder="Buscar colchón, manilla, base cama..."
                (input)="buscar($any($event.target).value)">
+                 <a routerLink="/carrito" aria-label="Carrito">
+        <i class="bx bx-cart"></i>
+      </a>
         <a routerLink="/productoss"><i class="bx bx-store"></i></a>
     </div>
 
     <!-- Derecha: Iconos limpios -->
     <div class="nav-right">
-      <a routerLink="/"><i class="bx bxs-home"></i></a>
+    
+      <a routerLink="/"><i class="bx bx-home"></i></a>
       <a href="https://www.instagram.com/conforthoome" target="_blank"><i class='bx bxl-instagram'></i></a>
       <a href="https://w.app/confort_home" target="_blank"><i class='bx bxl-whatsapp'></i></a>
       <a href="https://www.facebook.com/people/Confort-HOME/100084116541948/" target="_blank"><i class='bx bxl-facebook'></i></a>
@@ -49,6 +50,9 @@
     <input type="text"
            placeholder="Buscar colchón, manilla, base cama..."
            (input)="buscar($any($event.target).value)">
+             <a routerLink="/carrito" aria-label="Carrito">
+        <i class="bx bx-cart"></i>
+      </a>
     <a routerLink="/productoss"><i class="bx bx-store"></i></a>
   </div>
 

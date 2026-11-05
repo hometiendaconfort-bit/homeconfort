@@ -290,6 +290,17 @@
               Ver producto
             </button>
 
+            <!-- AGREGAR AL CARRITO -->
+            <button
+              type="button"
+              class="btn-carrito"
+              (click)="agregarAlCarrito(producto)"
+            >
+              <span>🛒</span>
+              Agregar al carrito
+            </button>
+
+            <!-- WHATSAPP -->
             <a
               class="btn-whatsapp"
               [href]="obtenerLinkWhatsApp(producto)"
