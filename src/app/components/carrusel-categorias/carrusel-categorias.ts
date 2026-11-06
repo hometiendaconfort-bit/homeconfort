@@ -16,7 +16,7 @@ export class CarruselCategorias {
 
   categorias: { nombre: string; ruta: string }[] = [
     { nombre: 'Colchones', ruta: '/categoria/colchon' },
-    { nombre: 'Espalday y base cama', ruta: '/categoria/espaldaroBaseCama' },
+    { nombre: 'Espaldar y base cama', ruta: '/categoria/espaldaroBaseCama' },
        { nombre: 'Camas', ruta: '/categoria/cama' },
     { nombre: 'Armarios', ruta: '/categoria/armario' },
     { nombre: 'Comedores', ruta: '/categoria/comedor' },
@@ -25,7 +25,7 @@ export class CarruselCategorias {
     { nombre: 'nocheros', ruta: '/categoria/nochero' },
     { nombre: 'Almohadas y Más', ruta: '/categoria/almohada' },
     { nombre: 'Joyas', ruta: '/categoria/joyas' }
-    
+
    
   ];
 
