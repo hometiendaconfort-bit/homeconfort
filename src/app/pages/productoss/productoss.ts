@@ -1,5 +1,5 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { CarruselCategorias } from '../../components/carrusel-categorias/carrusel-categorias';
@@ -11,7 +11,9 @@ import {
   BehaviorSubject,
   combineLatest,
   map,
-  Observable
+  Observable,
+  Subject,
+  takeUntil
 } from 'rxjs';
 
 type Modalidad = 'contado' | 'credito';
@@ -31,7 +33,7 @@ interface VarianteColor {
   templateUrl: './productoss.html',
   styleUrls: ['./productoss.css']
 })
-export class Productoss implements OnInit {
+export class Productoss implements OnInit, OnDestroy {
 
   productos: any[] = [];
   colores: string[] = [];
@@ -50,6 +52,8 @@ export class Productoss implements OnInit {
 
   productosFiltrados$!: Observable<any[]>;
 
+  private destruir$ = new Subject<void>();
+
   constructor(
     private productosService: ProductosService,
     private route: ActivatedRoute,
@@ -61,216 +65,247 @@ export class Productoss implements OnInit {
   ngOnInit(): void {
 
     // LEER CATEGORÍA DESDE LA RUTA.
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap
+      .pipe(takeUntil(this.destruir$))
+      .subscribe(params => {
 
-      this.slug =
-        params.get('slug') ||
-        params.get('categoria');
+        this.slug =
+          params.get('slug') ||
+          params.get('categoria');
 
-      this.actualizarProductosFiltrados();
-    });
+        this.actualizarProductosFiltrados();
+      });
 
     // LEER FILTROS DESDE LA URL.
-    this.route.queryParamMap.subscribe(params => {
+    this.route.queryParamMap
+      .pipe(takeUntil(this.destruir$))
+      .subscribe(params => {
 
-      if (
-        params.has('categoria') ||
-        params.has('slug')
-      ) {
-        this.slug =
-          params.get('categoria') ||
-          params.get('slug');
+        if (
+          params.has('categoria') ||
+          params.has('slug')
+        ) {
+          this.slug =
+            params.get('categoria') ||
+            params.get('slug');
 
-        this.actualizarProductosFiltrados();
+          this.actualizarProductosFiltrados();
+        }
+
+        const tipo = params.get('tipo');
+
+        if (
+          tipo === 'contado' ||
+          tipo === 'credito' ||
+          tipo === 'todos'
+        ) {
+          this.filtrar(tipo, this.colorActual);
+        }
+      });
+
+    // RECIBIR LOS PRODUCTOS CARGADOS POR EL RESOLVER.
+    this.route.data
+      .pipe(takeUntil(this.destruir$))
+      .subscribe({
+
+        next: data => {
+
+          const productosRecibidos = data['productos'];
+
+          if (!Array.isArray(productosRecibidos)) {
+            console.error(
+              'El resolver no entregó una lista válida de productos.'
+            );
+            this.productos = [];
+            this.actualizarProductosFiltrados();
+            return;
+          }
+
+          this.procesarProductos(productosRecibidos);
+        },
+
+        error: err => {
+          console.error('Error recibiendo productos del resolver:', err);
+        }
+
+      });
+  }
+
+  ngOnDestroy(): void {
+
+    this.destruir$.next();
+    this.destruir$.complete();
+  }
+
+  // PROCESAR Y NORMALIZAR PRODUCTOS.
+  private procesarProductos(data: any[]): void {
+
+    this.productos = data.map(p => {
+
+      const vendeContado =
+        p.vendeContado ??
+        (
+          p.tipo === 'contado' ||
+          p.tipo === 'ambos' ||
+          (!p.tipo && p.precio != null)
+        );
+
+      const vendeCredito =
+        p.vendeCredito ??
+        (
+          p.tipo === 'credito' ||
+          p.tipo === 'ambos'
+        );
+
+      const precioContado =
+        p.precioContado ??
+        (p.tipo !== 'credito' ? p.precio ?? null : null);
+
+      const precioCredito =
+        p.precioCredito ??
+        (p.tipo !== 'contado' ? p.precio ?? null : null);
+
+      const frecuenciaAntigua: Frecuencia =
+        p.frecuenciaPago === 'mensual'
+          ? 'mensual'
+          : 'quincenal';
+
+      const variantesColor: VarianteColor[] =
+        Array.isArray(p.variantesColor) &&
+        p.variantesColor.length > 0
+
+          ? p.variantesColor.map((v: any) => {
+
+              const imagenPrincipal =
+                String(v.imagen ?? '').trim();
+
+              const adicionales = Array.isArray(v.imagenes)
+                ? v.imagenes
+                : String(v.imagenesTexto ?? '')
+                    .split(',')
+                    .map((url: string) => url.trim())
+                    .filter(Boolean);
+
+              const imagenes = [
+                ...new Set(
+                  [imagenPrincipal, ...adicionales].filter(Boolean)
+                )
+              ];
+
+              return {
+                color: String(v.color ?? '').trim(),
+                imagen: imagenPrincipal,
+                imagenes,
+                imagenesTexto: imagenes
+                  .filter(url => url !== imagenPrincipal)
+                  .join(', ')
+              };
+            })
+
+          : [{
+              color: String(p.color ?? '').trim(),
+              imagen: String(p.imagen ?? '').trim(),
+              imagenes: this.normalizarImagenesAntiguas(p),
+              imagenesTexto: ''
+            }];
+
+      const imagenes = Array.isArray(p.imagenes)
+        ? p.imagenes
+        : [];
+
+      const quincenal = Number(p.quincenal ?? 0);
+      const mensual = Number(p.mensual ?? 0);
+
+      const numeroCuotasQuincenal = Number(
+        p.numeroCuotasQuincenal ??
+        (
+          frecuenciaAntigua === 'quincenal'
+            ? p.numeroCuotas ?? 0
+            : 0
+        )
+      );
+
+      const numeroCuotasMensual = Number(
+        p.numeroCuotasMensual ??
+        (
+          frecuenciaAntigua === 'mensual'
+            ? p.numeroCuotas ?? 0
+            : 0
+        )
+      );
+
+      return {
+        ...p,
+        vendeContado,
+        vendeCredito,
+        precioContado,
+        precioCredito,
+        inicial: Number(p.inicial ?? 0),
+        quincenal,
+        mensual,
+        numeroCuotasQuincenal,
+        numeroCuotasMensual,
+        frecuenciaPago: frecuenciaAntigua,
+        numeroCuotas: Number(p.numeroCuotas ?? 0),
+        variantesColor,
+        imagenes,
+        imagenActiva:
+          p.imagenActiva ||
+          (imagenes.length ? imagenes[0] : p.imagen)
+      };
+    });
+
+    // CONFIGURAR VARIANTES, IMÁGENES Y MODALIDADES.
+    this.productos.forEach(p => {
+
+      const id = String(p.id);
+
+      this.varianteSeleccionada[id] = 0;
+
+      const primeraVariante = p.variantesColor?.[0];
+
+      const primeraImagen =
+        primeraVariante?.imagen ||
+        p.imagenActiva ||
+        p.imagen ||
+        '';
+
+      this.imagenSeleccionada[id] = primeraImagen;
+
+      if (p.vendeCredito) {
+        this.modalidadProducto[id] = 'credito';
+      } else if (p.vendeContado) {
+        this.modalidadProducto[id] = 'contado';
       }
 
-      const tipo = params.get('tipo');
-
-      if (
-        tipo === 'contado' ||
-        tipo === 'credito' ||
-        tipo === 'todos'
+      if (p.mensual > 0 && p.quincenal <= 0) {
+        this.frecuenciaProducto[id] = 'mensual';
+      } else if (
+        p.frecuenciaPago === 'mensual' &&
+        p.mensual > 0
       ) {
-        this.filtrar(tipo, this.colorActual);
+        this.frecuenciaProducto[id] = 'mensual';
+      } else {
+        this.frecuenciaProducto[id] = 'quincenal';
       }
     });
 
-    // OBTENER PRODUCTOS DE FIREBASE.
-    this.productosService.getProductos().subscribe({
+    // OBTENER COLORES DISPONIBLES.
+    this.colores = Array.from(
+      new Set(
+        this.productos.flatMap(p =>
+          p.variantesColor?.length
+            ? p.variantesColor.map(
+                (v: VarianteColor) => v.color
+              )
+            : [p.color]
+        )
+      )
+    ).filter(Boolean);
 
-      next: data => {
+    this.actualizarProductosFiltrados();
 
-        this.productos = data.map(p => {
-
-          const vendeContado =
-            p.vendeContado ??
-            (
-              p.tipo === 'contado' ||
-              p.tipo === 'ambos' ||
-              (!p.tipo && p.precio != null)
-            );
-
-          const vendeCredito =
-            p.vendeCredito ??
-            (
-              p.tipo === 'credito' ||
-              p.tipo === 'ambos'
-            );
-
-          const precioContado =
-            p.precioContado ??
-            (p.tipo !== 'credito' ? p.precio ?? null : null);
-
-          const precioCredito =
-            p.precioCredito ??
-            (p.tipo !== 'contado' ? p.precio ?? null : null);
-
-          const frecuenciaAntigua: Frecuencia =
-            p.frecuenciaPago === 'mensual'
-              ? 'mensual'
-              : 'quincenal';
-
-          const variantesColor: VarianteColor[] =
-            Array.isArray(p.variantesColor) &&
-            p.variantesColor.length > 0
-
-              ? p.variantesColor.map((v: any) => {
-
-                  const imagenPrincipal =
-                    String(v.imagen ?? '').trim();
-
-                  const adicionales = Array.isArray(v.imagenes)
-                    ? v.imagenes
-                    : String(v.imagenesTexto ?? '')
-                        .split(',')
-                        .map((url: string) => url.trim())
-                        .filter(Boolean);
-
-                  const imagenes = [
-                    ...new Set(
-                      [imagenPrincipal, ...adicionales].filter(Boolean)
-                    )
-                  ];
-
-                  return {
-                    color: String(v.color ?? '').trim(),
-                    imagen: imagenPrincipal,
-                    imagenes,
-                    imagenesTexto: imagenes
-                      .filter(url => url !== imagenPrincipal)
-                      .join(', ')
-                  };
-                })
-
-              : [{
-                  color: String(p.color ?? '').trim(),
-                  imagen: String(p.imagen ?? '').trim(),
-                  imagenes: this.normalizarImagenesAntiguas(p),
-                  imagenesTexto: ''
-                }];
-
-          const imagenes = Array.isArray(p.imagenes)
-            ? p.imagenes
-            : [];
-
-          const quincenal = Number(p.quincenal ?? 0);
-          const mensual = Number(p.mensual ?? 0);
-
-          const numeroCuotasQuincenal = Number(
-            p.numeroCuotasQuincenal ??
-            (
-              frecuenciaAntigua === 'quincenal'
-                ? p.numeroCuotas ?? 0
-                : 0
-            )
-          );
-
-          const numeroCuotasMensual = Number(
-            p.numeroCuotasMensual ??
-            (
-              frecuenciaAntigua === 'mensual'
-                ? p.numeroCuotas ?? 0
-                : 0
-            )
-          );
-
-          return {
-            ...p,
-            vendeContado,
-            vendeCredito,
-            precioContado,
-            precioCredito,
-            inicial: Number(p.inicial ?? 0),
-            quincenal,
-            mensual,
-            numeroCuotasQuincenal,
-            numeroCuotasMensual,
-            frecuenciaPago: frecuenciaAntigua,
-            numeroCuotas: Number(p.numeroCuotas ?? 0),
-            variantesColor,
-            imagenes,
-            imagenActiva:
-              p.imagenActiva ||
-              (imagenes.length ? imagenes[0] : p.imagen)
-          };
-        });
-
-        // CONFIGURAR VARIANTES, IMÁGENES Y MODALIDADES.
-        this.productos.forEach(p => {
-
-          const id = String(p.id);
-
-          this.varianteSeleccionada[id] = 0;
-
-          const primeraVariante = p.variantesColor?.[0];
-
-          const primeraImagen =
-            primeraVariante?.imagen ||
-            p.imagenActiva ||
-            p.imagen ||
-            '';
-
-          this.imagenSeleccionada[id] = primeraImagen;
-
-          if (p.vendeCredito) {
-            this.modalidadProducto[id] = 'credito';
-          } else if (p.vendeContado) {
-            this.modalidadProducto[id] = 'contado';
-          }
-
-          if (p.mensual > 0 && p.quincenal <= 0) {
-            this.frecuenciaProducto[id] = 'mensual';
-          } else if (
-            p.frecuenciaPago === 'mensual' &&
-            p.mensual > 0
-          ) {
-            this.frecuenciaProducto[id] = 'mensual';
-          } else {
-            this.frecuenciaProducto[id] = 'quincenal';
-          }
-        });
-
-        // OBTENER COLORES DISPONIBLES.
-        this.colores = Array.from(
-          new Set(
-            this.productos.flatMap(p =>
-              p.variantesColor?.length
-                ? p.variantesColor.map(
-                    (v: VarianteColor) => v.color
-                  )
-                : [p.color]
-            )
-          )
-        ).filter(Boolean);
-
-        this.actualizarProductosFiltrados();
-
-        setTimeout(() => this.restaurarProducto(), 100);
-      },
-
-      error: err => console.error('Error cargando productos', err)
-
-    });
+    setTimeout(() => this.restaurarProducto(), 100);
   }
 
   // NORMALIZAR CATEGORÍAS.
@@ -707,7 +742,6 @@ export class Productoss implements OnInit {
 
       clave,
 
-      // ESTE CAMPO ERA EL QUE FALTABA.
       id: p.id ?? p.docId ?? p.nombre,
 
       nombre: p.nombre,

@@ -11,7 +11,6 @@ body {
 /* CONTENEDOR GENERAL */
 .contenedor-general {
   display: grid;
-  padding-bottom: 0 !important;
   gap: 12px;
   padding: 4px 7px;
   grid-template-columns: 3fr 1fr;
@@ -27,8 +26,7 @@ body {
   width: 100%;
   overflow: hidden;
   position: relative;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
+ 
 }
 
 .carrucel-inicio {
@@ -38,10 +36,11 @@ body {
 .carrucel-imagen {
   display: block;
   width: 100%;
-  max-height: 400px;
+  max-height: 370px;
   margin: 0 auto;
   object-fit: fill;
   border-radius: 6px;
+  background-color: #f9f9f9;
 }
 
 /* FLECHAS DEL CARRUSEL */
@@ -71,13 +70,13 @@ body {
 /* CONTENEDOR DE CATEGORÍAS EN COMPUTADOR */
 .links-carrucel {
   display: grid;
-  padding-top: 2rem;
+ 
   grid-template-columns: repeat(3, minmax(0, 130px));
   justify-content: center;
   justify-items: stretch;
   align-content: start;
   gap: 10px;
-  margin: 8px;
+ 
 }
 
 /* TARJETAS CUADRADAS */
@@ -316,7 +315,7 @@ body {
     gap: 3px;
     width: 100%;
     margin: 0;
-    margin-bottom: 0.8rem;
+    
     padding: 8px 4px 8px;
   }
 
