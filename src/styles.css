@@ -25,7 +25,7 @@ body {
 @media (max-width: 480px) {
   html,
   .body {
-    margin-top: 7rem !important;
+    margin-top: 7.5rem !important;
     
   }
    }
