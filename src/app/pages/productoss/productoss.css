@@ -229,12 +229,12 @@
 }
 
 .opcion-color.seleccionado {
-  border-color: #173f68;
+  border-color: #F9F5F0;
   box-shadow: 0 0 0 2px rgba(23,63,104,.2);
 }
 
 .opcion-color:focus-visible {
-  outline: 2px solid #24649c;
+  outline: 2px solid #F9F5F0;
   outline-offset: 3px;
 }
 
@@ -271,7 +271,7 @@
 
 .miniatura:hover,
 .miniatura.seleccionada {
-  border-color: #173f68;
+  border-color: #F9F5F0;
   box-shadow: 0 0 0 1px #173f68;
 }
 
@@ -302,7 +302,7 @@
 
 .modalidades-pago button {
   padding: 10px 5px;
-  border: 1px solid #173f68;
+  border: 1px solid #0c0c0c;
   background: #fff;
   color: #173f68;
   font-size: 13px;
@@ -313,7 +313,7 @@
 .modalidades-pago button:hover,
 .modalidades-pago button.activo {
   background: #F9F5F0;
- color: #263648;
+ color: #173f68;
 }
 
 .precios-producto {
@@ -354,7 +354,7 @@
 
 .dato-financiacion {
   margin: 0;
-  color: #465565;
+  color: #a7a8a9;
   font-size: 13px;
   line-height: 1.4;
   overflow-wrap: anywhere;
@@ -362,13 +362,14 @@
 
 .frecuencias-pago {
   margin-top: 4px;
+  background: #fff
 }
 
 .frecuencias-pago button {
   padding: 8px 4px;
   border: 1px solid #cbd6e1;
   background: #fff;
-  color: #344454;
+  color: #060606;
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
@@ -376,9 +377,9 @@
 
 .frecuencias-pago button:hover,
 .frecuencias-pago button.activo {
-  border-color: #24649c;
+  border-color: #050505;
   background: #e5eff8;
-  color: #173f68;
+  color: #050505;
 }
 
 .valor-cuota {
@@ -439,7 +440,7 @@
 }
 
 .btn-detalle:hover {
-  background: #102e4d;
+  background: #F9F5F0;
 }
 
 .btn-carrito {
