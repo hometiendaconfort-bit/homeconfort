@@ -44,9 +44,9 @@
 
 .filtro-modalidad button:hover,
 .filtro-modalidad button.activo {
-  background: #173f68;
-  color: #fff;
-  border-color: #173f68;
+  background: #F9F5F0;
+ color: #263648;
+  border-color: #f6f8f9;
 }
 
 .filtro-color label {
@@ -66,7 +66,7 @@
 }
 
 .filtro-color select:focus {
-  border-color: #24649c;
+  border-color: #f4f5f6;
 }
 
 .productos-grid {
@@ -312,8 +312,8 @@
 
 .modalidades-pago button:hover,
 .modalidades-pago button.activo {
-  background: #173f68;
-  color: #fff;
+  background: #F9F5F0;
+ color: #263648;
 }
 
 .precios-producto {
@@ -434,8 +434,8 @@
 
 .btn-detalle {
   border-color: #173f68;
-  background: #173f68;
-  color: #fff;
+  background: #F9F5F0;
+  color: #263648;
 }
 
 .btn-detalle:hover {
