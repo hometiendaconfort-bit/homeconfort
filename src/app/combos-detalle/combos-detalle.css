@@ -1,13 +1,11 @@
 
-/* ========================================
-   FONDO GENERAL Y CONTENEDOR PRINCIPAL
-======================================== */
+/*FONDO GENERAL Y CONTENEDOR PRINCIPAL*/
 
 :host {
   display: block;
   min-height: 100vh;
   background: #ffffff;
-  color: #1f2937;
+  color: #0c0c0c;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -15,19 +13,15 @@
   width: 100%;
   max-width: 1250px;
   min-height: 100vh;
- 
-  margin-bottom: 1rem !important;
   margin: 0 auto;
   padding: 30px 24px 50px;
   box-sizing: border-box;
-
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
   align-items: start;
   gap: 38px;
-
   background: #ffffff;
-  color: #1f2937;
+  color: #040404;
 }
 
 .detalle-container *,
@@ -36,53 +30,41 @@
   box-sizing: border-box;
 }
 
-/* ========================================
-   GALERÍA
-======================================== */
+/*GALERÍA*/
 
 .detalle-galeria {
   width: 100%;
   min-width: 0;
-
   display: grid;
   grid-template-columns: 76px minmax(0, 1fr);
   align-items: start;
   gap: 16px;
-
   background: #ffffff;
 }
 
-/* ========================================
-   MINIATURAS Y BOTÓN VOLVER
-======================================== */
+/*MINIATURAS Y BOTÓN VOLVER*/
 
 .miniaturas-vertical {
   width: 100%;
   min-width: 0;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
-
   background: #ffffff;
 }
 
 .volver {
   width: 100%;
-  min-height: 38px;
+  min-height: 48px;
   padding: 8px 5px;
-
   border: 1px solid #d1d5db;
   border-radius: 8px;
-
   background: #ffffff;
-  color: #123b66;
-
+  color: #070707;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-
   transition:
     background 0.2s ease,
     color 0.2s ease,
@@ -90,9 +72,9 @@
 }
 
 .volver:hover {
-  background: #123b66;
-  border-color: #123b66;
-  color: #ffffff;
+  background: #fff;;
+  border-color: #616263;
+  color: #0f0f0f;
 }
 
 .miniaturas-vertical img {
@@ -100,16 +82,12 @@
   width: 100%;
   height: 78px;
   padding: 3px;
-
-  object-fit: contain;
+  object-fit: fill;
   object-position: center;
-
   background: #ffffff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #919295;
   border-radius: 9px;
-
   cursor: pointer;
-
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
@@ -117,31 +95,26 @@
 }
 
 .miniaturas-vertical img:hover {
-  border-color: #2563eb;
+  border-color: #676768;
   transform: translateY(-1px);
 }
 
 .miniaturas-vertical img.activa {
-  border: 2px solid #174a7e;
+  border: 2px solid #717273;
   box-shadow: 0 0 0 2px rgba(23, 74, 126, 0.12);
 }
 
-/* ========================================
-   IMAGEN PRINCIPAL
-======================================== */
+/*IMAGEN PRINCIPAL*/
 
 .imagen-principal {
   width: 100%;
   min-width: 0;
   height: 490px;
   padding: 18px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   overflow: hidden;
-
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 14px;
@@ -151,34 +124,27 @@
   display: block;
   width: 100%;
   height: 100%;
-
-  object-fit: contain;
+  object-fit: fill;
   object-position: center;
-
   background: #ffffff;
 }
 
-/* ========================================
-   INFORMACIÓN DEL COMBO
-======================================== */
+/* INFORMACION DEL COMBO */
 
 .detalle-info {
   width: 100%;
   min-width: 0;
   padding: 8px 0;
-
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 16px;
-
   background: #ffffff;
 }
 
 .detalle-info h1 {
   margin: 0;
-
-  color: #123b66;
+  color: #0b0b0b;
   font-size: clamp(25px, 2.5vw, 34px);
   line-height: 1.2;
   font-weight: 750;
@@ -188,31 +154,24 @@
 
 .descripcion {
   margin: 0;
-
   color: #5b6472;
   font-size: 15px;
   line-height: 1.7;
-
   overflow-wrap: anywhere;
 }
 
-/* ========================================
-   ALMOHADAS INCLUIDAS
-======================================== */
+/* ALMOHADAS INCLUIDAS */
 
 .combo-almohadas {
   display: flex;
   align-items: center;
   gap: 9px;
-
   margin: 0;
   padding: 12px 14px;
-
-  color: #17603a;
+  color: #060606;
   background: #effaf3;
   border: 1px solid #c9efd5;
   border-radius: 9px;
-
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
@@ -222,50 +181,39 @@
   flex: 0 0 22px;
   width: 22px;
   height: 22px;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   background: #d5f5df;
   border-radius: 50%;
-
-  color: #16733c;
+  color: #090909;
   font-size: 14px;
   font-weight: 800;
 }
 
-/* ========================================
-   SELECTOR CONTADO / CRÉDITO
-======================================== */
+/*SELECTOR CONTADO / CRÉDITO*/
 
 .selector-modalidad {
   width: 100%;
   padding: 5px;
-
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-
   background: #f1f5f9;
   border-radius: 10px;
 }
 
 .selector-modalidad button {
   min-width: 0;
-  min-height: 44px;
+  min-height: 10px;
   padding: 10px;
-
   border: 1px solid transparent;
   border-radius: 7px;
-
   background: transparent;
-  color: #475569;
-
+  color: #0e0e0f;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-
   transition:
     color 0.2s ease,
     background 0.2s ease,
@@ -273,18 +221,16 @@
 }
 
 .selector-modalidad button:hover {
-  color: #123b66;
+  color: #0a0a0a;
 }
 
 .selector-modalidad button.activo {
-  color: #ffffff;
-  background: #123b66;
+  color: #080808;
+  background: #FFF;
   box-shadow: 0 2px 6px rgba(18, 59, 102, 0.18);
 }
 
-/* ========================================
-   SECCIÓN DE PRECIOS
-======================================== */
+/*SECCIÓN DE PRECIOS*/
 
 .precios {
   width: 100%;
@@ -296,18 +242,16 @@
   width: 100%;
   min-width: 0;
   padding: 18px;
-
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
-
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
 }
 
-/* Solo se muestra la modalidad seleccionada */
+/*SOLO SE MUESTRA LA MODALIDAD SELECCIONADA*/
 
 .precio-modalidad.invisible {
   display: none;
@@ -315,15 +259,13 @@
 
 .precio-modalidad > p {
   margin: 0;
-
   color: #475569;
   font-size: 14px;
   line-height: 1.5;
-
   overflow-wrap: anywhere;
 }
 
-/* Precio anterior */
+/*PRECIO ANTERIOR*/
 
 .precio-modalidad .precio-anterior {
   color: #8a929e;
@@ -331,44 +273,36 @@
   text-decoration: line-through;
 }
 
-/* Precio final */
+/*PRECIO FINAL*/
 
 .precio-modalidad .precio-final,
 .detalle-info > .precio-final {
   margin: 0;
-
-  color: #123b66;
+  color: #090909;
   font-size: clamp(25px, 2.6vw, 32px);
   line-height: 1.2;
   font-weight: 800;
-
   overflow-wrap: anywhere;
 }
 
-/* Descuento */
+/* DESCUENTO */
 
 .precio-modalidad .descuento {
   display: inline-flex;
   align-items: center;
-
   padding: 5px 10px;
-
   color: #a32121;
   background: #feecec;
   border-radius: 6px;
-
   font-size: 13px;
   font-weight: 700;
 }
 
-/* ========================================
-   SELECTOR DE FRECUENCIA
-======================================== */
+/*SELECTOR DE FRECUENCIA*/
 
 .selector-frecuencia {
   width: 100%;
   margin-top: 5px;
-
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
@@ -378,13 +312,10 @@
   min-width: 0;
   min-height: 42px;
   padding: 9px 7px;
-
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-
   background: #ffffff;
-  color: #475569;
-
+  color: #020202;
   font-size: 12px;
   font-weight: 700;
   line-height: 1.3;
@@ -397,68 +328,55 @@
 }
 
 .selector-frecuencia button:hover {
-  border-color: #174a7e;
-  color: #174a7e;
+  border-color: #5d5e5e;
+  color: #090909;
 }
 
 .selector-frecuencia button.activo {
-  border-color: #174a7e;
+  border-color: #515252;
   background: #eaf2fb;
-  color: #123b66;
+  color: #0c0c0c;
 }
 
-/* ========================================
-   INFORMACIÓN DE CUOTAS
-======================================== */
+/*INFORMACIÓN DE CUOTAS*/
 
 .informacion-cuotas {
   width: 100%;
   margin-top: 5px;
   padding-top: 13px;
-
   display: flex;
   flex-direction: column;
   gap: 9px;
-
   background: #ffffff;
   border-top: 1px solid #e2e8f0;
 }
 
 .informacion-cuotas p {
   margin: 0;
-
   color: #374151;
   font-size: 14px;
   line-height: 1.5;
-
   overflow-wrap: anywhere;
 }
 
-/* ========================================
-   BOTÓN WHATSAPP
-======================================== */
+/*BOTON WHATSAPP*/
 
 .btn-whatsapp {
   width: 100%;
   min-height: 50px;
   padding: 14px 18px;
-
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-
   border: none;
   border-radius: 9px;
-
-  background: #16864a;
+  background: #0d3c0d;
   color: #ffffff;
-
   font-size: 15px;
   font-weight: 700;
   line-height: 1.4;
   text-decoration: none;
-
   overflow-wrap: anywhere;
 
   transition:
@@ -473,9 +391,7 @@
   transform: translateY(-1px);
 }
 
-/* ========================================
-   TABLET
-======================================== */
+/*TABLET*/
 
 @media (max-width: 900px) {
   .detalle-container {
@@ -507,9 +423,7 @@
   }
 }
 
-/* ========================================
-   CELULARES
-======================================== */
+/*CELULARES*/
 
 @media (max-width: 650px) {
   .detalle-container {
@@ -595,13 +509,10 @@
   }
 }
 
-/* ========================================
-   CELULARES PEQUEÑOS
-======================================== */
+/*CELULARES PEQUEÑOS*/
 
 @media (max-width: 480px) {
   .detalle-container {
-    margin-top: 12rem !important;
     padding-right: 10px;
     padding-left: 10px;
   }

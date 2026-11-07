@@ -1,7 +1,5 @@
 
-/* ========================================
-   TITULO DE COMBOS
-======================================== */
+/*TITULO DE COMBOS*/
 
 .titulo-combos {
   display: block;
@@ -12,9 +10,7 @@
   text-align: center;
 }
 
-/* ========================================
-   CARRUSEL HORIZONTAL
-======================================== */
+/*CARRUSEL HORIZONTAL*/
 
 .combos-container {
   display: flex;
@@ -49,9 +45,7 @@
   border-radius: 10px;
 }
 
-/* ========================================
-   TARJETAS COMPACTAS
-======================================== */
+/*TARJETAS COMPACTAS*/
 
 .combo-card {
   display: flex;
@@ -74,17 +68,15 @@
   box-shadow: 0 7px 18px rgba(15, 23, 42, 0.12);
 }
 
-/* ========================================
-   IMAGEN PRINCIPAL
-======================================== */
+/*IMAGEN PRINCIPAL*/
 
 .combo-imagen {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
+  padding: 4px;
   height: 165px;
-  padding: 8px;
   overflow: hidden;
   background: #f8fafc;
   box-sizing: border-box;
@@ -94,21 +86,19 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit:fill;
   border-radius: 6px;
 }
 
-/* ========================================
-   MINIATURAS
-======================================== */
+/*MINIATURAS*/
 
 .combo-productos {
   display: flex;
   flex: 0 0 auto;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   width: 100%;
-  min-height: 83px;
+  min-height: 43px;
   padding: 8px;
   overflow-x: auto;
   overflow-y: hidden;
@@ -131,6 +121,7 @@
 .producto-titulo {
   width: 100%;
   margin: 0;
+  justify-content: center;
   color: #475569;
   font-size: 10px;
   font-weight: 600;
@@ -143,7 +134,7 @@
   width: 49px;
   height: 49px;
   padding: 2px;
-  object-fit: contain;
+  object-fit: fill;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
@@ -153,13 +144,11 @@
 }
 
 .miniatura:hover {
-  border-color: #2563eb;
+  border-color: #080808;
   transform: scale(1.03);
 }
 
-/* ========================================
-   INFORMACION
-======================================== */
+/*INFORMACION*/
 
 .combo-info {
   display: flex;
@@ -172,9 +161,9 @@
 
 .combo-info h3 {
   display: -webkit-box;
-  margin: 0 0 7px;
+  margin: 0 0 5px;
   overflow: hidden;
-  color: #173f6b;
+  color: #0d0d0d;
   font-size: 17px;
   font-weight: 700;
   line-height: 1.3;
@@ -197,7 +186,7 @@
 
 .combo-info p {
   margin: 5px 0;
-  color: #475569; 
+  color: #3f4143; 
   font-size: 12px;
   line-height: 1.4;
   overflow-wrap: anywhere;
@@ -205,14 +194,12 @@
 
 .combo-info p.precio {
   margin: 7px 0;
-  color: #12345a;
+  color: #030303;
   font-size: 15px;
   font-weight: 700;
 }
 
-/* ========================================
-   ALMOHADAS INCLUIDAS
-======================================== */
+/*ALMOHADAS INCLUIDAS*/
 
 .combo-almohadas {
   display: flex;
@@ -242,9 +229,7 @@
   font-size: 10px;
 }
 
-/* ========================================
-   SELECTORES
-======================================== */
+/*SELECTORES*/
 
 .selector-modalidad {
   display: flex;
@@ -262,9 +247,9 @@
   min-width: 0;
   min-height: 32px;
   padding: 6px 5px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #4a4a4a;
   border-radius: 7px;
-  background: #ffffff;
+  background: #fff;
   color: #334155;
   font-size: 11px;
   line-height: 1.2;
@@ -274,9 +259,9 @@
 }
 
 .selector-modalidad label.seleccionada {
-  border-color: #174a7e;
+  border-color: #202021;
   background: #edf5fc;
-  color: #174a7e;
+  color: #0a0b0b;
   font-weight: 700;
 }
 
@@ -285,7 +270,7 @@
   width: 12px;
   height: 12px;
   margin: 0;
-  accent-color: #174a7e;
+  accent-color: #272728;
   cursor: pointer;
 }
 
@@ -293,9 +278,7 @@
   margin-top: 9px;
 }
 
-/* ========================================
-   BOTONES
-======================================== */
+/*BOTONES*/
 
 .combo-botones {
   display: flex;
@@ -329,15 +312,16 @@
 
 .btn-detalle {
   background: #F9F5F0;
-  color: #12365b;
+  border: 1px solid #b9b4b4;
+  color: #020202;
 }
 
 .btn-detalle:hover {
-  background: #12365b;
+  background: #8e8e8f;
 }
 
 .btn-whatsapp {
-  background: #218c52;
+  background: #10532e;
   color: #ffffff;
 }
 
@@ -352,9 +336,7 @@
   outline-offset: 2px;
 }
 
-/* ========================================
-   TABLET
-======================================== */
+/*TABLET*/
 
 @media (min-width: 600px) {
   .combo-card {
@@ -362,9 +344,7 @@
   }
 }
 
-/* ========================================
-   CELULARES
-======================================== */
+/*CELULARES*/
 
 @media (max-width: 480px) {
   .titulo-combos {

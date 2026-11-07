@@ -13,9 +13,7 @@ body {
   background: #F9F5F0;
 }
 
-/* =========================
-   HEADER FIJO
-========================= */
+/*HEADER FIJO*/
 .header {
   position: fixed;
   top: 0;
@@ -221,9 +219,7 @@ border: white 2px solid;
 
 
 
-/* =========================
-   BUSCADOR MÓVIL
-========================= */
+/*BUSCADOR MÓVIL*/
 .buscador-mobile {
   display: none;
 }
@@ -236,9 +232,7 @@ border: white 2px solid;
   background: transparent;
 }
 
-/* =========================
-   BARRA DE FINANCIACIÓN
-========================= */
+/*BARRA DE FINANCIACIÓN*/
 .finance-bar {
  
   color: #faf9f9;
@@ -258,9 +252,7 @@ border: white 2px solid;
   text-decoration: none;
 }
 
-/* =========================
-   CONTENIDO PRINCIPAL
-========================= */
+/*CONTENIDO PRINCIPAL*/
 .app-content {
   min-height: 100vh;
   margin-top: 100px;
@@ -275,9 +267,7 @@ border: white 2px solid;
   display: none !important;
 }
 
-/* =========================
-   BARRA LATERAL
-========================= */
+/*BARRA LATERAL*/
 .barraLateral {
   position: fixed;
   top: 92px;
@@ -311,9 +301,7 @@ border: white 2px solid;
   margin-top: 1rem;
 }
 
-/* =========================
-   TABLET Y PANTALLAS MEDIANAS
-========================= */
+/*TABLET Y PANTALLAS MEDIANAS */
 @media (max-width: 900px) {
   .nav-link-desktop {
     display: none;
@@ -325,9 +313,7 @@ border: white 2px solid;
   }
 }
 
-/* =========================
-   CELULARES
-========================= */
+/*CELULARES*/
 @media (max-width: 600px) {
   .nav-container {
     height: 56px;

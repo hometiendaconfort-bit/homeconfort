@@ -1,16 +1,12 @@
 .carrucel-container {
   width: 300px;
-  margin-top: 7rem !important;
   margin: auto;
   padding: 15px;
-
   box-sizing: border-box;
-
   background: #eee;
   border: 1px solid #000;
   border-radius: 10px;
 }
-
 
 /* Títulos */
 
@@ -25,8 +21,6 @@
 
 .carrucel-container label {
   display: block;
-
- margin-top: 5px;
   font-size: 14px;
   font-weight: bold;
 }
@@ -37,9 +31,7 @@
 .carrucel-container input {
   width: 100%;
   height: 30px;
-  
   box-sizing: border-box;
-
   border: 1px solid #ccc;
   border-radius: 4px;
 }
@@ -49,14 +41,10 @@
 
 .carrucel-container button {
   width: 100%;
-
   padding: 7px;
-
   margin-top: 10px;
-
   border: none;
   border-radius: 5px;
-
   cursor: pointer;
 }
 
@@ -93,26 +81,19 @@
 }
 
 
-/* =========================
-   TABLA
-   ========================= */
+/*TABLA*/
 
 .tabla-container {
   width: 95%;
-
   margin: 30px auto;
-
   overflow-x: auto;
 }
 
 
 table {
   width: 100%;
-
   min-width: 600px;
-
   border-collapse: collapse;
-
   background: #eee;
 }
 
@@ -121,7 +102,6 @@ th,
 td {
 
   border: 1px solid #ddd;
-
   white-space: nowrap;
 }
 
@@ -152,9 +132,6 @@ td {
   white-space: nowrap;
 }
 
-
-
-
 .acciones {
   text-align: center;
 
@@ -162,19 +139,13 @@ td {
 }
 
 
-/* =========================
-   CELULAR
-   ========================= */
+/*CELULAR*/
 
 @media (max-width: 480px) {
 
   .carrucel-container {
     width: 280px;
-
     max-width: 80%;
- margin-top: 10rem !important;
-    margin: 20px auto;
-
     padding: 12px;
   }
 

@@ -1,21 +1,15 @@
 
-/* ================================
-   CONTENEDOR PRINCIPAL
-================================ */
-
+/*CONTENEDOR PRINCIPAL*/
 
 .contenedor {
   display: flex;
   justify-content: center;
   align-items: flex-start;
- margin-top: 9rem !important;
  margin-bottom: 2rem;
   width: 70%;
   min-height: 100vh;
-
   margin-left: auto;
   margin-right: auto;
-
   padding: 0;
   box-sizing: border-box;
   background-color: #ffffff;
@@ -62,9 +56,7 @@
   border-top: 1px solid #dce3eb;
 }
 
-/* ================================
-   FORMULARIO
-================================ */
+/*FORMULARIO*/
 
 .admin-productos form {
   width: 100%;
@@ -121,9 +113,7 @@
   color: #94a3b8;
 }
 
-/* ================================
-   OPCIONES DE PAGO
-================================ */
+/*OPCIONES DE PAGO */
 
 .admin-productos .opciones-pago {
   display: flex;
@@ -148,9 +138,7 @@
   accent-color: #1d4f91;
 }
 
-/* ================================
-   COLORES Y GALERÍAS
-================================ */
+/*COLORES Y GALERÍAS*/
 
 .admin-productos .ayuda {
   margin: 0 0 20px;
@@ -206,9 +194,7 @@
   background-color: #ffffff;
 }
 
-/* ================================
-   BOTONES
-================================ */
+/*BOTONES*/
 
 .admin-productos button {
   min-height: 42px;
@@ -263,9 +249,7 @@
   background-color: #8f1926;
 }
 
-/* ================================
-   MENSAJE DE ERROR
-================================ */
+/*MENSAJE DE ERROR*/
 
 .admin-productos .mensaje-error {
   margin: 0 0 20px;
@@ -277,9 +261,7 @@
   font-size: 14px;
 }
 
-/* ================================
-   PRODUCTOS REGISTRADOS
-================================ */
+/*PRODUCTOS REGISTRADOS*/
 
 .admin-productos > h3:last-of-type {
   color: #17365c;
@@ -362,15 +344,13 @@
   font-size: 12px;
 }
 
-/* ================================
-   DISEÑO RESPONSIVE
-================================ */
+/* DISEÑO RESPONSIVE */
 
 @media (max-width: 768px) {
   .contenedor {
     width: 100%;
     padding: 0;
-  }
+  } 
 
   .admin-productos {
     width: 100%;
@@ -410,7 +390,6 @@
 
 @media (max-width: 420px) {
   .admin-productos {
-    margin-top: 11rem !important;
     padding: 12px;
   }
 

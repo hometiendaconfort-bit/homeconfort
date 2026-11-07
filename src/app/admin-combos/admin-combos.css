@@ -1,7 +1,5 @@
 
-/* ==============================
-   CONTENEDOR GENERAL
-============================== */
+/*CONTENEDOR GENERAL*/
 
 :host {
   display: block;
@@ -51,9 +49,7 @@
   line-height: 1.5;
 }
 
-/* ==============================
-   ETIQUETAS Y CAMPOS
-============================== */
+/*ETIQUETAS Y CAMPOS*/
 
 .admin-combos-contenedor > label:not(.modalidad) {
   display: block;
@@ -99,9 +95,7 @@
   color: #94a3b8;
 }
 
-/* ==============================
-   SEPARADORES
-============================== */
+/*SEPARADORES*/
 
 .admin-combos-contenedor hr {
   margin: 24px 0;
@@ -109,9 +103,7 @@
   border-top: 1px solid #e2e8f0;
 }
 
-/* ==============================
-   MODALIDADES Y ALMOHADAS
-============================== */
+/*MODALIDADES Y ALMOHADAS*/
 
 .modalidad {
   display: flex;
@@ -137,9 +129,7 @@
   margin: 12px 0 20px;
 }
 
-/* ==============================
-   VISTA PREVIA DEL COLOR
-============================== */
+/*VISTA PREVIA DEL COLOR*/
 
 .vista-color {
   display: flex;
@@ -167,9 +157,7 @@
   overflow-wrap: anywhere;
 }
 
-/* ==============================
-   BOTONES DEL FORMULARIO
-============================== */
+/*BOTONES DEL FORMULARIO*/
 
 .admin-combos-contenedor button {
   min-height: 42px;
@@ -198,9 +186,7 @@
   background: #12365b;
 }
 
-/* ==============================
-   TABLA DE COMBOS
-============================== */
+/*TABLA DE COMBOS*/
 
 .admin-combos-contenedor-tabla {
   width: 100%;
@@ -264,9 +250,7 @@
   background: #ffffff;
 }
 
-/* ==============================
-   ACCIONES DE LA TABLA
-============================== */
+/*ACCIONES DE LA TABLA*/
 
 .admin-combos-contenedor-tabla button {
   display: inline-block;
@@ -297,9 +281,7 @@
   background: #b91c1c;
 }
 
-/* ==============================
-   TABLET
-============================== */
+/*TABLET*/
 
 @media (max-width: 768px) {
   .contenedor {
@@ -333,13 +315,10 @@
   }
 }
 
-/* ==============================
-   CELULARES
-============================== */
+/*CELULARES*/
 
 @media (max-width: 480px) {
   .contenedor {
-    margin-top: 11rem !important;
     padding: 10px 6px;
   }
 

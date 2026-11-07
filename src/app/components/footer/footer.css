@@ -7,7 +7,7 @@
   background-position: center;
   background-repeat: no-repeat;
   color: #3f3e3e;
-  
+  z-index: 1000;
   padding: 40px 20px 20px;
   font-family: Arial, sans-serif;
   margin-bottom: 0;
