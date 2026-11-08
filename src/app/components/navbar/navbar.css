@@ -57,8 +57,8 @@ body {
 .pay-badge.addi {
    background: linear-gradient(90deg, #4641df, #0066CC);
   color: #f5f5f8;
-  font-weight: 900;
-  border: 1px solid #04107b;
+  font-weight: 600;
+  border: 1px solid #070707;
   box-shadow: 0 0 8px rgba(105, 100, 114, 0.35);
 }
 
@@ -66,8 +66,8 @@ body {
 .pay-badge.siste {
    background: linear-gradient(90deg, #00A86B, #0066CC);
   color: #f1f3f2;
-  font-weight: 900;
-  border: 1px solid #159447;
+  font-weight: 600;
+  border: 1px solid #070707;
   box-shadow: 0 0 8px rgba(105, 121, 112, 0.35);
 }
 
