@@ -7,7 +7,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-height: 100vh;
+  min-height: 70vh;
   padding: 15px;
   margin: 0;
 }
@@ -54,7 +54,7 @@ button {
 /* CELULARES */
 @media (max-width: 600px) {
   .contenedor-login {
-    min-height: 100svh;
+    min-height: 50svh;
     padding: 10px;
     align-items: center;
   }

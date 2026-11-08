@@ -1,6 +1,6 @@
 .credito-card {
  display: block;
- margin-top: 6rem;
+ margin-top: 2rem;
  margin-bottom: 4rem;
  margin-left: 35%;
  max-width: 30%;
@@ -89,13 +89,11 @@
 
 @media (max-width: 480px) {
 
-  .credito-card{
-    margin-top: 10rem !important;
-  }
 
 .credito-card{
  margin-left: 1.5rem;
- max-width: 80%;
+  margin-right: 1.5rem;
+ max-width: 100%;
 }
 
 }
