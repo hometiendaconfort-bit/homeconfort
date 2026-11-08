@@ -1,10 +1,15 @@
+* {
+  box-sizing: border-box;
+}
+
 .contenedor-login {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   width: 100%;
-
+  min-height: 100vh;
+  padding: 15px;
+  margin: 0;
 }
 
 section {
@@ -17,36 +22,71 @@ section {
   padding: 20px;
   border-radius: 8px;
   width: 300px;
-
+  max-width: 100%;
+  margin: 0;
 }
 
 label {
- 
   font-weight: bold;
   margin-bottom: 5px;
-
 }
 
 input {
-  width: 300px;
+  width: 100%;
   padding: 10px;
   margin-bottom: 10px;
-  box-sizing: border-box;
   border-radius: 8px;
 }
 
 h2 {
   text-align: center;
-  margin-bottom: 10px;
-  
+  margin: 0 0 10px;
 }
-
-
 
 button {
   width: 80%;
-  padding: 5px;
+  padding: 8px;
   margin-top: 10px;
   background-color: #eceeec;
   cursor: pointer;
+}
+
+/* CELULARES */
+@media (max-width: 600px) {
+  .contenedor-login {
+    min-height: 100svh;
+    padding: 10px;
+    align-items: center;
+  }
+
+  section {
+    width: 100%;
+    max-width: 350px;
+    padding: 20px 15px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  label {
+    align-self: flex-start;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  button {
+    width: 80%;
+    padding: 10px;
+    font-size: 16px;
+  }
+}
+
+/* TABLETS */
+@media (min-width: 601px) and (max-width: 900px) {
+  section {
+    width: 350px;
+  }
 }
