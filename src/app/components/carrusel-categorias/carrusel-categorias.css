@@ -1,6 +1,7 @@
 
 .contenedor-categorias {
   display:flex;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   align-items: center;
   justify-content: center;
    background: #f9f9f9;

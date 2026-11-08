@@ -60,7 +60,7 @@
   border: 1px solid #d6dce4;
   border-radius: 8px;
   background: #fff;
-  color: #263648;
+  color: #2e2e2f;
   font-size: 14px;
   outline: none;
 }
@@ -148,7 +148,7 @@
 
 .producto-info h3 {
   margin: 0;
-  color: #173f68;
+  color: #0e0e0e;
   font-size: 17px;
   line-height: 1.35;
   font-weight: 700;
@@ -272,7 +272,7 @@
 .miniatura:hover,
 .miniatura.seleccionada {
   border-color: #F9F5F0;
-  box-shadow: 0 0 0 1px #173f68;
+  box-shadow: 0 0 0 1px #3c3d3d;
 }
 
 .modalidades-pago,
@@ -302,7 +302,7 @@
 
 .modalidades-pago button {
   padding: 10px 5px;
-  border: 1px solid #b3b0b0;
+  border: 1px solid #3a3a3a;
   background: #fff;
   color: #0f0f0f;
   font-size: 13px;
@@ -331,14 +331,14 @@
 
 .etiqueta-precio {
   margin: 0;
-  color: #536475;
+  color: #3d3e3e;
   font-size: 12px;
   font-weight: 600;
 }
 
 .precio-anterior {
   margin: 0;
-  color: #7c8792;
+  color: #505050;
   font-size: 13px;
   text-decoration: line-through;
 }
@@ -377,7 +377,7 @@
 
 .frecuencias-pago button:hover,
 .frecuencias-pago button.activo {
-  border-color: #a19e9e;
+  border-color: #3b3a3a;
   background: #F9F5F0;
   color: #050505;
 }
@@ -444,13 +444,13 @@
 }
 
 .btn-carrito {
-  border-color: #0c0d0d;
-  background: #fff;
-  color: #050505;
+  border-color: #313131;
+  background: #070707;
+  color: #f6f2f2;
 }
 
 .btn-carrito:hover {
-  background: #edf3f8;
+  background: #343535;
 }
 
 .btn-carrito span {
@@ -458,13 +458,13 @@
 }
 
 .btn-whatsapp {
-  border-color: #218b52;
-  background: #fff;
-  color: #187744;
+  border-color: #04351b;
+  background: #14562c;
+  color: #e8edea;
 }
 
 .btn-whatsapp:hover {
-  background: #eaf7ef;
+  background: #163e25;
 }
 
 .sin-productos {

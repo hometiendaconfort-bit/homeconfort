@@ -14,7 +14,7 @@
 
 .carrito-encabezado h1 {
   font-size: 30px;
-  color: #102b46;
+  color: #090909;
   margin: 0 0 8px;
   font-weight: 700;
 }
@@ -141,7 +141,7 @@
   height: 30px;
   border: 1px solid #d5dce3;
   background: #fff;
-  color: #102b46;
+  color: #080808;
   border-radius: 5px;
   font-size: 19px;
   cursor: pointer;

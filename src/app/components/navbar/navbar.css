@@ -24,39 +24,60 @@ body {
   border-bottom: 1px solid #EAE0D5;
   
 }
+.top-pay-bar {
+  background: #060606;
+  color: #f8f5f5;
+  font-size: 13px;
+  text-align: center;
+  padding: 7px 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  letter-spacing: 0.2px;
+}
 
-.top-pay-bar{
-  background:#060606;
-  color:#f8f5f5;
-  font-size:11px;
-  text-align:center;
-  padding:6px 6px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:7px;
-  letter-spacing:0.2px;
+/* BOTONES DE FINANCIACIÓN */
+.pay-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 95px;
+  height: 29px;
+  padding: 0 13px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+  cursor: default;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.pay-badge{
-  background:#fff;
-  padding:2px 7px;
-  border-radius:4px;
-  font-weight:800;
-  font-size:11px;
-}
-.pay-badge.addi{
-  background: #f9f7f7;
-  color:#060606; 
-border: white 2px solid;
-}
-  
-.pay-badge.siste{ 
-  background:#f0eeee ;
-  color:#050505;
-border: white 2px solid;
-}
-.pay-extra{ opacity:0.85; }
 
+/* ADDI */
+.pay-badge.addi {
+   background: linear-gradient(90deg, #4641df, #0066CC);
+  color: #f5f5f8;
+  font-weight: 900;
+  border: 1px solid #04107b;
+  box-shadow: 0 0 8px rgba(105, 100, 114, 0.35);
+}
+
+/* SISTECRÉDITO */
+.pay-badge.siste {
+   background: linear-gradient(90deg, #00A86B, #0066CC);
+  color: #f1f3f2;
+  font-weight: 900;
+  border: 1px solid #159447;
+  box-shadow: 0 0 8px rgba(105, 121, 112, 0.35);
+}
+
+.pay-badge:hover {
+  transform: translateY(-2px);
+}
+
+.pay-extra {
+  opacity: 0.85;
+}
 /* MENÚ PRINCIPAL */
 .nav-container {
   width: 100%;
@@ -245,6 +266,13 @@ border: white 2px solid;
   object-fit:contain;
   background-image: url(/assets/img/fondo4.jpeg);
   border-bottom: #F9F5F0 4px solid;
+}
+
+.bx-chevron-right{
+  background: white;
+  border-radius: 50%;
+  padding: 5px;
+  margin: 1px 2px 0;
 }
 
 .finance-bar a {
