@@ -329,7 +329,7 @@ body {
   margin-top: 1rem;
 }
 
-/*TABLET Y PANTALLAS MEDIANAS */
+/* TABLET Y PANTALLAS MEDIANAS */
 @media (max-width: 900px) {
   .nav-link-desktop {
     display: none;
@@ -341,8 +341,10 @@ body {
   }
 }
 
-/*CELULARES*/
+/* CELULARES */
 @media (max-width: 600px) {
+
+  /* MENÚ PRINCIPAL */
   .nav-container {
     height: 56px;
     padding: 0 16px;
@@ -367,7 +369,49 @@ body {
     font-size: 20px;
   }
 
-  /* BUSCADOR DEBAJO DEL MENÚ */
+  /* BARRA NEGRA DE PAGOS */
+  .top-pay-bar {
+    width: 100%;
+    min-height: 36px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 3px;
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .top-pay-bar > span {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* BOTONES ADDI Y SISTECRÉDITO */
+  .pay-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: auto;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 7px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .pay-extra {
+    font-size: 9px;
+  }
+
+  /* BUSCADOR MÓVIL */
   .buscador-mobile {
     display: flex;
     align-items: center;
@@ -379,37 +423,49 @@ body {
     border-radius: 999px;
   }
 
-  /* CONTENIDO DEBAJO DEL HEADER MÓVIL */
+  /* CONTENIDO */
   .app-content {
     margin-top: 150px;
     padding: 16px;
   }
 
-  /* SIDEBAR MÓVIL */
+  /* BARRA LATERAL */
   .barraLateral {
     top: 114px;
     height: calc(100vh - 114px);
   }
 
+  /* ICONO DE FINANCIACIÓN */
+  .bx-chevron-right {
+    background: white;
+    border-radius: 50%;
+    padding: 2px;
+    margin: 1px 2px 0;
+  }
+}
+
+/* CELULARES PEQUEÑOS */
+@media (max-width: 380px) {
+
+  .top-pay-bar {
+    gap: 3px;
+    padding: 6px 2px;
+    font-size: 9px;
+  }
+
+  .top-pay-bar > span:first-child {
+    font-size: 9px;
+  }
+
   .pay-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 90px;
-  height: 23px;
-  padding: 0 11px;
-  border-radius: 7px;
-  font-size: 11px;
-  font-weight: 700;
-  
-}
+    min-width: 0;
+    height: 20px;
+    padding: 0 5px;
+    font-size: 9px;
+    letter-spacing: -0.5px;
+  }
 
-.bx-chevron-right{
-  background: white;
-  border-radius: 50%;
-  padding: 2px;
-  margin: 1px 2px 0;
-}
-
-
+  .pay-extra {
+    display: none;
+  }
 }

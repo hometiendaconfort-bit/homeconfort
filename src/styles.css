@@ -20,12 +20,21 @@ body {
   box-sizing: border-box;
 }
 
+/* CELULAR */
+@media (max-width: 600px) {
+  html,
+  .body {
+    margin-top: 7rem !important;
+    
+  }
+   }
+
 
 /* CELULAR */
 @media (max-width: 480px) {
   html,
   .body {
-    margin-top: 7.7rem !important;
+    margin-top: 7.6rem !important;
     
   }
    }
