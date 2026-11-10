@@ -1,33 +1,45 @@
 
 <div class="detalle-container" *ngIf="producto">
 
-  <!-- GALERIA DE IMAGENES -->
+  <!-- GALERÍA DE IMÁGENES -->
   <div class="detalle-galeria">
+
     <div class="miniaturas-vertical">
 
-      <button type="button" class="volver" (click)="volver()">
+      <button
+        type="button"
+        class="volver"
+        (click)="volver()"
+        aria-label="Volver a la página anterior"
+      >
         Volver
       </button>
 
       <img
-        *ngFor="let img of producto.imagenes || []"
+        *ngFor="let img of producto.imagenes || []; let i = index"
         [src]="img"
-        [alt]="producto.nombre"
+        [alt]="producto.nombre + ' - imagen ' + (i + 1)"
         loading="lazy"
+        decoding="async"
         (click)="cambiarImagen(producto, img)"
         [class.activa]="img === producto.imagenActiva"
+        [attr.aria-label]="'Ver imagen ' + (i + 1) + ' de ' + producto.nombre"
       >
 
     </div>
 
     <!-- IMAGEN PRINCIPAL -->
     <div class="imagen-principal">
+
       <img
         [src]="producto.imagenActiva || producto.imagen"
         [alt]="producto.nombre"
-        loading="lazy"
+        fetchpriority="high"
+        decoding="async"
       >
+
     </div>
+
   </div>
 
   <!-- INFORMACIÓN DEL PRODUCTO -->
@@ -72,6 +84,7 @@
         </button>
 
       </div>
+
     </div>
 
     <!-- SELECTOR DE MODALIDAD -->
@@ -85,6 +98,7 @@
       <label
         [class.seleccionada]="modalidadSeleccionada === 'contado'"
       >
+
         <input
           type="radio"
           name="modalidadDetalle"
@@ -92,12 +106,15 @@
           [checked]="modalidadSeleccionada === 'contado'"
           (change)="seleccionarModalidad('contado')"
         >
+
         <span>De contado</span>
+
       </label>
 
       <label
         [class.seleccionada]="modalidadSeleccionada === 'credito'"
       >
+
         <input
           type="radio"
           name="modalidadDetalle"
@@ -105,7 +122,9 @@
           [checked]="modalidadSeleccionada === 'credito'"
           (change)="seleccionarModalidad('credito')"
         >
+
         <span>A crédito</span>
+
       </label>
 
     </div>
@@ -121,7 +140,7 @@
         "
       >
 
-        <h3>Precio de contado</h3>
+        <h2>Precio de contado</h2>
 
         <p
           *ngIf="producto.descuento > 0"
@@ -143,7 +162,7 @@
 
       </div>
 
-      <!-- INFORMACION A CREDITO -->
+      <!-- INFORMACIÓN A CRÉDITO -->
       <div
         *ngIf="
           producto.vendeCredito &&
@@ -151,15 +170,18 @@
         "
       >
 
-        <h3>Precio a crédito</h3>
+        <h2>Precio a crédito</h2>
 
         <p class="precio-final">
           {{ precioFinal(producto, 'credito') | currency:'COP':'symbol':'1.0-0' }}
         </p>
 
         <p *ngIf="producto.inicial > 0">
+
           <strong>Cuota inicial:</strong>
+
           {{ producto.inicial | currency:'COP':'symbol':'1.0-0' }}
+
         </p>
 
         <!-- SELECTOR DE FRECUENCIA -->
@@ -190,11 +212,13 @@
               <span>Quincenal</span>
 
               <small>
+
                 {{ producto.quincenal | currency:'COP':'symbol':'1.0-0' }}
 
                 <ng-container *ngIf="producto.numeroCuotasQuincenal > 0">
                   · {{ producto.numeroCuotasQuincenal }} cuotas
                 </ng-container>
+
               </small>
 
             </label>
@@ -217,11 +241,13 @@
               <span>Mensual</span>
 
               <small>
+
                 {{ producto.mensual | currency:'COP':'symbol':'1.0-0' }}
 
                 <ng-container *ngIf="producto.numeroCuotasMensual > 0">
                   · {{ producto.numeroCuotasMensual }} cuotas
                 </ng-container>
+
               </small>
 
             </label>
@@ -232,25 +258,32 @@
 
         <!-- CUOTA DE LA FRECUENCIA ELEGIDA -->
         <p *ngIf="obtenerValorCuota(producto) > 0">
+
           <strong>Pago {{ obtenerNombreFrecuencia() }}:</strong>
+
           {{ obtenerValorCuota(producto) | currency:'COP':'symbol':'1.0-0' }}
+
         </p>
 
         <p *ngIf="obtenerNumeroCuotas(producto) > 0">
+
           <strong>Número de cuotas:</strong>
+
           {{ obtenerNumeroCuotas(producto) }}
+
         </p>
 
       </div>
 
     </div>
 
-    <!-- BOTON WHATSAPP -->
+    <!-- BOTÓN WHATSAPP -->
     <a
       [href]="obtenerLinkWhatsApp(producto)"
       target="_blank"
       rel="noopener noreferrer"
       class="btn-whatsapp"
+      aria-label="Consultar y comprar este producto por WhatsApp"
     >
       Comprar por WhatsApp
     </a>

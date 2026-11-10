@@ -1,6 +1,5 @@
 
 import { Injectable } from '@angular/core';
-
 import {
   addDoc,
   getDocs,
@@ -11,29 +10,29 @@ import {
 } from 'firebase/firestore';
 
 import { db } from '../config/firebase';
+import { ProductosService } from './producto.service';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class Productos {
 
-  // =====================================
-  // PRODUCTOS - FIREBASE
-  // =====================================
+  constructor(
+    private productosService: ProductosService
+  ) {}
 
-  // AGREGAR UN PRODUCTO
   async agregarProducto(producto: any) {
 
     const productosRef = collection(db, 'productos');
 
-    await addDoc(productosRef, {
+    const resultado = await addDoc(productosRef, {
       ...producto
     });
-  }
 
-  // =====================================
-  // OBTENER TODOS LOS PRODUCTOS
-  // =====================================
+    this.productosService.invalidarCache();
+
+    return resultado;
+  }
 
   async obtenerProductos() {
 
@@ -47,24 +46,18 @@ export class Productos {
     }));
   }
 
-  // =====================================
-  // ELIMINAR UN PRODUCTO
-  // =====================================
-
   async eliminarProducto(docId: string) {
 
     if (!docId) {
       throw new Error('No se recibió el ID del producto.');
     }
 
-    const productoRef = doc(db, 'productos', docId);
+    await deleteDoc(
+      doc(db, 'productos', docId)
+    );
 
-    await deleteDoc(productoRef);
+    this.productosService.invalidarCache();
   }
-
-  // =====================================
-  // EDITAR UN PRODUCTO
-  // =====================================
 
   async editarProducto(docId: string, producto: any) {
 
@@ -72,9 +65,11 @@ export class Productos {
       throw new Error('No se recibió el ID del producto.');
     }
 
-    const productoRef = doc(db, 'productos', docId);
+    await updateDoc(
+      doc(db, 'productos', docId),
+      producto
+    );
 
-    await updateDoc(productoRef, producto);
+    this.productosService.invalidarCache();
   }
-
 }

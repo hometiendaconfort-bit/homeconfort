@@ -1,8 +1,24 @@
 
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Inject
+} from '@angular/core';
+
+import {
+  CommonModule,
+  Location,
+  DOCUMENT
+} from '@angular/common';
+
+import {
+  ActivatedRoute,
+  RouterModule
+} from '@angular/router';
+
 import { ProductosService } from '../../services/producto.service';
+import { Meta, Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-producto-detalle',
@@ -11,20 +27,29 @@ import { ProductosService } from '../../services/producto.service';
   templateUrl: './producto-detalle.html',
   styleUrl: './producto-detalle.css',
 })
-export class ProductoDetalleComponent implements OnInit {
+export class ProductoDetalleComponent implements OnInit, OnDestroy {
 
   producto: any = null;
 
   modalidadSeleccionada: 'contado' | 'credito' = 'contado';
   frecuenciaSeleccionada: 'quincenal' | 'mensual' = 'quincenal';
 
+  private readonly dominio = 'https://homeconfort.pages.dev';
+  private readonly idSchema = 'seo-producto-estructurado';
+
+  private enlaceCanonico: HTMLLinkElement | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private productosService: ProductosService,
-    private location: Location
+    private location: Location,
+    private titleService: Title,
+    private metaService: Meta,
+    @Inject(DOCUMENT) private document: Document
   ) {}
 
   ngOnInit(): void {
+
     const idRuta = this.route.snapshot.paramMap.get('id');
 
     if (!idRuta) {
@@ -33,6 +58,7 @@ export class ProductoDetalleComponent implements OnInit {
     }
 
     this.productosService.getProductos().subscribe({
+
       next: (res: any[]) => {
 
         const encontrado = res.find((p: any) =>
@@ -45,10 +71,9 @@ export class ProductoDetalleComponent implements OnInit {
           return;
         }
 
-        console.log('Datos originales de Firebase:', encontrado);
-
         // CONVERTIR VALORES A NÚMEROS
         const convertirNumero = (valor: any): number => {
+
           if (typeof valor === 'number') {
             return Number.isFinite(valor) ? valor : 0;
           }
@@ -58,6 +83,7 @@ export class ProductoDetalleComponent implements OnInit {
           }
 
           if (typeof valor === 'string') {
+
             const texto = valor.trim();
             const limpio = texto.replace(/[^\d,.-]/g, '');
 
@@ -65,16 +91,17 @@ export class ProductoDetalleComponent implements OnInit {
               return 0;
             }
 
-            // Admite precios como "80.000", "$80.000" o "80000".
             const normalizado = limpio.includes(',')
               ? limpio.replace(/\./g, '').replace(',', '.')
               : limpio.replace(/\./g, '');
 
             const numero = Number(normalizado);
+
             return Number.isFinite(numero) ? numero : 0;
           }
 
           const numero = Number(valor);
+
           return Number.isFinite(numero) ? numero : 0;
         };
 
@@ -83,7 +110,9 @@ export class ProductoDetalleComponent implements OnInit {
           objeto: any,
           campos: string[]
         ): any => {
+
           for (const campo of campos) {
+
             if (
               objeto[campo] !== undefined &&
               objeto[campo] !== null &&
@@ -211,6 +240,7 @@ export class ProductoDetalleComponent implements OnInit {
 
         // SELECCIONAR EL PRIMER COLOR SI EXISTEN VARIANTES
         if (variantesColor.length > 0) {
+
           const indiceInicial = variantesColor.findIndex(
             (v: any) => v.color === this.producto.colorSeleccionado
           );
@@ -219,6 +249,7 @@ export class ProductoDetalleComponent implements OnInit {
             this.producto,
             indiceInicial >= 0 ? indiceInicial : 0
           );
+
         }
 
         // ELEGIR LA MODALIDAD INICIAL
@@ -237,20 +268,199 @@ export class ProductoDetalleComponent implements OnInit {
           this.frecuenciaSeleccionada = 'quincenal';
         }
 
-        console.log('Producto preparado para los detalles:', this.producto);
-        console.log('Cuota quincenal:', this.producto.quincenal);
-        console.log('Cuota mensual:', this.producto.mensual);
-        console.log('Vende a crédito:', this.producto.vendeCredito);
+        // ACTUALIZAR SEO DEL PRODUCTO
+        this.actualizarSEO(this.producto);
+
       },
 
       error: err => {
         console.error('Error cargando el detalle del producto:', err);
       }
+
     });
+
   }
 
-  // OBTENER EL COLOR CSS A PARTIR DEL NOMBRE
+  // ==========================================
+  // SEO DEL PRODUCTO
+  // ==========================================
+
+  private actualizarSEO(p: any): void {
+
+    if (!p) return;
+
+    const nombre = String(p.nombre || 'Producto').trim();
+
+    const descripcion = String(
+      p.descripcion ||
+      `${nombre}. Consulta sus características y opciones de compra en Home Confort.`
+    ).trim();
+
+    const titulo = `${nombre} | Home Confort`;
+
+    const identificador = p.id ?? p.docId;
+
+    const url = `${this.dominio}/productos/${encodeURIComponent(
+      String(identificador)
+    )}`;
+
+    // TÍTULO
+    this.titleService.setTitle(titulo);
+
+    // DESCRIPCIÓN
+    this.metaService.updateTag({
+      name: 'description',
+      content: descripcion.slice(0, 160)
+    });
+
+    // INDEXACIÓN
+    this.metaService.updateTag({
+      name: 'robots',
+      content: 'index, follow'
+    });
+
+    // OPEN GRAPH
+    this.metaService.updateTag({
+      property: 'og:type',
+      content: 'product'
+    });
+
+    this.metaService.updateTag({
+      property: 'og:title',
+      content: titulo
+    });
+
+    this.metaService.updateTag({
+      property: 'og:description',
+      content: descripcion.slice(0, 200)
+    });
+
+    this.metaService.updateTag({
+      property: 'og:url',
+      content: url
+    });
+
+    const imagen = p.imagenActiva || p.imagen || '';
+
+    if (imagen) {
+
+      this.metaService.updateTag({
+        property: 'og:image',
+        content: this.obtenerUrlAbsoluta(imagen)
+      });
+
+    }
+
+    // URL CANÓNICA
+    if (!this.enlaceCanonico) {
+
+      this.enlaceCanonico = this.document.createElement('link');
+      this.enlaceCanonico.rel = 'canonical';
+
+      this.document.head.appendChild(this.enlaceCanonico);
+
+    }
+
+    this.enlaceCanonico.href = url;
+
+    // DATOS ESTRUCTURADOS
+    this.actualizarDatosEstructurados(
+      p,
+      titulo,
+      descripcion,
+      url
+    );
+
+  }
+
+  // CONVERTIR IMÁGENES EN URL ABSOLUTAS
+  private obtenerUrlAbsoluta(imagen: string): string {
+
+    try {
+      return new URL(imagen, this.dominio).toString();
+    } catch {
+      return '';
+    }
+
+  }
+
+  // DATOS ESTRUCTURADOS PRODUCT
+  private actualizarDatosEstructurados(
+    p: any,
+    titulo: string,
+    descripcion: string,
+    url: string
+  ): void {
+
+    const imagen = p.imagenActiva || p.imagen || '';
+
+    const modalidad = p.vendeContado
+      ? 'contado'
+      : 'credito';
+
+    const precio = this.precioFinal(p, modalidad);
+
+    const datos: any = {
+
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+
+      name: String(p.nombre || titulo),
+
+      description: descripcion,
+
+      url
+
+    };
+
+    if (imagen) {
+
+      datos.image = [
+        this.obtenerUrlAbsoluta(imagen)
+      ];
+
+    }
+
+    if (precio > 0) {
+
+      datos.offers = {
+
+        '@type': 'Offer',
+
+        priceCurrency: 'COP',
+
+        price: precio,
+
+        url
+
+      };
+
+    }
+
+    let script = this.document.getElementById(this.idSchema);
+
+    if (!script) {
+
+      script = this.document.createElement('script');
+
+      script.id = this.idSchema;
+
+      script.setAttribute('type', 'application/ld+json');
+
+      this.document.head.appendChild(script);
+
+    }
+
+    script.textContent = JSON.stringify(datos);
+
+  }
+
+  // ==========================================
+  // COLORES
+  // ==========================================
+
   obtenerColorCSS(color: string): string {
+
     const nombre = (color || '')
       .trim()
       .toLowerCase()
@@ -259,6 +469,7 @@ export class ProductoDetalleComponent implements OnInit {
       .replace(/\s+/g, ' ');
 
     const coloresCSS: Record<string, string> = {
+
       blanco: '#ffffff',
       negro: '#171717',
       gris: '#808080',
@@ -277,18 +488,23 @@ export class ProductoDetalleComponent implements OnInit {
       morado: '#800080',
       amarillo: '#fdd835',
       naranja: '#ef6c00'
+
     };
 
     return coloresCSS[nombre] || '#d9d9d9';
+
   }
 
   // COMPROBAR SI UNA VARIANTE ESTÁ SELECCIONADA
   esVarianteActiva(p: any, indice: number): boolean {
+
     return Number(p?.indiceColorSeleccionado ?? -1) === indice;
+
   }
 
   // SELECCIONAR COLOR Y ACTUALIZAR LA GALERÍA
   seleccionarColor(p: any, indice: number): void {
+
     if (!p || !Array.isArray(p.variantesColor)) {
       return;
     }
@@ -303,68 +519,98 @@ export class ProductoDetalleComponent implements OnInit {
     p.colorSeleccionado = variante.color || '';
 
     const imagenesColor = Array.isArray(variante.imagenes)
-      ? variante.imagenes.filter((img: any) => typeof img === 'string' && img.trim())
+      ? variante.imagenes.filter(
+          (img: any) => typeof img === 'string' && img.trim()
+        )
       : [];
 
-    // Usar la imagen principal de la variante si está disponible.
+    // USAR LA IMAGEN PRINCIPAL DE LA VARIANTE
     const imagenPrincipal = variante.imagen || imagenesColor[0];
 
     if (imagenPrincipal) {
       p.imagenActiva = imagenPrincipal;
     }
 
-    // Actualizar las miniaturas con las imágenes de ese color.
+    // ACTUALIZAR LAS MINIATURAS
     if (imagenesColor.length > 0) {
+
       p.imagenes = imagenesColor;
+
     } else if (imagenPrincipal) {
+
       p.imagenes = [imagenPrincipal];
+
     }
+
+    // ACTUALIZAR IMAGEN Y DATOS SEO
+    if (p === this.producto) {
+      this.actualizarSEO(p);
+    }
+
   }
+
+  // ==========================================
+  // MODALIDAD Y FRECUENCIA
+  // ==========================================
 
   // COMPROBAR SI EXISTE ALGUNA FRECUENCIA DE PAGO
   tieneFrecuenciasDisponibles(): boolean {
+
     return Number(this.producto?.quincenal ?? 0) > 0 ||
            Number(this.producto?.mensual ?? 0) > 0;
+
   }
 
   // CAMBIAR ENTRE CONTADO Y CRÉDITO
   seleccionarModalidad(modalidad: 'contado' | 'credito'): void {
+
     if (!this.producto) {
       return;
     }
 
     if (modalidad === 'contado' && this.producto.vendeContado) {
+
       this.modalidadSeleccionada = 'contado';
+
       return;
+
     }
 
     if (modalidad === 'credito' && this.producto.vendeCredito) {
+
       this.modalidadSeleccionada = 'credito';
 
       if (
         this.frecuenciaSeleccionada === 'quincenal' &&
         Number(this.producto.quincenal) <= 0
       ) {
+
         this.frecuenciaSeleccionada =
           Number(this.producto.mensual) > 0
             ? 'mensual'
             : 'quincenal';
+
       } else if (
         this.frecuenciaSeleccionada === 'mensual' &&
         Number(this.producto.mensual) <= 0
       ) {
+
         this.frecuenciaSeleccionada =
           Number(this.producto.quincenal) > 0
             ? 'quincenal'
             : 'mensual';
+
       }
+
     }
+
   }
 
   // CAMBIAR LA FRECUENCIA DEL CRÉDITO
   seleccionarFrecuencia(
     frecuencia: 'quincenal' | 'mensual'
   ): void {
+
     if (
       !this.producto ||
       this.modalidadSeleccionada !== 'credito'
@@ -376,30 +622,53 @@ export class ProductoDetalleComponent implements OnInit {
       frecuencia === 'quincenal' &&
       Number(this.producto.quincenal) > 0
     ) {
+
       this.frecuenciaSeleccionada = 'quincenal';
+
     }
 
     if (
       frecuencia === 'mensual' &&
       Number(this.producto.mensual) > 0
     ) {
+
       this.frecuenciaSeleccionada = 'mensual';
+
     }
+
   }
+
+  // ==========================================
+  // GALERÍA
+  // ==========================================
 
   // CAMBIAR IMAGEN PRINCIPAL
   cambiarImagen(p: any, img: string): void {
+
     p.imagenActiva = img;
+
+    if (p === this.producto) {
+      this.actualizarSEO(p);
+    }
+
   }
+
+  // ==========================================
+  // NAVEGACIÓN Y PRECIOS
+  // ==========================================
 
   // VOLVER A LA PÁGINA ANTERIOR
   volver(): void {
+
     this.location.back();
+
   }
 
   // PRECIO ORIGINAL ANTES DEL DESCUENTO
   precioOriginal(p: any): number {
+
     return Number(p.precioContado ?? p.precio ?? 0);
+
   }
 
   // CALCULAR EL PRECIO SEGÚN LA MODALIDAD
@@ -407,13 +676,14 @@ export class ProductoDetalleComponent implements OnInit {
     p: any,
     modalidad: 'contado' | 'credito' = 'contado'
   ): number {
+
     const precioBase = Number(
       modalidad === 'credito'
         ? (p.precioCredito ?? p.precio ?? 0)
         : (p.precioContado ?? p.precio ?? 0)
     );
 
-    // El descuento solo se aplica al contado.
+    // EL DESCUENTO SOLO SE APLICA AL CONTADO
     if (modalidad === 'credito') {
       return precioBase;
     }
@@ -423,40 +693,56 @@ export class ProductoDetalleComponent implements OnInit {
     return descuento > 0
       ? precioBase - (precioBase * descuento / 100)
       : precioBase;
+
   }
 
   // VALOR DE LA CUOTA SELECCIONADA
   obtenerValorCuota(p: any): number {
+
     return this.frecuenciaSeleccionada === 'mensual'
       ? Number(p.mensual ?? 0)
       : Number(p.quincenal ?? 0);
+
   }
 
   // NÚMERO DE CUOTAS DE LA FRECUENCIA SELECCIONADA
   obtenerNumeroCuotas(p: any): number {
+
     return this.frecuenciaSeleccionada === 'mensual'
       ? Number(p.numeroCuotasMensual ?? 0)
       : Number(p.numeroCuotasQuincenal ?? 0);
+
   }
 
   // NOMBRE DE LA FRECUENCIA SELECCIONADA
   obtenerNombreFrecuencia(): string {
+
     return this.frecuenciaSeleccionada === 'mensual'
       ? 'mensual'
       : 'quincenal';
+
   }
 
   // FORMATEAR PRECIO EN PESOS COLOMBIANOS
   private formatearPrecio(valor: number): string {
+
     return Number(valor || 0).toLocaleString('es-CO', {
+
       style: 'currency',
       currency: 'COP',
       maximumFractionDigits: 0
+
     });
+
   }
+
+  // ==========================================
+  // WHATSAPP
+  // ==========================================
 
   // GENERAR EL MENSAJE Y EL ENLACE DE WHATSAPP
   obtenerLinkWhatsApp(p: any): string {
+
     let modalidad = this.modalidadSeleccionada;
 
     if (modalidad === 'contado' && !p.vendeContado) {
@@ -473,21 +759,28 @@ export class ProductoDetalleComponent implements OnInit {
       `Hola, estoy interesado en el producto ${p.nombre}. `;
 
     if (p.colorSeleccionado) {
+
       mensaje += `Color seleccionado: ${p.colorSeleccionado}. `;
+
     }
 
     if (modalidad === 'contado') {
+
       mensaje +=
         `Deseo comprarlo de contado. ` +
         `Precio de contado: ${this.formatearPrecio(precio)}.`;
+
     } else {
+
       mensaje +=
         `Deseo comprarlo a crédito. ` +
         `Precio a crédito: ${this.formatearPrecio(precio)}.`;
 
       if (Number(p.inicial) > 0) {
+
         mensaje +=
           ` Cuota inicial: ${this.formatearPrecio(Number(p.inicial))}.`;
+
       }
 
       const valorCuota = this.obtenerValorCuota(p);
@@ -495,22 +788,43 @@ export class ProductoDetalleComponent implements OnInit {
       const frecuencia = this.obtenerNombreFrecuencia();
 
       if (valorCuota > 0) {
+
         mensaje +=
           ` Frecuencia de pago elegida: ${frecuencia}.` +
           ` Valor de cada cuota: ${this.formatearPrecio(valorCuota)}.`;
+
       }
 
       if (numeroCuotas > 0) {
+
         mensaje +=
           ` Número de cuotas ${frecuencia}: ${numeroCuotas}.`;
+
       }
 
       if (valorCuota <= 0) {
+
         mensaje +=
           ' Quisiera que me informaran sobre las opciones de pago disponibles.';
+
       }
+
     }
 
     return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
+
   }
+
+  // ==========================================
+  // LIMPIEZA
+  // ==========================================
+
+  ngOnDestroy(): void {
+
+    this.document.getElementById(this.idSchema)?.remove();
+
+    this.enlaceCanonico?.remove();
+
+  }
+
 }
