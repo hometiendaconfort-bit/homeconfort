@@ -3,11 +3,24 @@ import {
   Component,
   OnInit,
   OnDestroy,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  Inject
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule, Router } from '@angular/router';
+import {
+  CommonModule,
+  DOCUMENT
+} from '@angular/common';
+
+import {
+  ActivatedRoute,
+  RouterModule,
+  Router,
+  NavigationEnd
+} from '@angular/router';
+
+import { Title, Meta } from '@angular/platform-browser';
+
 import { CarruselCategorias } from '../../components/carrusel-categorias/carrusel-categorias';
 import { ProductosService } from '../../services/producto.service';
 import { SearchService } from '../../services/search.service';
@@ -19,7 +32,9 @@ import {
   map,
   Observable,
   Subject,
-  takeUntil
+  takeUntil,
+  filter,
+  startWith
 } from 'rxjs';
 
 type Modalidad = 'contado' | 'credito';
@@ -53,7 +68,6 @@ export class Productoss implements OnInit, OnDestroy {
   tipoSeleccionado$ = new BehaviorSubject<string>('todos');
   colorSeleccionado$ = new BehaviorSubject<string>('todos');
 
-  // NUEVOS EMISORES PARA ACTUALIZAR LOS FILTROS.
   private productosSubject = new BehaviorSubject<any[]>([]);
   private categoriaSubject = new BehaviorSubject<string>('');
 
@@ -64,16 +78,35 @@ export class Productoss implements OnInit, OnDestroy {
 
   private destruir$ = new Subject<void>();
 
+  // DOMINIO PRINCIPAL.
+  private readonly dominio = 'https://homeconfort.pages.dev';
+
   constructor(
     private productosService: ProductosService,
     private route: ActivatedRoute,
     private searchService: SearchService,
     private router: Router,
     private carrito: Carrito,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private title: Title,
+    private meta: Meta,
+    @Inject(DOCUMENT) private document: Document
   ) {}
 
   ngOnInit(): void {
+
+    // ACTUALIZAR SEO INICIAL.
+    this.actualizarSEO();
+
+    // ACTUALIZAR SEO CUANDO CAMBIA LA RUTA.
+    this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntil(this.destruir$)
+      )
+      .subscribe(() => {
+        this.actualizarSEO();
+      });
 
     // CREAR EL OBSERVABLE UNA SOLA VEZ.
     this.actualizarProductosFiltrados();
@@ -90,6 +123,8 @@ export class Productoss implements OnInit, OnDestroy {
         this.categoriaSubject.next(
           this.normalizarCategoria(this.slug)
         );
+
+        this.actualizarSEO();
       });
 
     // LEER FILTROS DESDE LA URL.
@@ -108,6 +143,8 @@ export class Productoss implements OnInit, OnDestroy {
           this.categoriaSubject.next(
             this.normalizarCategoria(this.slug)
           );
+
+          this.actualizarSEO();
         }
 
         const tipo = params.get('tipo');
@@ -145,6 +182,144 @@ export class Productoss implements OnInit, OnDestroy {
           this.cargarProductos();
         }
       });
+  }
+
+  // SEO DEL CATÁLOGO Y SUS CATEGORÍAS.
+  private actualizarSEO(): void {
+
+    const url = this.router.url
+      .split('?')[0]
+      .split('#')[0];
+
+    const slug =
+      this.route.snapshot.paramMap.get('slug') ||
+      this.route.snapshot.queryParamMap.get('categoria') ||
+      this.route.snapshot.queryParamMap.get('slug');
+
+    const categoria = this.normalizarCategoria(slug);
+
+    let titulo = 'Camas, colchones y muebles | Home Confort';
+
+    let descripcion =
+      'Explora nuestro catálogo de camas, colchones, bases cama y muebles para el hogar. Encuentra opciones de contado y crédito en Home Confort, con atención en Pereira y Dosquebradas.';
+
+    if (categoria) {
+
+      const nombres: Record<string, string> = {
+        'colchones': 'Colchones',
+        'camas': 'Camas',
+        'bases cama': 'Bases cama',
+        'base cama': 'Bases cama',
+        'comedores': 'Comedores',
+        'closets': 'Closets',
+        'armarios': 'Armarios',
+        'sofas': 'Sofás',
+        'muebles': 'Muebles',
+        'cabeceros': 'Cabeceros'
+      };
+
+      const nombreCategoria =
+        nombres[categoria] ||
+        categoria.charAt(0).toUpperCase() + categoria.slice(1);
+
+      titulo =
+        `${nombreCategoria} en Pereira y Dosquebradas | Home Confort`;
+
+      descripcion =
+        `Encuentra ${nombreCategoria.toLowerCase()} para tu hogar en Home Confort. Explora nuestro catálogo, consulta precios y opciones de compra de contado o crédito en Pereira y Dosquebradas.`;
+    }
+
+    // ACTUALIZAR TÍTULO.
+    this.title.setTitle(titulo);
+
+    // ACTUALIZAR DESCRIPCIÓN.
+    this.meta.updateTag({
+      name: 'description',
+      content: descripcion
+    });
+
+    // ACTUALIZAR DIRECTIVAS PARA BUSCADORES.
+    this.meta.updateTag({
+      name: 'robots',
+      content: 'index, follow, max-image-preview:large'
+    });
+
+    this.meta.updateTag({
+      name: 'googlebot',
+      content: 'index, follow'
+    });
+
+    // ACTUALIZAR CANONICAL.
+    const canonicalUrl = `${this.dominio}${url}`;
+
+    let canonical = this.document.querySelector(
+      'link[rel="canonical"]'
+    ) as HTMLLinkElement | null;
+
+    if (!canonical) {
+      canonical = this.document.createElement('link');
+      canonical.rel = 'canonical';
+      this.document.head.appendChild(canonical);
+    }
+
+    canonical.href = canonicalUrl;
+
+    // OPEN GRAPH.
+    this.meta.updateTag({
+      property: 'og:type',
+      content: 'website'
+    });
+
+    this.meta.updateTag({
+      property: 'og:locale',
+      content: 'es_CO'
+    });
+
+    this.meta.updateTag({
+      property: 'og:site_name',
+      content: 'Home Confort'
+    });
+
+    this.meta.updateTag({
+      property: 'og:title',
+      content: titulo
+    });
+
+    this.meta.updateTag({
+      property: 'og:description',
+      content: descripcion
+    });
+
+    this.meta.updateTag({
+      property: 'og:url',
+      content: canonicalUrl
+    });
+
+    this.meta.updateTag({
+      property: 'og:image',
+      content: `${this.dominio}/assets/img/logo2.jpeg`
+    });
+
+    // TWITTER.
+    this.meta.updateTag({
+      name: 'twitter:card',
+      content: 'summary'
+    });
+
+    this.meta.updateTag({
+      name: 'twitter:title',
+      content: titulo
+    });
+
+    this.meta.updateTag({
+      name: 'twitter:description',
+      content: descripcion
+    });
+
+    this.meta.updateTag({
+      name: 'twitter:image',
+      content: `${this.dominio}/assets/img/logo2.jpeg`
+    });
   }
 
   // CARGAR PRODUCTOS DESDE FIREBASE.
@@ -364,7 +539,6 @@ export class Productoss implements OnInit, OnDestroy {
     ).filter(Boolean);
 
     // EMITIR LA NUEVA LISTA DE PRODUCTOS.
-    // ESTO ACTUALIZA AUTOMÁTICAMENTE combineLatest.
     this.productosSubject.next(this.productos);
 
     console.log(
@@ -428,7 +602,9 @@ export class Productoss implements OnInit, OnDestroy {
 
     this.productosFiltrados$ = combineLatest([
 
-      this.searchService.search$,
+      this.searchService.search$.pipe(
+        startWith('')
+      ),
 
       this.tipoSeleccionado$,
 
@@ -879,7 +1055,7 @@ export class Productoss implements OnInit, OnDestroy {
 
     const buscarProducto = () => {
 
-      const elemento = document.getElementById(`producto-${id}`);
+      const elemento = this.document.getElementById(`producto-${id}`);
 
       if (elemento) {
 

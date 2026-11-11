@@ -1,10 +1,26 @@
 
-<div class="detalle-container" *ngIf="producto">
+<div
+  class="detalle-container"
+  *ngIf="producto"
+  itemscope
+  itemtype="https://schema.org/Product"
+>
+
+  <!-- INFORMACIÓN SEO DEL PRODUCTO -->
+  <meta itemprop="name" [content]="producto.nombre">
+
+  <meta
+    itemprop="description"
+    [content]="producto.descripcion || producto.nombre"
+  >
 
   <!-- GALERÍA DE IMÁGENES -->
   <div class="detalle-galeria">
 
-    <div class="miniaturas-vertical">
+    <div
+      class="miniaturas-vertical"
+      aria-label="Galería de imágenes del producto"
+    >
 
       <button
         type="button"
@@ -18,12 +34,13 @@
       <img
         *ngFor="let img of producto.imagenes || []; let i = index"
         [src]="img"
-        [alt]="producto.nombre + ' - imagen ' + (i + 1)"
+        [alt]="producto.nombre + ' - fotografía ' + (i + 1)"
         loading="lazy"
         decoding="async"
         (click)="cambiarImagen(producto, img)"
         [class.activa]="img === producto.imagenActiva"
-        [attr.aria-label]="'Ver imagen ' + (i + 1) + ' de ' + producto.nombre"
+        [attr.aria-label]="'Ver fotografía ' + (i + 1) + ' de ' + producto.nombre"
+        [attr.aria-pressed]="img === producto.imagenActiva"
       >
 
     </div>
@@ -33,7 +50,8 @@
 
       <img
         [src]="producto.imagenActiva || producto.imagen"
-        [alt]="producto.nombre"
+        [alt]="producto.nombre + ' - imagen principal'"
+        itemprop="image"
         fetchpriority="high"
         decoding="async"
       >
@@ -43,17 +61,25 @@
   </div>
 
   <!-- INFORMACIÓN DEL PRODUCTO -->
-  <div class="detalle-info">
+  <section class="detalle-info">
 
-    <h1>{{ producto.nombre }}</h1>
+    <!-- NOMBRE DEL PRODUCTO -->
+    <h1 itemprop="name">
+      {{ producto.nombre }}
+    </h1>
 
+    <!-- TEXTO COMERCIAL -->
     <p *ngIf="producto.texto">
       {{ producto.texto }}
     </p>
 
-    <p class="descripcion">
+    <!-- DESCRIPCIÓN -->
+    <div
+      class="descripcion"
+      itemprop="description"
+    >
       {{ producto.descripcion }}
-    </p>
+    </div>
 
     <!-- SELECTOR DE COLORES -->
     <div
@@ -130,7 +156,14 @@
     </div>
 
     <!-- PRECIOS -->
-    <div class="precios">
+    <div
+      class="precios"
+      itemprop="offers"
+      itemscope
+      itemtype="https://schema.org/Offer"
+    >
+
+      <meta itemprop="priceCurrency" content="COP">
 
       <!-- PRECIO DE CONTADO -->
       <div
@@ -149,9 +182,15 @@
           {{ precioOriginal(producto) | currency:'COP':'symbol':'1.0-0' }}
         </p>
 
-        <p class="precio-final">
+        <p
+          class="precio-final"
+          itemprop="price"
+          [attr.content]="precioFinal(producto, 'contado')"
+        >
           {{ precioFinal(producto, 'contado') | currency:'COP':'symbol':'1.0-0' }}
         </p>
+
+        <link itemprop="availability" href="https://schema.org/InStock">
 
         <span
           *ngIf="producto.descuento > 0"
@@ -288,6 +327,19 @@
       Comprar por WhatsApp
     </a>
 
-  </div>
+    <!-- INFORMACIÓN DE ENVÍOS -->
+    <aside class="informacion-envios">
+
+      <h2>Envíos de Home Confort</h2>
+
+      <p>
+        Compra tus muebles, camas y colchones en Home Confort.
+        Realizamos entregas en Pereira, Dosquebradas y diferentes
+        ciudades de Colombia.
+      </p>
+
+    </aside>
+
+  </section>
 
 </div>

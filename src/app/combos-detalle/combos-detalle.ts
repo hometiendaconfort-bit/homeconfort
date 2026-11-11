@@ -1,7 +1,24 @@
 
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
+  Inject
+} from '@angular/core';
+
+import {
+  CommonModule,
+  Location,
+  DOCUMENT
+} from '@angular/common';
+
+import {
+  ActivatedRoute,
+  RouterModule
+} from '@angular/router';
+
+import { Title, Meta } from '@angular/platform-browser';
 
 import { Combos } from '../services/combos';
 import { Productos } from '../services/productos';
@@ -11,304 +28,605 @@ import { Productos } from '../services/productos';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './combos-detalle.html',
-  styleUrl: './combos-detalle.css',
+  styleUrls: ['./combos-detalle.css']
 })
-export class ComboDetalleComponent implements OnInit {
+export class ComboDetalleComponent implements OnInit, OnDestroy {
 
-  // COMBO SELECCIONADO
-  combo: any;
-
-  // TODOS LOS PRODUCTOS
+  combo: any = null;
   productosLista: any[] = [];
 
-  // MODALIDAD SELECCIONADA
-  modalidad: 'contado' | 'credito' = 'credito';
-
-  // FRECUENCIA DE PAGO SELECCIONADA
+  modalidad: 'contado' | 'credito' = 'contado';
   frecuencia: 'quincenal' | 'mensual' = 'quincenal';
+
+  private readonly urlBase = 'https://homeconfort.pages.dev';
+  private seoScript?: HTMLScriptElement;
 
   constructor(
     private route: ActivatedRoute,
-    private combos: Combos,
-    private productos: Productos,
-    private cdr: ChangeDetectorRef,
-    private location: Location
+    private combosService: Combos,
+    private productosService: Productos,
+    private cd: ChangeDetectorRef,
+    private location: Location,
+    private title: Title,
+    private meta: Meta,
+    @Inject(DOCUMENT) private document: Document
   ) {}
 
-  async ngOnInit() {
-    try {
+  // ==================================================
+  // INICIO
+  // ==================================================
 
-      // OBTIENE EL ID DE LA URL
-      const docId = this.route.snapshot.paramMap.get('id');
+  ngOnInit(): void {
+    this.cargarProductos();
+    this.cargarCombo();
+  }
 
-      if (!docId) {
-        return;
-      }
-
-      // OBTIENE LOS COMBOS Y PRODUCTOS
-      const combos = await this.combos.obtenerCombo();
-      const productos = await this.productos.obtenerProductos();
-
-      this.productosLista = productos;
-
-      // BUSCA EL COMBO SELECCIONADO
-      const comboEncontrado = combos.find(
-        combo => combo.docId === docId
-      );
-
-      if (!comboEncontrado) {
-        this.cdr.detectChanges();
-        return;
-      }
-
-      // COMPATIBILIDAD CON COMBOS ANTIGUOS
-      const vendeContado =
-        comboEncontrado.vendeContado ??
-        (
-          comboEncontrado.tipo === 'contado' ||
-          comboEncontrado.tipo === 'ambos' ||
-          (!comboEncontrado.tipo && comboEncontrado.precio != null)
-        );
-
-      const vendeCredito =
-        comboEncontrado.vendeCredito ??
-        (
-          comboEncontrado.tipo === 'credito' ||
-          comboEncontrado.tipo === 'ambos'
-        );
-
-      const precioContado =
-        comboEncontrado.precioContado ??
-        (
-          comboEncontrado.tipo !== 'credito'
-            ? comboEncontrado.precio
-            : null
-        );
-
-      const precioCredito =
-        comboEncontrado.precioCredito ??
-        (
-          comboEncontrado.tipo !== 'contado'
-            ? comboEncontrado.precio
-            : null
-        );
-
-      const vendeQuincenal =
-        comboEncontrado.vendeQuincenal ??
-        (Number(comboEncontrado.quincenal) > 0);
-
-      const vendeMensual =
-        comboEncontrado.vendeMensual ??
-        (Number(comboEncontrado.mensual) > 0);
-
-      // ALMOHADAS: COMPATIBILIDAD CON COMBOS ANTIGUOS
-      const incluyeAlmohadas =
-        comboEncontrado.incluyeAlmohadas ?? false;
-
-      const cantidadAlmohadas =
-        incluyeAlmohadas
-          ? Math.max(
-              0,
-              Math.floor(Number(comboEncontrado.cantidadAlmohadas) || 0)
-            )
-          : 0;
-
-      // PREPARA EL COMBO PARA LA VISTA
-      this.combo = {
-        ...comboEncontrado,
-        vendeContado,
-        vendeCredito,
-        precioContado,
-        precioCredito,
-        vendeQuincenal,
-        vendeMensual,
-        incluyeAlmohadas,
-        cantidadAlmohadas,
-        imagenActiva: comboEncontrado.imagen
-      };
-
-      // SELECCIONA UNA MODALIDAD DISPONIBLE
-      if (this.combo.vendeCredito) {
-        this.modalidad = 'credito';
-      } else if (this.combo.vendeContado) {
-        this.modalidad = 'contado';
-      }
-
-      // SELECCIONA UNA FRECUENCIA DISPONIBLE
-      if (this.combo.vendeQuincenal) {
-        this.frecuencia = 'quincenal';
-      } else if (this.combo.vendeMensual) {
-        this.frecuencia = 'mensual';
-      }
-
-      this.cdr.detectChanges();
-
-    } catch (error) {
-      console.error('Error cargando el combo:', error);
+  ngOnDestroy(): void {
+    if (this.seoScript?.parentNode) {
+      this.seoScript.parentNode.removeChild(this.seoScript);
     }
   }
 
-  // BUSCA UN PRODUCTO POR SU DOCID
-  obtenerProducto(docId: string) {
-    return this.productosLista.find(
-      producto => producto.docId === docId
-    );
+  // ==================================================
+  // CARGAR COMBO
+  // ==================================================
+
+  private async cargarCombo(): Promise<void> {
+
+    const id = this.route.snapshot.paramMap.get('id');
+
+    if (!id) {
+      this.comboNoEncontrado();
+      return;
+    }
+
+    try {
+
+      const combos = await this.combosService.obtenerCombo();
+
+      const encontrado = (combos || []).find(
+        (item: any) => String(item.docId) === String(id)
+      );
+
+      if (!encontrado) {
+        this.comboNoEncontrado();
+        return;
+      }
+
+      this.combo = encontrado;
+
+      this.adaptarComboAntiguo();
+
+      this.actualizarSEO();
+
+      this.cd.detectChanges();
+
+    } catch (error) {
+
+      console.error('Error al cargar el combo:', error);
+
+      this.comboNoEncontrado();
+    }
   }
 
-  // CAMBIA LA IMAGEN PRINCIPAL
-  cambiarImagen(combo: any, imagen: string) {
+  // ==================================================
+  // CARGAR PRODUCTOS
+  // ==================================================
+
+  private async cargarProductos(): Promise<void> {
+
+    try {
+
+      const productos = await this.productosService.obtenerProductos();
+
+      this.productosLista = productos || [];
+
+      this.cd.detectChanges();
+
+    } catch (error) {
+
+      console.error('Error al cargar los productos:', error);
+
+      this.productosLista = [];
+    }
+  }
+
+  // ==================================================
+  // ADAPTAR COMBOS ANTIGUOS
+  // ==================================================
+
+  private adaptarComboAntiguo(): void {
+
+    if (!this.combo) {
+      return;
+    }
+
+    this.combo.precioContado =
+      this.combo.precioContado ?? this.combo.precio ?? 0;
+
+    this.combo.precioCredito =
+      this.combo.precioCredito ?? this.combo.precio ?? 0;
+
+    this.combo.inicial =
+      this.combo.inicial ?? this.combo.cuotaInicial ?? null;
+
+    this.combo.quincenal =
+      this.combo.quincenal ?? this.combo.valorQuincenal ?? null;
+
+    this.combo.mensual =
+      this.combo.mensual ?? this.combo.valorMensual ?? null;
+
+    this.combo.cuotasQuincenales =
+      this.combo.cuotasQuincenales ??
+      this.combo.numeroCuotasQuincenales ??
+      null;
+
+    this.combo.cuotasMensuales =
+      this.combo.cuotasMensuales ??
+      this.combo.numeroCuotasMensuales ??
+      null;
+
+    this.combo.descuento = Number(this.combo.descuento) || 0;
+
+    this.combo.cantidadAlmohadas =
+      Number(
+        this.combo.cantidadAlmohadas ??
+        this.combo.almohadas ??
+        0
+      ) || 0;
+
+    this.combo.incluyeAlmohadas =
+      this.combo.incluyeAlmohadas ??
+      this.combo.cantidadAlmohadas > 0;
+
+    this.combo.vendeContado =
+      this.combo.vendeContado ??
+      Number(this.combo.precioContado) > 0;
+
+    this.combo.vendeCredito =
+      this.combo.vendeCredito ??
+      Number(this.combo.precioCredito) > 0;
+
+    this.combo.vendeQuincenal =
+      this.combo.vendeQuincenal ??
+      Number(this.combo.quincenal) > 0;
+
+    this.combo.vendeMensual =
+      this.combo.vendeMensual ??
+      Number(this.combo.mensual) > 0;
+
+    this.combo.imagenActiva =
+      this.combo.imagenActiva || this.combo.imagen || '';
+
+    if (this.combo.vendeContado && !this.combo.vendeCredito) {
+      this.modalidad = 'contado';
+    } else if (this.combo.vendeCredito && !this.combo.vendeContado) {
+      this.modalidad = 'credito';
+    } else {
+      this.modalidad = 'contado';
+    }
+
+    if (this.combo.vendeQuincenal && !this.combo.vendeMensual) {
+      this.frecuencia = 'quincenal';
+    } else if (this.combo.vendeMensual && !this.combo.vendeQuincenal) {
+      this.frecuencia = 'mensual';
+    } else {
+      this.frecuencia = 'quincenal';
+    }
+  }
+
+  // ==================================================
+  // BUSCAR PRODUCTOS
+  // ==================================================
+
+  obtenerProducto(docId: string): any {
+
+    if (!docId || !this.productosLista.length) {
+      return null;
+    }
+
+    return this.productosLista.find(
+      (producto: any) =>
+        String(producto.docId) === String(docId) ||
+        String(producto.id) === String(docId)
+    ) || null;
+  }
+
+  // ==================================================
+  // CAMBIAR IMAGEN
+  // ==================================================
+
+  cambiarImagen(combo: any, imagen: string): void {
+
+    if (!combo || !imagen) {
+      return;
+    }
+
     combo.imagenActiva = imagen;
   }
 
-  // CAMBIA ENTRE CONTADO Y CRÉDITO
-  seleccionarModalidad(modalidad: 'contado' | 'credito') {
+  // ==================================================
+  // MODALIDAD
+  // ==================================================
 
-    if (
-      (modalidad === 'contado' && this.combo?.vendeContado) ||
-      (modalidad === 'credito' && this.combo?.vendeCredito)
-    ) {
-      this.modalidad = modalidad;
-    }
+  seleccionarModalidad(modalidad: 'contado' | 'credito'): void {
+    this.modalidad = modalidad;
   }
 
-  // CAMBIA LA FRECUENCIA DE PAGO
-  seleccionarFrecuencia(frecuencia: 'quincenal' | 'mensual') {
+  // ==================================================
+  // FRECUENCIA
+  // ==================================================
 
-    if (
-      frecuencia === 'quincenal' &&
-      this.combo?.vendeQuincenal
-    ) {
-      this.frecuencia = 'quincenal';
-    }
-
-    if (
-      frecuencia === 'mensual' &&
-      this.combo?.vendeMensual
-    ) {
-      this.frecuencia = 'mensual';
-    }
+  seleccionarFrecuencia(
+    frecuencia: 'quincenal' | 'mensual'
+  ): void {
+    this.frecuencia = frecuencia;
   }
 
-  // OBTIENE LA FRECUENCIA DISPONIBLE
-  obtenerFrecuencia(combo: any): 'quincenal' | 'mensual' {
-    if (
-      this.frecuencia === 'quincenal' &&
-      combo.vendeQuincenal
-    ) {
-      return 'quincenal';
-    }
-
-    if (combo.vendeMensual) {
-      return 'mensual';
-    }
-
-    return 'quincenal';
+  obtenerFrecuencia(
+    combo: any
+  ): 'quincenal' | 'mensual' {
+    return this.frecuencia;
   }
 
-  // OBTIENE EL PRECIO FINAL SEGÚN LA MODALIDAD
+  // ==================================================
+  // PRECIO CON DESCUENTO
+  // ==================================================
+
   obtenerPrecio(combo: any): number {
 
-    if (this.modalidad === 'contado') {
-      const precio = Number(
-        combo.precioContado ?? combo.precio
-      ) || 0;
-
-      const descuento = Number(combo.descuento) || 0;
-
-      return descuento > 0
-        ? precio - (precio * descuento / 100)
-        : precio;
+    if (!combo) {
+      return 0;
     }
 
-    return Number(
-      combo.precioCredito ?? combo.precio
-    ) || 0;
+    const precio = Number(
+      combo.precioContado ?? combo.precio ?? 0
+    );
+
+    const descuento = Number(combo.descuento) || 0;
+
+    if (precio <= 0) {
+      return 0;
+    }
+
+    if (descuento <= 0) {
+      return precio;
+    }
+
+    return precio - (precio * descuento / 100);
   }
 
-  // FORMATEA UN VALOR COMO PESOS COLOMBIANOS
+  // ==================================================
+  // FORMATO DE MONEDA
+  // ==================================================
+
   private formatoPesos(valor: number): string {
-    return Number(valor).toLocaleString('es-CO', {
+
+    return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
       maximumFractionDigits: 0
-    });
+    }).format(Number(valor) || 0);
   }
 
-  // GENERA EL ENLACE DE WHATSAPP
+  // ==================================================
+  // WHATSAPP
+  // ==================================================
+
   obtenerLinkWhatsApp(combo: any): string {
 
-    const precio = this.obtenerPrecio(combo);
-
-    const nombreModalidad =
-      this.modalidad === 'contado'
-        ? 'de contado'
-        : 'a crédito';
-
-    let mensaje =
-      `Hola, estoy interesado en el combo ${combo.nombre}. ` +
-      `Modalidad: ${nombreModalidad}. ` +
-      `Precio: ${this.formatoPesos(precio)}.`;
-
-    // INFORMACIÓN DE ALMOHADAS
-    if (combo.incluyeAlmohadas && combo.cantidadAlmohadas > 0) {
-      const cantidad = combo.cantidadAlmohadas;
-      const textoAlmohadas = cantidad === 1
-        ? 'almohada'
-        : 'almohadas';
-
-      mensaje += ` Incluye ${cantidad} ${textoAlmohadas}.`;
+    if (!combo) {
+      return 'https://wa.me/573137110232';
     }
 
-    // INFORMACIÓN ADICIONAL DE CRÉDITO
-    if (this.modalidad === 'credito') {
+    const nombre = combo.nombre || 'Combo de Home Confort';
+
+    let mensaje = `Hola, estoy interesado en el ${nombre}.`;
+
+    if (this.modalidad === 'contado') {
+
+      const precio = this.obtenerPrecio(combo);
+
+      mensaje += `\nModalidad: Contado.`;
+      mensaje += `\nPrecio: ${this.formatoPesos(precio)}.`;
+
+    } else {
+
+      const precioCredito = Number(
+        combo.precioCredito ?? combo.precio ?? 0
+      );
+
+      mensaje += `\nModalidad: Crédito.`;
+      mensaje += `\nPrecio a crédito: ${this.formatoPesos(precioCredito)}.`;
 
       if (combo.inicial != null) {
-        mensaje +=
-          ` Cuota inicial: ${this.formatoPesos(Number(combo.inicial))}.`;
+        mensaje += `\nCuota inicial: ${this.formatoPesos(combo.inicial)}.`;
       }
 
-      const frecuenciaSeleccionada = this.obtenerFrecuencia(combo);
-
-      // PAGO QUINCENAL
-      if (
-        frecuenciaSeleccionada === 'quincenal' &&
-        combo.vendeQuincenal
-      ) {
+      if (this.obtenerFrecuencia(combo) === 'quincenal') {
 
         if (combo.quincenal != null) {
-          mensaje +=
-            ` Cuota quincenal: ${this.formatoPesos(Number(combo.quincenal))}.`;
+          mensaje += `\nCuota quincenal: ${this.formatoPesos(combo.quincenal)}.`;
         }
 
         if (combo.cuotasQuincenales != null) {
-          mensaje +=
-            ` Número de cuotas quincenales: ${combo.cuotasQuincenales}.`;
+          mensaje += `\nNúmero de cuotas quincenales: ${combo.cuotasQuincenales}.`;
         }
-      }
 
-      // PAGO MENSUAL
-      if (
-        frecuenciaSeleccionada === 'mensual' &&
-        combo.vendeMensual
-      ) {
+      } else {
 
         if (combo.mensual != null) {
-          mensaje +=
-            ` Cuota mensual: ${this.formatoPesos(Number(combo.mensual))}.`;
+          mensaje += `\nCuota mensual: ${this.formatoPesos(combo.mensual)}.`;
         }
 
         if (combo.cuotasMensuales != null) {
-          mensaje +=
-            ` Número de cuotas mensuales: ${combo.cuotasMensuales}.`;
+          mensaje += `\nNúmero de cuotas mensuales: ${combo.cuotasMensuales}.`;
         }
       }
     }
+
+    if (combo.incluyeAlmohadas && combo.cantidadAlmohadas > 0) {
+      mensaje += `\nIncluye ${combo.cantidadAlmohadas} almohada(s).`;
+    }
+
+    mensaje += '\n¿Me pueden dar más información?';
 
     return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
   }
 
-  // REGRESA A LA PÁGINA ANTERIOR
-  volver() {
+  // ==================================================
+  // VOLVER
+  // ==================================================
+
+  volver(): void {
     this.location.back();
+  }
+
+  // ==================================================
+  // SEO
+  // ==================================================
+
+  private actualizarSEO(): void {
+
+    if (!this.combo) {
+      return;
+    }
+
+    const nombre = String(
+      this.combo.nombre || 'Combo especial'
+    ).trim();
+
+    const descripcion = String(
+      this.combo.descripcion ||
+      `Conoce ${nombre}, uno de los combos especiales de Home Confort. Consulta sus opciones de compra y entrega por WhatsApp.`
+    ).trim();
+
+    const url = `${this.urlBase}/combo-detalle/${this.combo.docId}`;
+
+    const imagen = this.obtenerUrlAbsoluta(
+      this.combo.imagenActiva || this.combo.imagen
+    );
+
+    this.title.setTitle(`${nombre} | Home Confort`);
+
+    this.meta.updateTag({
+      name: 'description',
+      content: descripcion
+    });
+
+    this.meta.updateTag({
+      name: 'robots',
+      content: 'index, follow, max-image-preview:large'
+    });
+
+    this.meta.updateTag({
+      name: 'googlebot',
+      content: 'index, follow, max-image-preview:large'
+    });
+
+    this.meta.updateTag({
+      property: 'og:type',
+      content: 'product'
+    });
+
+    this.meta.updateTag({
+      property: 'og:title',
+      content: `${nombre} | Home Confort`
+    });
+
+    this.meta.updateTag({
+      property: 'og:description',
+      content: descripcion
+    });
+
+    this.meta.updateTag({
+      property: 'og:url',
+      content: url
+    });
+
+    this.meta.updateTag({
+      property: 'og:site_name',
+      content: 'Home Confort'
+    });
+
+    this.meta.updateTag({
+      property: 'og:locale',
+      content: 'es_CO'
+    });
+
+    if (imagen) {
+      this.meta.updateTag({
+        property: 'og:image',
+        content: imagen
+      });
+    }
+
+    this.meta.updateTag({
+      name: 'twitter:card',
+      content: 'summary_large_image'
+    });
+
+    this.meta.updateTag({
+      name: 'twitter:title',
+      content: `${nombre} | Home Confort`
+    });
+
+    this.meta.updateTag({
+      name: 'twitter:description',
+      content: descripcion
+    });
+
+    if (imagen) {
+      this.meta.updateTag({
+        name: 'twitter:image',
+        content: imagen
+      });
+    }
+
+    this.actualizarCanonical(url);
+
+    this.actualizarDatosEstructurados(
+      nombre,
+      descripcion,
+      url,
+      imagen
+    );
+  }
+
+  // ==================================================
+  // URL ABSOLUTA
+  // ==================================================
+
+  private obtenerUrlAbsoluta(imagen: string): string {
+
+    if (!imagen) {
+      return '';
+    }
+
+    try {
+      return new URL(imagen, this.urlBase).href;
+    } catch {
+      return '';
+    }
+  }
+
+  // ==================================================
+  // CANONICAL
+  // ==================================================
+
+  private actualizarCanonical(url: string): void {
+
+    let canonical = this.document.querySelector(
+      'link[rel="canonical"]'
+    ) as HTMLLinkElement | null;
+
+    if (!canonical) {
+      canonical = this.document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      this.document.head.appendChild(canonical);
+    }
+
+    canonical.setAttribute('href', url);
+  }
+
+  // ==================================================
+  // DATOS ESTRUCTURADOS
+  // ==================================================
+
+  private actualizarDatosEstructurados(
+    nombre: string,
+    descripcion: string,
+    url: string,
+    imagen: string
+  ): void {
+
+    const ofertas: any[] = [];
+
+    const precioContado = this.obtenerPrecio(this.combo);
+
+    const precioCredito = Number(
+      this.combo.precioCredito ?? this.combo.precio ?? 0
+    );
+
+    if (this.combo.vendeContado && precioContado > 0) {
+      ofertas.push({
+        '@type': 'Offer',
+        priceCurrency: 'COP',
+        price: precioContado,
+        url
+      });
+    }
+
+    if (this.combo.vendeCredito && precioCredito > 0) {
+      ofertas.push({
+        '@type': 'Offer',
+        priceCurrency: 'COP',
+        price: precioCredito,
+        url
+      });
+    }
+
+    const datosEstructurados: any = {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: nombre,
+      description: descripcion,
+      url: url,
+      brand: {
+        '@type': 'Brand',
+        name: 'Home Confort'
+      }
+    };
+
+    if (imagen) {
+      datosEstructurados.image = [imagen];
+    }
+
+    if (ofertas.length > 0) {
+      datosEstructurados.offers =
+        ofertas.length === 1 ? ofertas[0] : ofertas;
+    }
+
+    if (this.seoScript?.parentNode) {
+      this.seoScript.parentNode.removeChild(this.seoScript);
+    }
+
+    this.seoScript = this.document.createElement('script');
+    this.seoScript.type = 'application/ld+json';
+    this.seoScript.id = 'seo-combo-detalle-jsonld';
+
+    this.seoScript.textContent = JSON.stringify(
+      datosEstructurados
+    ).replace(/</g, '\\u003c');
+
+    this.document.head.appendChild(this.seoScript);
+  }
+
+  // ==================================================
+  // COMBO NO ENCONTRADO
+  // ==================================================
+
+  private comboNoEncontrado(): void {
+
+    this.combo = null;
+
+    this.title.setTitle('Combo no encontrado | Home Confort');
+
+    this.meta.updateTag({
+      name: 'description',
+      content: 'El combo que buscas no se encuentra disponible en Home Confort.'
+    });
+
+    this.meta.updateTag({
+      name: 'robots',
+      content: 'noindex, nofollow'
+    });
+
+    this.meta.updateTag({
+      name: 'googlebot',
+      content: 'noindex, nofollow'
+    });
+
+    this.cd.detectChanges();
   }
 }

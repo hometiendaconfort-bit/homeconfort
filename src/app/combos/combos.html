@@ -1,265 +1,299 @@
 
-<div class="combos-container" id="combo">
+<section class="combos-pagina" aria-labelledby="titulo-combos">
 
-  <div
-    class="combo-card"
-    *ngFor="let combo of comboLista"
-    [id]="'producto-' + combo.docId"
-  >
+  <!-- ENCABEZADO SEO -->
+  <header class="combos-encabezado">
+    <h1 id="titulo-combos">
+      Combos de camas y colchones en Pereira y Dosquebradas
+    </h1>
 
-    <!-- IMAGEN PRINCIPAL -->
-    <div class="combo-imagen">
-      <img
-        [src]="combo.imagenActiva || combo.imagen"
-        [alt]="combo.nombre"
-        class="imagen-principal"
-      >
-    </div>
+    <p>
+  Combinaciones especiales pensadas para ofrecerte algo diferente.
+</p>
+  </header>
 
-    <!-- MINIATURAS -->
-    <div
-      class="combo-productos"
-      (click)="$event.stopPropagation()"
-    >
+  <section aria-labelledby="titulo-listado-combos">
 
-      <!-- COMBO -->
-      <div class="producto-mini">
-        <h4 class="producto-titulo">Combo</h4>
+    <h2 id="titulo-listado-combos">
+      Nuestros combos disponibles
+    </h2>
 
-        <img
-          [src]="combo.imagen"
-          [alt]="combo.nombre"
-          class="miniatura"
-          (click)="combo.imagenActiva = combo.imagen"
-        >
-      </div>
+    <div class="combos-container" id="combo">
 
-      <!-- BASE -->
-      <div
-        class="producto-mini"
-        *ngIf="combo.baseId && obtenerProducto(combo.baseId) as base"
-      >
-        <h4 class="producto-titulo">Base</h4>
-
-        <img
-          [src]="base.imagen"
-          [alt]="base.nombre"
-          class="miniatura"
-          (click)="combo.imagenActiva = base.imagen"
-        >
-      </div>
-
-      <!-- COLCHÓN -->
-      <div
-        class="producto-mini"
-        *ngIf="combo.colchonId && obtenerProducto(combo.colchonId) as colchon"
-      >
-        <h4 class="producto-titulo">Colchón</h4>
-
-        <img
-          [src]="colchon.imagen"
-          [alt]="colchon.nombre"
-          class="miniatura"
-          (click)="combo.imagenActiva = colchon.imagen"
-        >
-      </div>
-
-      <!-- ESPALDAR -->
-      <div
-        class="producto-mini"
-        *ngIf="combo.espaldarId && obtenerProducto(combo.espaldarId) as espaldar"
-      >
-        <h4 class="producto-titulo">Espaldar</h4>
-
-        <img
-          [src]="espaldar.imagen"
-          [alt]="espaldar.nombre"
-          class="miniatura"
-          (click)="combo.imagenActiva = espaldar.imagen"
-        >
-      </div>
-
-    </div>
-
-    <!-- INFORMACIÓN DEL COMBO -->
-    <div class="combo-info">
-
-      <h3>{{ combo.nombre }}</h3>
-
-      <p class="descripcion">
-        {{ combo.descripcion }}
-      </p>
-
-      <!-- ALMOHADAS INCLUIDAS -->
-      <p
-        class="combo-almohadas"
-        *ngIf="combo.incluyeAlmohadas && combo.cantidadAlmohadas > 0"
-      >
-        <span class="icono-almohada" aria-hidden="true">✓</span>
-        Incluye {{ combo.cantidadAlmohadas }}
-        {{ combo.cantidadAlmohadas === 1 ? 'almohada' : 'almohadas' }}
-      </p>
-
-      <!-- SELECTOR DE MODALIDAD -->
-      <div
-        class="selector-modalidad"
-        *ngIf="combo.vendeContado && combo.vendeCredito"
-        (click)="$event.stopPropagation()"
+      <article
+        class="combo-card"
+        *ngFor="let combo of comboLista"
+        [id]="'producto-' + combo.docId"
       >
 
-        <label
-          [class.seleccionada]="obtenerModalidad(combo) === 'contado'"
-        >
-          <input
-            type="radio"
-            [name]="'modalidad-' + (combo.docId ?? combo.id)"
-            [checked]="obtenerModalidad(combo) === 'contado'"
-            (change)="seleccionarModalidad(combo, 'contado')"
+        <!-- IMAGEN PRINCIPAL -->
+        <div class="combo-imagen">
+          <img
+            [src]="combo.imagenActiva || combo.imagen"
+            [alt]="combo.nombre"
+            class="imagen-principal"
+            decoding="async"
           >
-          Contado
-        </label>
+        </div>
 
-        <label
-          [class.seleccionada]="obtenerModalidad(combo) === 'credito'"
-        >
-          <input
-            type="radio"
-            [name]="'modalidad-' + (combo.docId ?? combo.id)"
-            [checked]="obtenerModalidad(combo) === 'credito'"
-            (change)="seleccionarModalidad(combo, 'credito')"
-          >
-          Crédito
-        </label>
-
-      </div>
-
-      <!-- PRECIO DE CONTADO -->
-      <ng-container
-        *ngIf="obtenerModalidad(combo) === 'contado' && combo.vendeContado"
-      >
-        <p class="precio">
-          Precio de contado:
-          {{ precioFinal(combo, 'contado') | currency:'COP':'symbol':'1.0-0' }}
-        </p>
-      </ng-container>
-
-      <!-- INFORMACIÓN A CRÉDITO -->
-      <ng-container
-        *ngIf="obtenerModalidad(combo) === 'credito' && combo.vendeCredito"
-      >
-
-        <p class="precio">
-          Precio a crédito:
-          {{ precioFinal(combo, 'credito') | currency:'COP':'symbol':'1.0-0' }}
-        </p>
-
-        <p *ngIf="combo.inicial != null">
-          Inicial:
-          {{ combo.inicial | currency:'COP':'symbol':'1.0-0' }}
-        </p>
-
-        <!-- SELECTOR DE FRECUENCIA -->
+        <!-- MINIATURAS -->
         <div
-          class="selector-modalidad selector-frecuencia"
-          *ngIf="combo.vendeQuincenal && combo.vendeMensual"
+          class="combo-productos"
           (click)="$event.stopPropagation()"
         >
 
-          <label
-            [class.seleccionada]="obtenerFrecuencia(combo) === 'quincenal'"
-          >
-            <input
-              type="radio"
-              [name]="'frecuencia-' + (combo.docId ?? combo.id)"
-              [checked]="obtenerFrecuencia(combo) === 'quincenal'"
-              (change)="seleccionarFrecuencia(combo, 'quincenal')"
-            >
-            Pago quincenal
-          </label>
+          <!-- COMBO -->
+          <div class="producto-mini">
+            <h4 class="producto-titulo">Combo</h4>
 
-          <label
-            [class.seleccionada]="obtenerFrecuencia(combo) === 'mensual'"
-          >
-            <input
-              type="radio"
-              [name]="'frecuencia-' + (combo.docId ?? combo.id)"
-              [checked]="obtenerFrecuencia(combo) === 'mensual'"
-              (change)="seleccionarFrecuencia(combo, 'mensual')"
+            <img
+              [src]="combo.imagen"
+              [alt]="'Imagen del combo ' + combo.nombre"
+              class="miniatura"
+              loading="lazy"
+              decoding="async"
+              (click)="combo.imagenActiva = combo.imagen"
             >
-            Pago mensual
-          </label>
+          </div>
+
+          <!-- BASE -->
+          <div
+            class="producto-mini"
+            *ngIf="combo.baseId && obtenerProducto(combo.baseId) as base"
+          >
+            <h4 class="producto-titulo">Base</h4>
+
+            <img
+              [src]="base.imagen"
+              [alt]="base.nombre"
+              class="miniatura"
+              loading="lazy"
+              decoding="async"
+              (click)="combo.imagenActiva = base.imagen"
+            >
+          </div>
+
+          <!-- COLCHÓN -->
+          <div
+            class="producto-mini"
+            *ngIf="combo.colchonId && obtenerProducto(combo.colchonId) as colchon"
+          >
+            <h4 class="producto-titulo">Colchón</h4>
+
+            <img
+              [src]="colchon.imagen"
+              [alt]="colchon.nombre"
+              class="miniatura"
+              loading="lazy"
+              decoding="async"
+              (click)="combo.imagenActiva = colchon.imagen"
+            >
+          </div>
+
+          <!-- ESPALDAR -->
+          <div
+            class="producto-mini"
+            *ngIf="combo.espaldarId && obtenerProducto(combo.espaldarId) as espaldar"
+          >
+            <h4 class="producto-titulo">Espaldar</h4>
+
+            <img
+              [src]="espaldar.imagen"
+              [alt]="espaldar.nombre"
+              class="miniatura"
+              loading="lazy"
+              decoding="async"
+              (click)="combo.imagenActiva = espaldar.imagen"
+            >
+          </div>
 
         </div>
 
-        <!-- PAGO QUINCENAL -->
-        <ng-container
-          *ngIf="combo.vendeQuincenal && (!combo.vendeMensual || obtenerFrecuencia(combo) === 'quincenal')"
-        >
+        <!-- INFORMACIÓN DEL COMBO -->
+        <div class="combo-info">
 
-          <p *ngIf="combo.quincenal != null">
-            Cuota quincenal:
-            {{ combo.quincenal | currency:'COP':'symbol':'1.0-0' }}
+          <h3>{{ combo.nombre }}</h3>
+
+          <p class="descripcion">
+            {{ combo.descripcion }}
           </p>
 
-          <p *ngIf="combo.cuotasQuincenales != null">
-            Número de cuotas quincenales:
-            {{ combo.cuotasQuincenales }}
+          <!-- ALMOHADAS INCLUIDAS -->
+          <p
+            class="combo-almohadas"
+            *ngIf="combo.incluyeAlmohadas && combo.cantidadAlmohadas > 0"
+          >
+            <span class="icono-almohada" aria-hidden="true">✓</span>
+            Incluye {{ combo.cantidadAlmohadas }}
+            {{ combo.cantidadAlmohadas === 1 ? 'almohada' : 'almohadas' }}
           </p>
 
-        </ng-container>
+          <!-- SELECTOR DE MODALIDAD -->
+          <div
+            class="selector-modalidad"
+            *ngIf="combo.vendeContado && combo.vendeCredito"
+            (click)="$event.stopPropagation()"
+          >
 
-        <!-- PAGO MENSUAL -->
-        <ng-container
-          *ngIf="combo.vendeMensual && (!combo.vendeQuincenal || obtenerFrecuencia(combo) === 'mensual')"
-        >
+            <label
+              [class.seleccionada]="obtenerModalidad(combo) === 'contado'"
+            >
+              <input
+                type="radio"
+                [name]="'modalidad-' + (combo.docId ?? combo.id)"
+                [checked]="obtenerModalidad(combo) === 'contado'"
+                (change)="seleccionarModalidad(combo, 'contado')"
+              >
+              Contado
+            </label>
 
-          <p *ngIf="combo.mensual != null">
-            Cuota mensual:
-            {{ combo.mensual | currency:'COP':'symbol':'1.0-0' }}
+            <label
+              [class.seleccionada]="obtenerModalidad(combo) === 'credito'"
+            >
+              <input
+                type="radio"
+                [name]="'modalidad-' + (combo.docId ?? combo.id)"
+                [checked]="obtenerModalidad(combo) === 'credito'"
+                (change)="seleccionarModalidad(combo, 'credito')"
+              >
+              Crédito
+            </label>
+
+          </div>
+
+          <!-- PRECIO DE CONTADO -->
+          <ng-container
+            *ngIf="obtenerModalidad(combo) === 'contado' && combo.vendeContado"
+          >
+            <p class="precio">
+              Precio de contado:
+              {{ precioFinal(combo, 'contado') | currency:'COP':'symbol':'1.0-0' }}
+            </p>
+          </ng-container>
+
+          <!-- INFORMACIÓN A CRÉDITO -->
+          <ng-container
+            *ngIf="obtenerModalidad(combo) === 'credito' && combo.vendeCredito"
+          >
+
+            <p class="precio">
+              Precio a crédito:
+              {{ precioFinal(combo, 'credito') | currency:'COP':'symbol':'1.0-0' }}
+            </p>
+
+            <p *ngIf="combo.inicial != null">
+              Inicial:
+              {{ combo.inicial | currency:'COP':'symbol':'1.0-0' }}
+            </p>
+
+            <!-- SELECTOR DE FRECUENCIA -->
+            <div
+              class="selector-modalidad selector-frecuencia"
+              *ngIf="combo.vendeQuincenal && combo.vendeMensual"
+              (click)="$event.stopPropagation()"
+            >
+
+              <label
+                [class.seleccionada]="obtenerFrecuencia(combo) === 'quincenal'"
+              >
+                <input
+                  type="radio"
+                  [name]="'frecuencia-' + (combo.docId ?? combo.id)"
+                  [checked]="obtenerFrecuencia(combo) === 'quincenal'"
+                  (change)="seleccionarFrecuencia(combo, 'quincenal')"
+                >
+                Pago quincenal
+              </label>
+
+              <label
+                [class.seleccionada]="obtenerFrecuencia(combo) === 'mensual'"
+              >
+                <input
+                  type="radio"
+                  [name]="'frecuencia-' + (combo.docId ?? combo.id)"
+                  [checked]="obtenerFrecuencia(combo) === 'mensual'"
+                  (change)="seleccionarFrecuencia(combo, 'mensual')"
+                >
+                Pago mensual
+              </label>
+
+            </div>
+
+            <!-- PAGO QUINCENAL -->
+            <ng-container
+              *ngIf="combo.vendeQuincenal && (!combo.vendeMensual || obtenerFrecuencia(combo) === 'quincenal')"
+            >
+
+              <p *ngIf="combo.quincenal != null">
+                Cuota quincenal:
+                {{ combo.quincenal | currency:'COP':'symbol':'1.0-0' }}
+              </p>
+
+              <p *ngIf="combo.cuotasQuincenales != null">
+                Número de cuotas quincenales:
+                {{ combo.cuotasQuincenales }}
+              </p>
+
+            </ng-container>
+
+            <!-- PAGO MENSUAL -->
+            <ng-container
+              *ngIf="combo.vendeMensual && (!combo.vendeQuincenal || obtenerFrecuencia(combo) === 'mensual')"
+            >
+
+              <p *ngIf="combo.mensual != null">
+                Cuota mensual:
+                {{ combo.mensual | currency:'COP':'symbol':'1.0-0' }}
+              </p>
+
+              <p *ngIf="combo.cuotasMensuales != null">
+                Número de cuotas mensuales:
+                {{ combo.cuotasMensuales }}
+              </p>
+
+            </ng-container>
+
+          </ng-container>
+
+          <!-- COMPATIBILIDAD CON COMBOS ANTIGUOS -->
+          <p
+            class="precio"
+            *ngIf="!combo.vendeContado && !combo.vendeCredito"
+          >
+            {{ combo.precio | currency:'COP':'symbol':'1.0-0' }}
           </p>
 
-          <p *ngIf="combo.cuotasMensuales != null">
-            Número de cuotas mensuales:
-            {{ combo.cuotasMensuales }}
-          </p>
+          <!-- BOTONES -->
+          <div class="combo-botones">
 
-        </ng-container>
+            <button
+              type="button"
+              (click)="$event.stopPropagation(); verDetalleCombo(combo.docId)"
+              class="btn-detalle"
+              [attr.aria-label]="'Ver detalle del combo ' + combo.nombre"
+            >
+              Ver detalle
+            </button>
 
-      </ng-container>
+            <a
+              [href]="obtenerLinkWhatsApp(combo)"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-whatsapp"
+              (click)="$event.stopPropagation()"
+              [attr.aria-label]="'Comprar ' + combo.nombre + ' por WhatsApp'"
+            >
+              Comprar por WhatsApp
+            </a>
 
-      <!-- COMPATIBILIDAD CON COMBOS ANTIGUOS -->
-      <p
-        class="precio"
-        *ngIf="!combo.vendeContado && !combo.vendeCredito"
-      >
-        {{ combo.precio | currency:'COP':'symbol':'1.0-0' }}
-      </p>
+          </div>
 
-      <!-- BOTONES -->
-      <div class="combo-botones">
+        </div>
 
-        <button
-          type="button"
-          (click)="$event.stopPropagation(); verDetalleCombo(combo.docId)"
-          class="btn-detalle"
-        >
-          Ver detalle
-        </button>
-
-        <a
-          [href]="obtenerLinkWhatsApp(combo)"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn-whatsapp"
-          (click)="$event.stopPropagation()"
-        >
-          Comprar por WhatsApp
-        </a>
-
-      </div>
+      </article>
 
     </div>
 
-  </div>
+  </section>
 
-</div>
+</section>

@@ -19,6 +19,7 @@ import {
 
 import { ProductosService } from '../../services/producto.service';
 import { Meta, Title } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-producto-detalle',
@@ -38,6 +39,8 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
   private readonly idSchema = 'seo-producto-estructurado';
 
   private enlaceCanonico: HTMLLinkElement | null = null;
+  private suscripcionProductos?: Subscription;
+  private idRutaProducto = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -48,6 +51,10 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document
   ) {}
 
+  // ==========================================
+  // INICIALIZACIÓN
+  // ==========================================
+
   ngOnInit(): void {
 
     const idRuta = this.route.snapshot.paramMap.get('id');
@@ -57,7 +64,9 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.productosService.getProductos().subscribe({
+    this.idRutaProducto = idRuta;
+
+    this.suscripcionProductos = this.productosService.getProductos().subscribe({
 
       next: (res: any[]) => {
 
@@ -249,7 +258,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
             this.producto,
             indiceInicial >= 0 ? indiceInicial : 0
           );
-
         }
 
         // ELEGIR LA MODALIDAD INICIAL
@@ -270,7 +278,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
 
         // ACTUALIZAR SEO DEL PRODUCTO
         this.actualizarSEO(this.producto);
-
       },
 
       error: err => {
@@ -278,7 +285,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
       }
 
     });
-
   }
 
   // ==========================================
@@ -289,20 +295,32 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
 
     if (!p) return;
 
-    const nombre = String(p.nombre || 'Producto').trim();
+    const nombre = String(p.nombre || 'Producto')
+      .replace(/\s+/g, ' ')
+      .trim();
 
-    const descripcion = String(
+    const descripcionOriginal = String(
       p.descripcion ||
       `${nombre}. Consulta sus características y opciones de compra en Home Confort.`
-    ).trim();
+    );
+
+    const descripcion = descripcionOriginal
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
 
     const titulo = `${nombre} | Home Confort`;
 
-    const identificador = p.id ?? p.docId;
+    // USAR EL ID REAL DE LA RUTA
+    const identificador = this.idRutaProducto ||
+      String(p.id ?? p.docId ?? '');
 
     const url = `${this.dominio}/productos/${encodeURIComponent(
-      String(identificador)
+      identificador
     )}`;
+
+    const descripcionCorta = descripcion.slice(0, 160);
+    const descripcionSocial = descripcion.slice(0, 200);
 
     // TÍTULO
     this.titleService.setTitle(titulo);
@@ -310,12 +328,17 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     // DESCRIPCIÓN
     this.metaService.updateTag({
       name: 'description',
-      content: descripcion.slice(0, 160)
+      content: descripcionCorta
     });
 
     // INDEXACIÓN
     this.metaService.updateTag({
       name: 'robots',
+      content: 'index, follow, max-image-preview:large'
+    });
+
+    this.metaService.updateTag({
+      name: 'googlebot',
       content: 'index, follow'
     });
 
@@ -326,13 +349,23 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     });
 
     this.metaService.updateTag({
+      property: 'og:site_name',
+      content: 'Home Confort'
+    });
+
+    this.metaService.updateTag({
+      property: 'og:locale',
+      content: 'es_CO'
+    });
+
+    this.metaService.updateTag({
       property: 'og:title',
       content: titulo
     });
 
     this.metaService.updateTag({
       property: 'og:description',
-      content: descripcion.slice(0, 200)
+      content: descripcionSocial
     });
 
     this.metaService.updateTag({
@@ -340,15 +373,41 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
       content: url
     });
 
+    // TWITTER
+    this.metaService.updateTag({
+      name: 'twitter:card',
+      content: 'summary_large_image'
+    });
+
+    this.metaService.updateTag({
+      name: 'twitter:title',
+      content: titulo
+    });
+
+    this.metaService.updateTag({
+      name: 'twitter:description',
+      content: descripcionSocial
+    });
+
+    // IMAGEN PRINCIPAL
     const imagen = p.imagenActiva || p.imagen || '';
 
     if (imagen) {
 
-      this.metaService.updateTag({
-        property: 'og:image',
-        content: this.obtenerUrlAbsoluta(imagen)
-      });
+      const imagenAbsoluta = this.obtenerUrlAbsoluta(imagen);
 
+      if (imagenAbsoluta) {
+
+        this.metaService.updateTag({
+          property: 'og:image',
+          content: imagenAbsoluta
+        });
+
+        this.metaService.updateTag({
+          name: 'twitter:image',
+          content: imagenAbsoluta
+        });
+      }
     }
 
     // URL CANÓNICA
@@ -358,7 +417,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
       this.enlaceCanonico.rel = 'canonical';
 
       this.document.head.appendChild(this.enlaceCanonico);
-
     }
 
     this.enlaceCanonico.href = url;
@@ -370,7 +428,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
       descripcion,
       url
     );
-
   }
 
   // CONVERTIR IMÁGENES EN URL ABSOLUTAS
@@ -381,10 +438,12 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     } catch {
       return '';
     }
-
   }
 
+  // ==========================================
   // DATOS ESTRUCTURADOS PRODUCT
+  // ==========================================
+
   private actualizarDatosEstructurados(
     p: any,
     titulo: string,
@@ -415,10 +474,11 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
 
     if (imagen) {
 
-      datos.image = [
-        this.obtenerUrlAbsoluta(imagen)
-      ];
+      const imagenAbsoluta = this.obtenerUrlAbsoluta(imagen);
 
+      if (imagenAbsoluta) {
+        datos.image = [imagenAbsoluta];
+      }
     }
 
     if (precio > 0) {
@@ -434,7 +494,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
         url
 
       };
-
     }
 
     let script = this.document.getElementById(this.idSchema);
@@ -448,11 +507,11 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
       script.setAttribute('type', 'application/ld+json');
 
       this.document.head.appendChild(script);
-
     }
 
-    script.textContent = JSON.stringify(datos);
-
+    // EVITAR QUE EL CONTENIDO ROMPA EL JSON-LD
+    script.textContent = JSON.stringify(datos)
+      .replace(/</g, '\\u003c');
   }
 
   // ==========================================
@@ -492,14 +551,12 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     };
 
     return coloresCSS[nombre] || '#d9d9d9';
-
   }
 
   // COMPROBAR SI UNA VARIANTE ESTÁ SELECCIONADA
   esVarianteActiva(p: any, indice: number): boolean {
 
     return Number(p?.indiceColorSeleccionado ?? -1) === indice;
-
   }
 
   // SELECCIONAR COLOR Y ACTUALIZAR LA GALERÍA
@@ -539,14 +596,12 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     } else if (imagenPrincipal) {
 
       p.imagenes = [imagenPrincipal];
-
     }
 
     // ACTUALIZAR IMAGEN Y DATOS SEO
     if (p === this.producto) {
       this.actualizarSEO(p);
     }
-
   }
 
   // ==========================================
@@ -558,7 +613,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
 
     return Number(this.producto?.quincenal ?? 0) > 0 ||
            Number(this.producto?.mensual ?? 0) > 0;
-
   }
 
   // CAMBIAR ENTRE CONTADO Y CRÉDITO
@@ -573,7 +627,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
       this.modalidadSeleccionada = 'contado';
 
       return;
-
     }
 
     if (modalidad === 'credito' && this.producto.vendeCredito) {
@@ -599,11 +652,8 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
           Number(this.producto.quincenal) > 0
             ? 'quincenal'
             : 'mensual';
-
       }
-
     }
-
   }
 
   // CAMBIAR LA FRECUENCIA DEL CRÉDITO
@@ -624,7 +674,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     ) {
 
       this.frecuenciaSeleccionada = 'quincenal';
-
     }
 
     if (
@@ -633,9 +682,7 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     ) {
 
       this.frecuenciaSeleccionada = 'mensual';
-
     }
-
   }
 
   // ==========================================
@@ -650,7 +697,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     if (p === this.producto) {
       this.actualizarSEO(p);
     }
-
   }
 
   // ==========================================
@@ -661,14 +707,12 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
   volver(): void {
 
     this.location.back();
-
   }
 
   // PRECIO ORIGINAL ANTES DEL DESCUENTO
   precioOriginal(p: any): number {
 
     return Number(p.precioContado ?? p.precio ?? 0);
-
   }
 
   // CALCULAR EL PRECIO SEGÚN LA MODALIDAD
@@ -693,7 +737,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     return descuento > 0
       ? precioBase - (precioBase * descuento / 100)
       : precioBase;
-
   }
 
   // VALOR DE LA CUOTA SELECCIONADA
@@ -702,7 +745,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     return this.frecuenciaSeleccionada === 'mensual'
       ? Number(p.mensual ?? 0)
       : Number(p.quincenal ?? 0);
-
   }
 
   // NÚMERO DE CUOTAS DE LA FRECUENCIA SELECCIONADA
@@ -711,7 +753,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     return this.frecuenciaSeleccionada === 'mensual'
       ? Number(p.numeroCuotasMensual ?? 0)
       : Number(p.numeroCuotasQuincenal ?? 0);
-
   }
 
   // NOMBRE DE LA FRECUENCIA SELECCIONADA
@@ -720,7 +761,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     return this.frecuenciaSeleccionada === 'mensual'
       ? 'mensual'
       : 'quincenal';
-
   }
 
   // FORMATEAR PRECIO EN PESOS COLOMBIANOS
@@ -733,7 +773,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
       maximumFractionDigits: 0
 
     });
-
   }
 
   // ==========================================
@@ -761,7 +800,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
     if (p.colorSeleccionado) {
 
       mensaje += `Color seleccionado: ${p.colorSeleccionado}. `;
-
     }
 
     if (modalidad === 'contado') {
@@ -780,7 +818,6 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
 
         mensaje +=
           ` Cuota inicial: ${this.formatearPrecio(Number(p.inicial))}.`;
-
       }
 
       const valorCuota = this.obtenerValorCuota(p);
@@ -792,27 +829,22 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
         mensaje +=
           ` Frecuencia de pago elegida: ${frecuencia}.` +
           ` Valor de cada cuota: ${this.formatearPrecio(valorCuota)}.`;
-
       }
 
       if (numeroCuotas > 0) {
 
         mensaje +=
           ` Número de cuotas ${frecuencia}: ${numeroCuotas}.`;
-
       }
 
       if (valorCuota <= 0) {
 
         mensaje +=
           ' Quisiera que me informaran sobre las opciones de pago disponibles.';
-
       }
-
     }
 
     return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
-
   }
 
   // ==========================================
@@ -821,10 +853,11 @@ export class ProductoDetalleComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
 
+    this.suscripcionProductos?.unsubscribe();
+
     this.document.getElementById(this.idSchema)?.remove();
 
     this.enlaceCanonico?.remove();
-
   }
 
 }

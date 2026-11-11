@@ -1,13 +1,18 @@
 
 <div class="detalle-container" *ngIf="combo">
 
-  <!-- GALERIA -->
+  <!-- GALERÍA -->
   <div class="detalle-galeria">
 
     <!-- MINIATURAS -->
     <div class="miniaturas-vertical">
 
-      <button type="button" class="volver" (click)="volver()">
+      <button
+        type="button"
+        class="volver"
+        (click)="volver()"
+        aria-label="Volver a la página anterior"
+      >
         Volver
       </button>
 
@@ -17,6 +22,8 @@
         [alt]="combo.nombre"
         (click)="cambiarImagen(combo, combo.imagen)"
         [class.activa]="combo.imagen === combo.imagenActiva"
+        loading="lazy"
+        decoding="async"
       >
 
       <!-- IMAGEN DE LA BASE -->
@@ -26,6 +33,8 @@
         [alt]="base.nombre"
         (click)="cambiarImagen(combo, base.imagen)"
         [class.activa]="base.imagen === combo.imagenActiva"
+        loading="lazy"
+        decoding="async"
       >
 
       <!-- IMAGEN DEL COLCHÓN -->
@@ -35,6 +44,8 @@
         [alt]="colchon.nombre"
         (click)="cambiarImagen(combo, colchon.imagen)"
         [class.activa]="colchon.imagen === combo.imagenActiva"
+        loading="lazy"
+        decoding="async"
       >
 
       <!-- IMAGEN DEL ESPALDAR -->
@@ -44,16 +55,22 @@
         [alt]="espaldar.nombre"
         (click)="cambiarImagen(combo, espaldar.imagen)"
         [class.activa]="espaldar.imagen === combo.imagenActiva"
+        loading="lazy"
+        decoding="async"
       >
 
     </div>
 
     <!-- IMAGEN PRINCIPAL -->
     <div class="imagen-principal">
+
       <img
         [src]="combo.imagenActiva || combo.imagen"
         [alt]="combo.nombre"
+        fetchpriority="high"
+        decoding="async"
       >
+
     </div>
 
   </div>
@@ -64,7 +81,10 @@
     <h1>{{ combo.nombre }}</h1>
 
     <!-- DESCRIPCIÓN -->
-    <p class="descripcion">
+    <p
+      class="descripcion"
+      *ngIf="combo.descripcion"
+    >
       {{ combo.descripcion }}
     </p>
 
@@ -74,6 +94,7 @@
       *ngIf="combo.incluyeAlmohadas && combo.cantidadAlmohadas > 0"
     >
       <span class="icono-almohada" aria-hidden="true">✓</span>
+
       Incluye {{ combo.cantidadAlmohadas }}
       {{ combo.cantidadAlmohadas === 1 ? 'almohada' : 'almohadas' }}
     </p>
@@ -82,11 +103,13 @@
     <div
       class="selector-modalidad"
       *ngIf="combo.vendeContado && combo.vendeCredito"
+      aria-label="Seleccionar modalidad de pago"
     >
 
       <button
         type="button"
         [class.activo]="modalidad === 'contado'"
+        [attr.aria-pressed]="modalidad === 'contado'"
         (click)="seleccionarModalidad('contado')"
       >
         Contado
@@ -95,6 +118,7 @@
       <button
         type="button"
         [class.activo]="modalidad === 'credito'"
+        [attr.aria-pressed]="modalidad === 'credito'"
         (click)="seleccionarModalidad('credito')"
       >
         Crédito
@@ -167,11 +191,13 @@
         <div
           class="selector-frecuencia"
           *ngIf="combo.vendeQuincenal && combo.vendeMensual"
+          aria-label="Seleccionar frecuencia de pago"
         >
 
           <button
             type="button"
             [class.activo]="obtenerFrecuencia(combo) === 'quincenal'"
+            [attr.aria-pressed]="obtenerFrecuencia(combo) === 'quincenal'"
             (click)="seleccionarFrecuencia('quincenal')"
           >
             Pago quincenal
@@ -180,6 +206,7 @@
           <button
             type="button"
             [class.activo]="obtenerFrecuencia(combo) === 'mensual'"
+            [attr.aria-pressed]="obtenerFrecuencia(combo) === 'mensual'"
             (click)="seleccionarFrecuencia('mensual')"
           >
             Pago mensual
@@ -190,7 +217,10 @@
         <!-- INFORMACIÓN DE PAGO QUINCENAL -->
         <div
           class="informacion-cuotas"
-          *ngIf="combo.vendeQuincenal && (!combo.vendeMensual || obtenerFrecuencia(combo) === 'quincenal')"
+          *ngIf="
+            combo.vendeQuincenal &&
+            (!combo.vendeMensual || obtenerFrecuencia(combo) === 'quincenal')
+          "
         >
 
           <p *ngIf="combo.quincenal != null">
@@ -208,7 +238,10 @@
         <!-- INFORMACIÓN DE PAGO MENSUAL -->
         <div
           class="informacion-cuotas"
-          *ngIf="combo.vendeMensual && (!combo.vendeQuincenal || obtenerFrecuencia(combo) === 'mensual')"
+          *ngIf="
+            combo.vendeMensual &&
+            (!combo.vendeQuincenal || obtenerFrecuencia(combo) === 'mensual')
+          "
         >
 
           <p *ngIf="combo.mensual != null">
@@ -241,6 +274,7 @@
       target="_blank"
       rel="noopener noreferrer"
       class="btn-whatsapp"
+      aria-label="Consultar y comprar este combo por WhatsApp"
     >
       Comprar por WhatsApp
     </a>

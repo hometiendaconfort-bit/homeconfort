@@ -1,9 +1,17 @@
 
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
+  Inject
+} from '@angular/core';
+
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { Combos } from '../services/combos';
 import { Productos } from '../services/productos';
 import { Router } from '@angular/router';
+import { Title, Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-combos',
@@ -12,12 +20,17 @@ import { Router } from '@angular/router';
   templateUrl: './combos.html',
   styleUrl: './combos.css',
 })
-export class CombosComponent implements OnInit {
+export class CombosComponent implements OnInit, OnDestroy {
 
   comboLista: any[] = [];
   productosLista: any[] = [];
 
   descripcion: string = 'Combos a Credito y Contado';
+
+  private readonly urlBase = 'https://homeconfort.pages.dev';
+  private readonly urlCombos = 'https://homeconfort.pages.dev/combos';
+
+  private seoScript?: HTMLScriptElement;
 
   // MODALIDAD SELECCIONADA PARA CADA COMBO
   modalidadCombo: {
@@ -33,11 +46,17 @@ export class CombosComponent implements OnInit {
     private combos: Combos,
     private productos: Productos,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private title: Title,
+    private meta: Meta,
+    @Inject(DOCUMENT) private document: Document
   ) {}
 
-  // CARGA INDEPENDIENTE DE COMBOS Y PRODUCTOS
+  // INICIALIZACIÓN
   ngOnInit(): void {
+
+    // CONFIGURAR SEO INICIAL
+    this.actualizarSEO();
 
     // CARGAR COMBOS
     this.combos.obtenerCombo()
@@ -121,6 +140,9 @@ export class CombosComponent implements OnInit {
           return comboAdaptado;
         });
 
+        // ACTUALIZAR DATOS ESTRUCTURADOS CON LOS COMBOS CARGADOS
+        this.actualizarDatosEstructurados();
+
         this.cdr.detectChanges();
         this.restaurarProducto();
 
@@ -141,6 +163,143 @@ export class CombosComponent implements OnInit {
       .catch((error: unknown) => {
         console.error('Error cargando productos:', error);
       });
+  }
+
+  // SEO DE LA PÁGINA DE COMBOS
+  private actualizarSEO(): void {
+
+    const titulo =
+      'Combos especiales de camas y colchones | Home Confort';
+
+    const descripcionSEO =
+      'Descubre los combos especiales de Home Confort. Conoce nuestras combinaciones de productos para tu habitación y consulta sus detalles y opciones de compra.';
+
+    this.title.setTitle(titulo);
+
+    this.meta.updateTag({
+      name: 'description',
+      content: descripcionSEO
+    });
+
+    this.meta.updateTag({
+      name: 'robots',
+      content: 'index, follow, max-image-preview:large'
+    });
+
+    this.meta.updateTag({
+      name: 'googlebot',
+      content: 'index, follow'
+    });
+
+    // OPEN GRAPH
+    this.meta.updateTag({
+      property: 'og:type',
+      content: 'website'
+    });
+
+    this.meta.updateTag({
+      property: 'og:title',
+      content: titulo
+    });
+
+    this.meta.updateTag({
+      property: 'og:description',
+      content: descripcionSEO
+    });
+
+    this.meta.updateTag({
+      property: 'og:url',
+      content: this.urlCombos
+    });
+
+    this.meta.updateTag({
+      property: 'og:site_name',
+      content: 'Home Confort'
+    });
+
+    this.meta.updateTag({
+      property: 'og:locale',
+      content: 'es_CO'
+    });
+
+    // TWITTER
+    this.meta.updateTag({
+      name: 'twitter:card',
+      content: 'summary'
+    });
+
+    this.meta.updateTag({
+      name: 'twitter:title',
+      content: titulo
+    });
+
+    this.meta.updateTag({
+      name: 'twitter:description',
+      content: descripcionSEO
+    });
+
+    // URL CANÓNICA
+    let canonical = this.document.querySelector(
+      'link[rel="canonical"]'
+    ) as HTMLLinkElement | null;
+
+    if (!canonical) {
+      canonical = this.document.createElement('link');
+      canonical.rel = 'canonical';
+      this.document.head.appendChild(canonical);
+    }
+
+    canonical.href = this.urlCombos;
+  }
+
+  // DATOS ESTRUCTURADOS DE LA COLECCIÓN
+  private actualizarDatosEstructurados(): void {
+
+    const elementos = this.comboLista.map(
+      (combo: any, index: number) => {
+
+        const id = combo.docId ?? combo.id;
+
+        return {
+          '@type': 'ListItem',
+          position: index + 1,
+          name: combo.nombre || 'Combo especial',
+          url: `${this.urlBase}/combo-detalle/${encodeURIComponent(String(id))}`
+        };
+      }
+    );
+
+    const datosEstructurados = {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Combos especiales | Home Confort',
+      description:
+        'Colección de combos especiales de Home Confort.',
+      url: this.urlCombos,
+      inLanguage: 'es-CO',
+      mainEntity: {
+        '@type': 'ItemList',
+        numberOfItems: elementos.length,
+        itemListElement: elementos
+      }
+    };
+
+    // CREAR O ACTUALIZAR SCRIPT JSON-LD
+    let script = this.document.getElementById(
+      'seo-combos-jsonld'
+    ) as HTMLScriptElement | null;
+
+    if (!script) {
+      script = this.document.createElement('script');
+      script.id = 'seo-combos-jsonld';
+      script.type = 'application/ld+json';
+      this.document.head.appendChild(script);
+    }
+
+    script.textContent = JSON.stringify(datosEstructurados)
+      .replace(/</g, '\\u003c');
+
+    this.seoScript = script;
   }
 
   // OBTENER UN PRODUCTO POR SU ID DE FIRESTORE
@@ -235,7 +394,7 @@ export class CombosComponent implements OnInit {
 
     const buscarCombo = (): void => {
 
-      const combo = document.getElementById('producto-' + docId);
+      const combo = this.document.getElementById('producto-' + docId);
 
       if (combo) {
 
@@ -325,7 +484,16 @@ export class CombosComponent implements OnInit {
         }
       }
     }
+    
 
     return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
+  }
+
+  // LIMPIAR DATOS ESTRUCTURADOS AL SALIR
+  ngOnDestroy(): void {
+
+    if (this.seoScript) {
+      this.seoScript.remove();
+    }
   }
 }
