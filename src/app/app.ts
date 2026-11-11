@@ -20,6 +20,7 @@ import { Footer } from './components/footer/footer';
 
   template: `
     <app-navbar></app-navbar>
+   
     <router-outlet></router-outlet>
     <app-footer></app-footer>
   `
