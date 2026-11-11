@@ -189,7 +189,6 @@
           <!-- PRECIOS -->
           <div class="precios-producto">
 
-            <!-- PRECIO DE CONTADO -->
             <ng-container
               *ngIf="obtenerModalidad(producto) === 'contado' && producto.vendeContado"
             >
@@ -211,7 +210,6 @@
 
             </ng-container>
 
-            <!-- PRECIO A CRÉDITO -->
             <ng-container
               *ngIf="obtenerModalidad(producto) === 'credito' && producto.vendeCredito"
             >
@@ -224,7 +222,6 @@
                 {{ precioFinal(producto, 'credito') | currency:'COP':'symbol-narrow':'1.0-0' }}
               </p>
 
-              <!-- CUOTA INICIAL -->
               <p
                 class="dato-financiacion"
                 *ngIf="producto.inicial > 0"
@@ -233,7 +230,6 @@
                 {{ producto.inicial | currency:'COP':'symbol-narrow':'1.0-0' }}
               </p>
 
-              <!-- FRECUENCIAS DE PAGO -->
               <div
                 class="frecuencias-pago"
                 *ngIf="producto.quincenal > 0 || producto.mensual > 0"
@@ -259,7 +255,6 @@
 
               </div>
 
-              <!-- VALOR DE LA CUOTA -->
               <p
                 class="valor-cuota"
                 *ngIf="obtenerValorCuota(producto) > 0"
@@ -268,7 +263,6 @@
                 {{ obtenerValorCuota(producto) | currency:'COP':'symbol-narrow':'1.0-0' }}
               </p>
 
-              <!-- NÚMERO DE CUOTAS -->
               <p
                 class="numero-cuotas"
                 *ngIf="obtenerNumeroCuotas(producto) > 0"
@@ -292,7 +286,6 @@
               Ver producto
             </button>
 
-            <!-- AGREGAR AL CARRITO -->
             <button
               type="button"
               class="btn-carrito"
@@ -302,7 +295,6 @@
               Agregar al carrito
             </button>
 
-            <!-- WHATSAPP -->
             <a
               class="btn-whatsapp"
               [href]="obtenerLinkWhatsApp(producto)"
@@ -320,7 +312,6 @@
 
     </div>
 
-    <!-- MENSAJE CUANDO NO HAY PRODUCTOS -->
     <div
       class="sin-productos"
       *ngIf="productosLista.length === 0"

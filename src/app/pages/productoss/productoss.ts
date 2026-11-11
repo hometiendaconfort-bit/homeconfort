@@ -1,5 +1,11 @@
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { CarruselCategorias } from '../../components/carrusel-categorias/carrusel-categorias';
@@ -59,7 +65,8 @@ export class Productoss implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private searchService: SearchService,
     private router: Router,
-    private carrito: Carrito
+    private carrito: Carrito,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -112,7 +119,10 @@ export class Productoss implements OnInit, OnDestroy {
 
           const productosRecibidos = data['productos'];
 
-          if (Array.isArray(productosRecibidos)) {
+          if (
+            Array.isArray(productosRecibidos) &&
+            productosRecibidos.length > 0
+          ) {
 
             this.procesarProductos(productosRecibidos);
 
@@ -154,6 +164,8 @@ export class Productoss implements OnInit, OnDestroy {
 
           this.productos = [];
           this.actualizarProductosFiltrados();
+
+          this.cdr.detectChanges();
         }
 
       });
@@ -332,6 +344,9 @@ export class Productoss implements OnInit, OnDestroy {
     ).filter(Boolean);
 
     this.actualizarProductosFiltrados();
+
+    // ACTUALIZAR LA VISTA DESPUÉS DE CARGAR LOS PRODUCTOS.
+    this.cdr.detectChanges();
 
     setTimeout(() => this.restaurarProducto(), 100);
   }
@@ -855,5 +870,3 @@ export class Productoss implements OnInit, OnDestroy {
   }
 
 }
-
-
