@@ -1,8 +1,7 @@
 
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of, from } from 'rxjs';
-import { map, tap, shareReplay, finalize } from 'rxjs/operators';
+import { Observable, of, from, throwError } from 'rxjs';
+import { map, tap, shareReplay, finalize, catchError } from 'rxjs/operators';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { DataSource } from '../config/data-source';
@@ -12,67 +11,70 @@ import { DataSource } from '../config/data-source';
 })
 export class ProductosService {
 
-  private url = 'http://localhost:3000/productos';
-
   private cache: any[] | null = null;
 
   private solicitud$: Observable<any[]> | null = null;
 
   productoParaVolver: number | null = null;
 
-  constructor(private http: HttpClient) {}
-
   getProductos(): Observable<any[]> {
 
-    // Si los productos ya están cargados, no consultar nuevamente.
+    // 1. Si ya tenemos los productos, usamos la caché.
     if (this.cache !== null) {
       return of(this.cache);
     }
 
-    // Si ya existe una consulta en curso, reutilizarla.
-    if (this.solicitud$) {
+    // 2. Si existe una consulta en curso, la reutilizamos.
+    if (this.solicitud$ !== null) {
       return this.solicitud$;
     }
 
-    let solicitud: Observable<any[]>;
-
+    // 3. Consultamos Firebase.
     if (!DataSource.firebase) {
-
-      solicitud = this.http.get<any[]>(this.url);
-
-    } else {
-
-      solicitud = from(
-        getDocs(collection(db, 'productos'))
-      ).pipe(
-        map(snapshot =>
-          snapshot.docs.map(documento => ({
-            ...documento.data(),
-            docId: documento.id
-          }))
-        )
+      return throwError(() =>
+        new Error('La fuente de datos Firebase no está habilitada.')
       );
-
     }
 
-    this.solicitud$ = solicitud.pipe(
+    const solicitud = from(
+      getDocs(collection(db, 'productos'))
+    ).pipe(
+      map(snapshot =>
+        snapshot.docs.map(documento => ({
+          ...documento.data(),
+          docId: documento.id
+        }))
+      ),
+
+      // Guardamos los productos recibidos.
       tap(productos => {
         this.cache = productos;
       }),
+
+      // Si ocurre un error, lo propagamos y permitimos reintentar.
+      catchError(error => {
+        console.error('Error al cargar los productos:', error);
+        return throwError(() => error);
+      }),
+
+      // Liberamos la solicitud al finalizar.
       finalize(() => {
         this.solicitud$ = null;
       }),
+
+      // Compartimos la misma consulta entre los suscriptores.
       shareReplay({
         bufferSize: 1,
         refCount: false
       })
     );
 
-    return this.solicitud$;
+    this.solicitud$ = solicitud;
+
+    return solicitud;
   }
 
-  // Permite actualizar el catálogo después de crear,
-  // editar o eliminar un producto desde administración.
+  // Limpiar caché después de crear, editar o eliminar productos.
   invalidarCache(): void {
     this.cache = null;
     this.solicitud$ = null;

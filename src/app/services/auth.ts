@@ -1,19 +1,42 @@
+
 import { Injectable } from '@angular/core';
-import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  UserCredential
+} from 'firebase/auth';
+
 import { auth } from '../config/firebase';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class Auth {
 
-  async login(email: string, password: string) {
-  return await signInWithEmailAndPassword(auth, email, password);
-}
+  async login(email: string, password: string): Promise<UserCredential> {
 
-async logout() {
-  return await signOut(auth);
-}
-  
+    try {
+      return await signInWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      );
+
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      throw error;
+    }
+  }
+
+  async logout(): Promise<void> {
+
+    try {
+      await signOut(auth);
+
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+      throw error;
+    }
+  }
 
 }

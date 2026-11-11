@@ -1,6 +1,6 @@
 
 import { Routes } from '@angular/router';
-
+import { NotFound } from './pages/not-found/not-found';
 import { Home } from './pages/home/home';
 import { Requisitos } from './components/requisitos/requisitos';
 import { Carrucel } from './components/carrucel/carrucel';
@@ -123,6 +123,11 @@ export const routes: Routes = [
     path: 'admin-combos',
     component: AdminCombos,
     canActivate: [authGuard]
+  },
+   // PÁGINA 404: SIEMPRE DEBE SER LA ÚLTIMA
+  {
+    path: '**',
+    component: NotFound
   }
 
 ];
