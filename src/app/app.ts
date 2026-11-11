@@ -14,14 +14,16 @@ import { filter, Subscription } from 'rxjs';
 
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
+import { Home } from './pages/home/home';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Navbar, Footer],
+  imports: [RouterOutlet, Navbar, Footer, Home],
 
   template: `
     <app-navbar></app-navbar>
+    <app-home><app-home>
     <router-outlet></router-outlet>
     <app-footer></app-footer>
   `
