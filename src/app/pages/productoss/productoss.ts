@@ -53,6 +53,10 @@ export class Productoss implements OnInit, OnDestroy {
   tipoSeleccionado$ = new BehaviorSubject<string>('todos');
   colorSeleccionado$ = new BehaviorSubject<string>('todos');
 
+  // NUEVOS EMISORES PARA ACTUALIZAR LOS FILTROS.
+  private productosSubject = new BehaviorSubject<any[]>([]);
+  private categoriaSubject = new BehaviorSubject<string>('');
+
   tipoActual = 'todos';
   colorActual = 'todos';
 
@@ -71,6 +75,9 @@ export class Productoss implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
+    // CREAR EL OBSERVABLE UNA SOLA VEZ.
+    this.actualizarProductosFiltrados();
+
     // LEER CATEGORÍA DESDE LA RUTA.
     this.route.paramMap
       .pipe(takeUntil(this.destruir$))
@@ -80,7 +87,9 @@ export class Productoss implements OnInit, OnDestroy {
           params.get('slug') ||
           params.get('categoria');
 
-        this.actualizarProductosFiltrados();
+        this.categoriaSubject.next(
+          this.normalizarCategoria(this.slug)
+        );
       });
 
     // LEER FILTROS DESDE LA URL.
@@ -96,7 +105,9 @@ export class Productoss implements OnInit, OnDestroy {
             params.get('categoria') ||
             params.get('slug');
 
-          this.actualizarProductosFiltrados();
+          this.categoriaSubject.next(
+            this.normalizarCategoria(this.slug)
+          );
         }
 
         const tipo = params.get('tipo');
@@ -110,7 +121,7 @@ export class Productoss implements OnInit, OnDestroy {
         }
       });
 
-    // RECIBIR PRODUCTOS DEL RESOLVER O CARGARLOS DIRECTAMENTE.
+    // RECIBIR PRODUCTOS DEL RESOLVER O CARGARLOS.
     this.route.data
       .pipe(takeUntil(this.destruir$))
       .subscribe({
@@ -123,13 +134,9 @@ export class Productoss implements OnInit, OnDestroy {
             Array.isArray(productosRecibidos) &&
             productosRecibidos.length > 0
           ) {
-
             this.procesarProductos(productosRecibidos);
-
           } else {
-
             this.cargarProductos();
-
           }
         },
 
@@ -137,11 +144,10 @@ export class Productoss implements OnInit, OnDestroy {
           console.error('Error recibiendo productos:', error);
           this.cargarProductos();
         }
-
       });
   }
 
-  // CARGAR PRODUCTOS DIRECTAMENTE DESDE FIREBASE.
+  // CARGAR PRODUCTOS DESDE FIREBASE.
   private cargarProductos(): void {
 
     this.productosService.getProductos()
@@ -150,7 +156,7 @@ export class Productoss implements OnInit, OnDestroy {
 
         next: productos => {
 
-          console.log('Productos cargados:', productos);
+          console.log('Productos recibidos de Firebase:', productos);
 
           this.procesarProductos(productos);
         },
@@ -163,11 +169,11 @@ export class Productoss implements OnInit, OnDestroy {
           );
 
           this.productos = [];
-          this.actualizarProductosFiltrados();
+          this.productosSubject.next([]);
+          this.colores = [];
 
           this.cdr.detectChanges();
         }
-
       });
   }
 
@@ -175,6 +181,11 @@ export class Productoss implements OnInit, OnDestroy {
 
     this.destruir$.next();
     this.destruir$.complete();
+
+    this.productosSubject.complete();
+    this.categoriaSubject.complete();
+    this.tipoSeleccionado$.complete();
+    this.colorSeleccionado$.complete();
   }
 
   // PROCESAR Y NORMALIZAR PRODUCTOS.
@@ -276,19 +287,28 @@ export class Productoss implements OnInit, OnDestroy {
 
       return {
         ...p,
+
+        // IDENTIFICADOR SEGURO.
+        id: p.id ?? p.docId ?? p.nombre,
+
         vendeContado,
         vendeCredito,
         precioContado,
         precioCredito,
+
         inicial: Number(p.inicial ?? 0),
         quincenal,
         mensual,
+
         numeroCuotasQuincenal,
         numeroCuotasMensual,
+
         frecuenciaPago: frecuenciaAntigua,
         numeroCuotas: Number(p.numeroCuotas ?? 0),
+
         variantesColor,
         imagenes,
+
         imagenActiva:
           p.imagenActiva ||
           (imagenes.length ? imagenes[0] : p.imagen)
@@ -343,9 +363,15 @@ export class Productoss implements OnInit, OnDestroy {
       )
     ).filter(Boolean);
 
-    this.actualizarProductosFiltrados();
+    // EMITIR LA NUEVA LISTA DE PRODUCTOS.
+    // ESTO ACTUALIZA AUTOMÁTICAMENTE combineLatest.
+    this.productosSubject.next(this.productos);
 
-    // ACTUALIZAR LA VISTA DESPUÉS DE CARGAR LOS PRODUCTOS.
+    console.log(
+      'Productos procesados:',
+      this.productos.length
+    );
+
     this.cdr.detectChanges();
 
     setTimeout(() => this.restaurarProducto(), 100);
@@ -401,27 +427,38 @@ export class Productoss implements OnInit, OnDestroy {
   private actualizarProductosFiltrados(): void {
 
     this.productosFiltrados$ = combineLatest([
+
       this.searchService.search$,
+
       this.tipoSeleccionado$,
-      this.colorSeleccionado$
+
+      this.colorSeleccionado$,
+
+      this.productosSubject,
+
+      this.categoriaSubject
+
     ]).pipe(
 
-      map(([textoBusqueda, tipo, color]) => {
+      map(([
+        textoBusqueda,
+        tipo,
+        color,
+        productos,
+        categoria
+      ]) => {
 
         const txt = (textoBusqueda || '')
           .toLowerCase()
           .trim();
 
-        const categoriaFiltro =
-          this.normalizarCategoria(this.slug);
-
-        return this.productos.filter(p => {
+        return productos.filter(p => {
 
           const categoriaProducto =
             this.normalizarCategoria(p.categoria);
 
-          const categoriaOk = categoriaFiltro
-            ? categoriaProducto === categoriaFiltro
+          const categoriaOk = categoria
+            ? categoriaProducto === categoria
             : true;
 
           const tipoOk =
@@ -712,7 +749,7 @@ export class Productoss implements OnInit, OnDestroy {
     });
   }
 
-  // ENVIAR PRODUCTO INDIVIDUAL POR WHATSAPP.
+  // ENVIAR PRODUCTO POR WHATSAPP.
   obtenerLinkWhatsApp(p: any): string {
 
     const modalidad = this.obtenerModalidad(p);
@@ -755,10 +792,7 @@ export class Productoss implements OnInit, OnDestroy {
     return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
   }
 
-  // =====================================
-  // CARRITO DE COMPRAS
-  // =====================================
-
+  // AGREGAR AL CARRITO.
   agregarAlCarrito(p: any): void {
 
     if (!p) {
@@ -828,9 +862,9 @@ export class Productoss implements OnInit, OnDestroy {
   }
 
   // IDENTIFICAR PRODUCTOS EN LA LISTA.
-  productosId(_index: number, item: any): number {
+  productosId(_index: number, item: any): string {
 
-    return item.id;
+    return String(item.id ?? item.docId ?? item.nombre);
   }
 
   // RESTAURAR POSICIÓN DEL PRODUCTO.
