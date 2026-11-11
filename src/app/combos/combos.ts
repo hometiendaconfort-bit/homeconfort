@@ -16,13 +16,18 @@ export class CombosComponent implements OnInit {
 
   comboLista: any[] = [];
   productosLista: any[] = [];
+
   descripcion: string = 'Combos a Credito y Contado';
 
-  // GUARDO LA MODALIDAD SELECCIONADA PARA CADA COMBO
-  modalidadCombo: { [docId: string]: 'contado' | 'credito' } = {};
+  // MODALIDAD SELECCIONADA PARA CADA COMBO
+  modalidadCombo: {
+    [docId: string]: 'contado' | 'credito'
+  } = {};
 
-  // GUARDO LA FRECUENCIA DE PAGO DE CADA COMBO
-  frecuenciaCombo: { [docId: string]: 'quincenal' | 'mensual' } = {};
+  // FRECUENCIA DE PAGO SELECCIONADA
+  frecuenciaCombo: {
+    [docId: string]: 'quincenal' | 'mensual'
+  } = {};
 
   constructor(
     private combos: Combos,
@@ -31,109 +36,126 @@ export class CombosComponent implements OnInit {
     private router: Router
   ) {}
 
-  async ngOnInit() {
-    try {
-      const combos = await this.combos.obtenerCombo();
-      const productos = await this.productos.obtenerProductos();
+  // CARGA INDEPENDIENTE DE COMBOS Y PRODUCTOS
+  ngOnInit(): void {
 
-      // ADAPTO LOS COMBOS PARA MANEJAR CONTADO Y CREDITO
-      this.comboLista = combos.map((combo: any) => {
+    // CARGAR COMBOS
+    this.combos.obtenerCombo()
+      .then((combos: any[]) => {
 
-        const vendeContado =
-          combo.vendeContado ??
-          (
-            combo.tipo === 'contado' ||
-            combo.tipo === 'ambos' ||
-            (!combo.tipo && combo.precio != null)
-          );
+        this.comboLista = combos.map((combo: any) => {
 
-        const vendeCredito =
-          combo.vendeCredito ??
-          (
-            combo.tipo === 'credito' ||
-            combo.tipo === 'ambos'
-          );
+          const vendeContado =
+            combo.vendeContado ??
+            (
+              combo.tipo === 'contado' ||
+              combo.tipo === 'ambos' ||
+              (!combo.tipo && combo.precio != null)
+            );
 
-        const precioContado =
-          combo.precioContado ??
-          (combo.tipo !== 'credito' ? combo.precio : null);
+          const vendeCredito =
+            combo.vendeCredito ??
+            (
+              combo.tipo === 'credito' ||
+              combo.tipo === 'ambos'
+            );
 
-        const precioCredito =
-          combo.precioCredito ??
-          (combo.tipo !== 'contado' ? combo.precio : null);
+          const precioContado =
+            combo.precioContado ??
+            (combo.tipo !== 'credito' ? combo.precio : null);
 
-        // COMPATIBILIDAD CON COMBOS ANTIGUOS
-        const vendeQuincenal =
-          combo.vendeQuincenal ??
-          (Number(combo.quincenal) > 0);
+          const precioCredito =
+            combo.precioCredito ??
+            (combo.tipo !== 'contado' ? combo.precio : null);
 
-        const vendeMensual =
-          combo.vendeMensual ??
-          (Number(combo.mensual) > 0);
+          // COMPATIBILIDAD CON COMBOS ANTIGUOS
+          const vendeQuincenal =
+            combo.vendeQuincenal ??
+            (Number(combo.quincenal) > 0);
 
-        // ALMOHADAS: COMPATIBILIDAD CON COMBOS ANTIGUOS
-        const incluyeAlmohadas =
-          combo.incluyeAlmohadas ?? false;
+          const vendeMensual =
+            combo.vendeMensual ??
+            (Number(combo.mensual) > 0);
 
-        const cantidadAlmohadas =
-          incluyeAlmohadas
-            ? Math.max(0, Math.floor(Number(combo.cantidadAlmohadas) || 0))
-            : 0;
+          // ALMOHADAS
+          const incluyeAlmohadas =
+            combo.incluyeAlmohadas ?? false;
 
-        const comboAdaptado = {
-          ...combo,
-          vendeContado,
-          vendeCredito,
-          precioContado,
-          precioCredito,
-          vendeQuincenal,
-          vendeMensual,
-          incluyeAlmohadas,
-          cantidadAlmohadas,
-          imagenActiva: combo.imagen
-        };
+          const cantidadAlmohadas =
+            incluyeAlmohadas
+              ? Math.max(
+                  0,
+                  Math.floor(Number(combo.cantidadAlmohadas) || 0)
+                )
+              : 0;
 
-        const id = String(combo.docId ?? combo.id);
+          const comboAdaptado = {
+            ...combo,
+            vendeContado,
+            vendeCredito,
+            precioContado,
+            precioCredito,
+            vendeQuincenal,
+            vendeMensual,
+            incluyeAlmohadas,
+            cantidadAlmohadas,
+            imagenActiva: combo.imagen
+          };
 
-        // INICIO EN CREDITO SI ESTA DISPONIBLE
-        if (vendeCredito) {
-          this.modalidadCombo[id] = 'credito';
-        } else if (vendeContado) {
-          this.modalidadCombo[id] = 'contado';
-        }
+          const id = String(combo.docId ?? combo.id);
 
-        // SELECCIONO UNA FRECUENCIA DISPONIBLE
-        if (vendeQuincenal) {
-          this.frecuenciaCombo[id] = 'quincenal';
-        } else if (vendeMensual) {
-          this.frecuenciaCombo[id] = 'mensual';
-        }
+          // INICIAR EN CRÉDITO SI ESTÁ DISPONIBLE
+          if (vendeCredito) {
+            this.modalidadCombo[id] = 'credito';
+          } else if (vendeContado) {
+            this.modalidadCombo[id] = 'contado';
+          }
 
-        return comboAdaptado;
+          // FRECUENCIA DISPONIBLE
+          if (vendeQuincenal) {
+            this.frecuenciaCombo[id] = 'quincenal';
+          } else if (vendeMensual) {
+            this.frecuenciaCombo[id] = 'mensual';
+          }
+
+          return comboAdaptado;
+        });
+
+        this.cdr.detectChanges();
+        this.restaurarProducto();
+
+      })
+      .catch((error: unknown) => {
+        console.error('Error cargando combos:', error);
       });
 
-      this.productosLista = productos;
+    // CARGAR PRODUCTOS SIN ESPERAR A LOS COMBOS
+    this.productos.obtenerProductos()
+      .then((productos: any[]) => {
 
-      this.cdr.detectChanges();
-      this.restaurarProducto();
+        this.productosLista = productos;
 
-    } catch (error) {
-      console.error('Error cargando combos:', error);
-    }
+        this.cdr.detectChanges();
+
+      })
+      .catch((error: unknown) => {
+        console.error('Error cargando productos:', error);
+      });
   }
 
-  // OBTENGO UN PRODUCTO POR SU ID DE FIRESTORE
+  // OBTENER UN PRODUCTO POR SU ID DE FIRESTORE
   obtenerProducto(docId: string) {
     return this.productosLista.find(
       producto => producto.docId === docId
     );
   }
 
-  // CAMBIO LA MODALIDAD DEL COMBO
+  // CAMBIAR MODALIDAD DEL COMBO
   seleccionarModalidad(
     combo: any,
     modalidad: 'contado' | 'credito'
-  ) {
+  ): void {
+
     const id = String(combo.docId ?? combo.id);
 
     if (modalidad === 'contado' && combo.vendeContado) {
@@ -145,19 +167,21 @@ export class CombosComponent implements OnInit {
     }
   }
 
-  // OBTENGO LA MODALIDAD SELECCIONADA
+  // OBTENER MODALIDAD SELECCIONADA
   obtenerModalidad(combo: any): 'contado' | 'credito' {
+
     const id = String(combo.docId ?? combo.id);
 
     return this.modalidadCombo[id] ??
       (combo.vendeCredito ? 'credito' : 'contado');
   }
 
-  // CAMBIO LA FRECUENCIA DE PAGO
+  // CAMBIAR FRECUENCIA DE PAGO
   seleccionarFrecuencia(
     combo: any,
     frecuencia: 'quincenal' | 'mensual'
-  ) {
+  ): void {
+
     const id = String(combo.docId ?? combo.id);
 
     if (frecuencia === 'quincenal' && combo.vendeQuincenal) {
@@ -169,25 +193,29 @@ export class CombosComponent implements OnInit {
     }
   }
 
-  // OBTENGO LA FRECUENCIA SELECCIONADA
+  // OBTENER FRECUENCIA SELECCIONADA
   obtenerFrecuencia(combo: any): 'quincenal' | 'mensual' {
+
     const id = String(combo.docId ?? combo.id);
 
     return this.frecuenciaCombo[id] ??
       (combo.vendeQuincenal ? 'quincenal' : 'mensual');
   }
 
-  // ABRO EL DETALLE DEL COMBO
-  verDetalleCombo(docId: string) {
+  // ABRIR DETALLE DEL COMBO
+  verDetalleCombo(docId: string): void {
+
     this.combos.productoParaVolver = docId;
+
     this.router.navigate(['/combo-detalle', docId]);
   }
 
-  // OBTENGO EL PRECIO SEGUN LA MODALIDAD
+  // OBTENER PRECIO SEGÚN MODALIDAD
   precioFinal(
     combo: any,
     modalidad: 'contado' | 'credito'
   ): number {
+
     const precio = modalidad === 'contado'
       ? (combo.precioContado ?? combo.precio)
       : (combo.precioCredito ?? combo.precio);
@@ -195,8 +223,9 @@ export class CombosComponent implements OnInit {
     return Number(precio) || 0;
   }
 
-  // RESTAURO LA POSICION DEL COMBO AL VOLVER DEL DETALLE
-  restaurarProducto() {
+  // RESTAURAR POSICIÓN DEL COMBO AL VOLVER DEL DETALLE
+  restaurarProducto(): void {
+
     const docId = this.combos.productoParaVolver;
 
     if (!docId) return;
@@ -204,16 +233,19 @@ export class CombosComponent implements OnInit {
     let intentos = 0;
     const maxIntentos = 20;
 
-    const buscarCombo = () => {
+    const buscarCombo = (): void => {
+
       const combo = document.getElementById('producto-' + docId);
 
       if (combo) {
+
         combo.scrollIntoView({
           behavior: 'auto',
           block: 'center'
         });
 
         this.combos.productoParaVolver = null;
+
         return;
       }
 
@@ -227,10 +259,11 @@ export class CombosComponent implements OnInit {
     setTimeout(buscarCombo, 100);
   }
 
-  // GENERO EL MENSAJE DE WHATSAPP CON MODALIDAD,
-  // FRECUENCIA DE PAGO Y ALMOHADAS INCLUIDAS
+  // GENERAR MENSAJE DE WHATSAPP
   obtenerLinkWhatsApp(combo: any): string {
+
     const modalidad = this.obtenerModalidad(combo);
+
     const precio = this.precioFinal(combo, modalidad);
 
     const nombreModalidad =
@@ -240,9 +273,11 @@ export class CombosComponent implements OnInit {
       `Hola! Estoy interesado en el combo ${combo.nombre}. ` +
       `Precio de ${nombreModalidad}: ${precio.toLocaleString('es-CO')} pesos.`;
 
-    // INFORMACION DE ALMOHADAS
+    // INFORMACIÓN DE ALMOHADAS
     if (combo.incluyeAlmohadas && combo.cantidadAlmohadas > 0) {
+
       const cantidad = combo.cantidadAlmohadas;
+
       const textoAlmohadas = cantidad === 1
         ? 'almohada'
         : 'almohadas';
@@ -250,9 +285,11 @@ export class CombosComponent implements OnInit {
       mensaje += ` Incluye ${cantidad} ${textoAlmohadas}.`;
     }
 
+    // INFORMACIÓN DEL CRÉDITO
     if (modalidad === 'credito') {
 
       if (combo.inicial != null) {
+
         mensaje +=
           ` Cuota inicial: ${Number(combo.inicial).toLocaleString('es-CO')} pesos.`;
       }
@@ -262,11 +299,13 @@ export class CombosComponent implements OnInit {
       if (frecuencia === 'quincenal' && combo.vendeQuincenal) {
 
         if (combo.quincenal != null) {
+
           mensaje +=
             ` Pago quincenal: ${Number(combo.quincenal).toLocaleString('es-CO')} pesos.`;
         }
 
         if (combo.cuotasQuincenales != null) {
+
           mensaje +=
             ` Número de cuotas quincenales: ${combo.cuotasQuincenales}.`;
         }
@@ -274,11 +313,13 @@ export class CombosComponent implements OnInit {
       } else if (frecuencia === 'mensual' && combo.vendeMensual) {
 
         if (combo.mensual != null) {
+
           mensaje +=
             ` Pago mensual: ${Number(combo.mensual).toLocaleString('es-CO')} pesos.`;
         }
 
         if (combo.cuotasMensuales != null) {
+
           mensaje +=
             ` Número de cuotas mensuales: ${combo.cuotasMensuales}.`;
         }
@@ -288,4 +329,3 @@ export class CombosComponent implements OnInit {
     return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
   }
 }
-
