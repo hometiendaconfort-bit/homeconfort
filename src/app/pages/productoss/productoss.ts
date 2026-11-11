@@ -103,7 +103,7 @@ export class Productoss implements OnInit, OnDestroy {
         }
       });
 
-    // RECIBIR LOS PRODUCTOS CARGADOS POR EL RESOLVER.
+    // RECIBIR PRODUCTOS DEL RESOLVER O CARGARLOS DIRECTAMENTE.
     this.route.data
       .pipe(takeUntil(this.destruir$))
       .subscribe({
@@ -112,20 +112,48 @@ export class Productoss implements OnInit, OnDestroy {
 
           const productosRecibidos = data['productos'];
 
-          if (!Array.isArray(productosRecibidos)) {
-            console.error(
-              'El resolver no entregó una lista válida de productos.'
-            );
-            this.productos = [];
-            this.actualizarProductosFiltrados();
-            return;
-          }
+          if (Array.isArray(productosRecibidos)) {
 
-          this.procesarProductos(productosRecibidos);
+            this.procesarProductos(productosRecibidos);
+
+          } else {
+
+            this.cargarProductos();
+
+          }
         },
 
-        error: err => {
-          console.error('Error recibiendo productos del resolver:', err);
+        error: error => {
+          console.error('Error recibiendo productos:', error);
+          this.cargarProductos();
+        }
+
+      });
+  }
+
+  // CARGAR PRODUCTOS DIRECTAMENTE DESDE FIREBASE.
+  private cargarProductos(): void {
+
+    this.productosService.getProductos()
+      .pipe(takeUntil(this.destruir$))
+      .subscribe({
+
+        next: productos => {
+
+          console.log('Productos cargados:', productos);
+
+          this.procesarProductos(productos);
+        },
+
+        error: error => {
+
+          console.error(
+            'Error cargando productos desde Firebase:',
+            error
+          );
+
+          this.productos = [];
+          this.actualizarProductosFiltrados();
         }
 
       });
@@ -827,3 +855,5 @@ export class Productoss implements OnInit, OnDestroy {
   }
 
 }
+
+

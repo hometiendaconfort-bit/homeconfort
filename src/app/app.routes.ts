@@ -1,6 +1,7 @@
 
 import { Routes } from '@angular/router';
 
+import { NotFound } from './pages/not-found/not-found';
 import { Home } from './pages/home/home';
 import { Requisitos } from './components/requisitos/requisitos';
 import { Carrucel } from './components/carrucel/carrucel';
@@ -22,20 +23,23 @@ import { AdminCombos } from './admin-combos/admin-combos';
 
 export const routes: Routes = [
 
+  // REDIRECCIÓN PRINCIPAL
   {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
   },
 
+  // PÁGINA PRINCIPAL
   {
     path: 'home',
     component: Home,
-    resolve: {
+ resolve: {
       productos: productsResolver
     }
   },
 
+  // REQUISITOS
   {
     path: 'requisitos',
     component: Requisitos
@@ -59,72 +63,90 @@ export const routes: Routes = [
     }
   },
 
+  // CARRITO: NO INDEXAR
   {
     path: 'carrito',
-    component: CarritoPage
+    component: CarritoPage,
+    data: { robots: 'noindex, follow' }
   },
 
+  // CARRUSEL
   {
     path: 'carrucel',
     component: Carrucel
   },
 
+  // COMBOS
   {
     path: 'combos',
     component: CombosComponent
   },
 
+  // QUIÉNES SOMOS
   {
     path: 'quienesSomos',
     component: QuienesSomos
   },
 
+  // DETALLE DE PRODUCTOS
   {
     path: 'productos/:id',
     component: ProductoDetalleComponent
   },
 
+  // COMBOS POR ID
   {
     path: 'combos/:id',
     component: CombosComponent
   },
 
+  // DETALLE DE COMBOS
   {
     path: 'combo-detalle/:id',
     component: ComboDetalleComponent
   },
 
-  // LOGIN
+  // LOGIN: NO INDEXAR
   {
     path: 'login',
-    component: Login
+    component: Login,
+    data: { robots: 'noindex, follow' }
   },
 
-  // ADMINISTRACIÓN
+  // ADMINISTRACIÓN: PROTEGIDA Y NO INDEXABLE
   {
     path: 'admin',
     component: Admin,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    data: { robots: 'noindex, follow' }
   },
 
   {
     path: 'admin-productos',
     component: AdminProductos,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    data: { robots: 'noindex, follow' }
   },
 
   {
     path: 'admin-carrucel',
     component: AdminCarrucel,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    data: { robots: 'noindex, follow' }
   },
 
   {
     path: 'admin-combos',
     component: AdminCombos,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    data: { robots: 'noindex, follow' }
+  },
+
+  // PÁGINA 404: NO INDEXAR
+  {
+    path: '**',
+    component: NotFound,
+    data: { robots: 'noindex, follow' }
   }
 
 ];
-
-

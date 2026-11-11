@@ -4,31 +4,49 @@
   <section>
     <h2>Iniciar sesión</h2>
 
-   <div class="formulario-login">
+    <form class="formulario-login" (ngSubmit)="login()">
+
       <div>
-         <label>Correo electrónico</label><br>
-         <input
+        <label for="email">Correo electrónico</label><br>
+
+        <input
+          id="email"
           type="email"
+          name="email"
           [(ngModel)]="email"
-          placeholder="Correo electrónico">
+          placeholder="Correo electrónico"
+          autocomplete="username"
+          required>
       </div>
 
+      <div>
+        <label for="password">Contraseña</label><br>
 
-       <div>
-          <label>Contraseña</label><br>
-          <input
-           type="password"
-           [(ngModel)]="password"
-           placeholder="Contraseña">
+        <input
+          id="password"
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          placeholder="Contraseña"
+          autocomplete="current-password"
+          required>
       </div>
-   </div>
 
-    
+      @if (errorMensaje) {
+        <p class="mensaje-error" role="alert">
+          {{ errorMensaje }}
+        </p>
+      }
 
+      <button
+        type="submit"
+        [disabled]="cargando">
 
-    <button (click)="login()">
-     Iniciar sesión
-    </button>
+        {{ cargando ? 'Ingresando...' : 'Iniciar sesión' }}
+
+      </button>
+
+    </form>
 
   </section>
 

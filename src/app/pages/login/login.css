@@ -1,3 +1,4 @@
+
 * {
   box-sizing: border-box;
 }
@@ -26,7 +27,16 @@ section {
   margin: 0;
 }
 
+.formulario-login {
+  width: 100%;
+}
+
+.formulario-login > div {
+  width: 100%;
+}
+
 label {
+  display: inline-block;
   font-weight: bold;
   margin-bottom: 5px;
 }
@@ -36,9 +46,26 @@ input {
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 8px;
+  border: 1px solid #bbb;
+}
+
+input:focus {
+  outline: 2px solid #315b85;
+  outline-offset: 1px;
 }
 
 h2 {
+  text-align: center;
+  margin: 0 0 10px;
+}
+
+.mensaje-error {
+  width: 100%;
+  color: #b42318;
+  background-color: #fee4e2;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
   text-align: center;
   margin: 0 0 10px;
 }
@@ -49,6 +76,13 @@ button {
   margin-top: 10px;
   background-color: #eceeec;
   cursor: pointer;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* CELULARES */
