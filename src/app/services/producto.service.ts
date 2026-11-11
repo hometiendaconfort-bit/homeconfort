@@ -1,7 +1,23 @@
 
-import { Injectable } from '@angular/core';
-import { Observable, of, from, throwError } from 'rxjs';
-import { map, tap, shareReplay, finalize, catchError } from 'rxjs/operators';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
+import {
+  Observable,
+  of,
+  from,
+  concat,
+  throwError
+} from 'rxjs';
+
+import {
+  map,
+  tap,
+  shareReplay,
+  finalize,
+  catchError
+} from 'rxjs/operators';
+
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { DataSource } from '../config/data-source';
@@ -15,30 +31,53 @@ export class ProductosService {
 
   private solicitud$: Observable<any[]> | null = null;
 
+  private readonly STORAGE_KEY = 'homeconfort_productos_cache';
+
+  private esNavegador: boolean;
+
   productoParaVolver: number | null = null;
+
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.esNavegador = isPlatformBrowser(this.platformId);
+  }
 
   getProductos(): Observable<any[]> {
 
-    // 1. Si ya tenemos los productos, usamos la caché.
+    // 1. Entregar inmediatamente los productos en memoria.
     if (this.cache !== null) {
-      return of(this.cache);
+      return of<any[]>(this.cache);
     }
 
-    // 2. Si existe una consulta en curso, la reutilizamos.
+    // 2. Recuperar los productos guardados en el navegador.
+    this.cargarCacheLocal();
+
+    // 3. Reutilizar una consulta que ya esté en ejecución.
     if (this.solicitud$ !== null) {
       return this.solicitud$;
     }
 
-    // 3. Consultamos Firebase.
+    // 4. Comprobar si Firebase está habilitado.
     if (!DataSource.firebase) {
-      return throwError(() =>
-        new Error('La fuente de datos Firebase no está habilitada.')
+
+      if (this.cache !== null) {
+        return of<any[]>(this.cache);
+      }
+
+      return throwError(
+        () => new Error('La fuente de datos Firebase no está habilitada.')
       );
     }
 
-    const solicitud = from(
+    // Productos disponibles antes de consultar Firebase.
+    const productosIniciales: any[] | null = this.cache;
+
+    // 5. Consultar Firebase.
+    const consultaFirebase$: Observable<any[]> = from(
       getDocs(collection(db, 'productos'))
     ).pipe(
+
       map(snapshot =>
         snapshot.docs.map(documento => ({
           ...documento.data(),
@@ -46,23 +85,41 @@ export class ProductosService {
         }))
       ),
 
-      // Guardamos los productos recibidos.
-      tap(productos => {
+      tap((productos: any[]) => {
         this.cache = productos;
+        this.guardarCacheLocal(productos);
       }),
 
-      // Si ocurre un error, lo propagamos y permitimos reintentar.
-      catchError(error => {
-        console.error('Error al cargar los productos:', error);
+      catchError((error): Observable<any[]> => {
+
+        console.error(
+          'Error al cargar productos desde Firebase:',
+          error
+        );
+
+        if (productosIniciales !== null) {
+          return of<any[]>(productosIniciales);
+        }
+
         return throwError(() => error);
-      }),
+      })
+    );
 
-      // Liberamos la solicitud al finalizar.
+    // 6. Mostrar primero la caché y después los datos de Firebase.
+    const fuente$: Observable<any[]> = productosIniciales !== null
+      ? concat<any[]>(
+          of<any[]>(productosIniciales),
+          consultaFirebase$
+        )
+      : consultaFirebase$;
+
+    // 7. Compartir la consulta entre los componentes.
+    const solicitud: Observable<any[]> = fuente$.pipe(
+
       finalize(() => {
         this.solicitud$ = null;
       }),
 
-      // Compartimos la misma consulta entre los suscriptores.
       shareReplay({
         bufferSize: 1,
         refCount: false
@@ -74,9 +131,78 @@ export class ProductosService {
     return solicitud;
   }
 
+  // Recuperar productos guardados en el navegador.
+  private cargarCacheLocal(): void {
+
+    if (!this.esNavegador) {
+      return;
+    }
+
+    try {
+
+      const datos = localStorage.getItem(this.STORAGE_KEY);
+
+      if (!datos) {
+        return;
+      }
+
+      const productos: unknown = JSON.parse(datos);
+
+      if (Array.isArray(productos)) {
+        this.cache = productos;
+      }
+
+    } catch (error) {
+
+      console.warn(
+        'Error al recuperar la caché de productos:',
+        error
+      );
+
+      this.cache = null;
+    }
+  }
+
+  // Guardar productos en el navegador.
+  private guardarCacheLocal(productos: any[]): void {
+
+    if (!this.esNavegador) {
+      return;
+    }
+
+    try {
+
+      localStorage.setItem(
+        this.STORAGE_KEY,
+        JSON.stringify(productos)
+      );
+
+    } catch (error) {
+
+      console.warn(
+        'Error al guardar la caché de productos:',
+        error
+      );
+    }
+  }
+
   // Limpiar caché después de crear, editar o eliminar productos.
   invalidarCache(): void {
+
     this.cache = null;
     this.solicitud$ = null;
+
+    if (this.esNavegador) {
+
+      try {
+        localStorage.removeItem(this.STORAGE_KEY);
+      } catch (error) {
+
+        console.warn(
+          'Error al limpiar la caché de productos:',
+          error
+        );
+      }
+    }
   }
 }
