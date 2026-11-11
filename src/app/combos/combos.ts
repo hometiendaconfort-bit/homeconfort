@@ -4,7 +4,8 @@ import {
   OnInit,
   OnDestroy,
   ChangeDetectorRef,
-  Inject
+  Inject,
+  PendingTasks
 } from '@angular/core';
 
 import { CommonModule, DOCUMENT } from '@angular/common';
@@ -32,12 +33,10 @@ export class CombosComponent implements OnInit, OnDestroy {
 
   private seoScript?: HTMLScriptElement;
 
-  // MODALIDAD SELECCIONADA PARA CADA COMBO
   modalidadCombo: {
     [docId: string]: 'contado' | 'credito'
   } = {};
 
-  // FRECUENCIA DE PAGO SELECCIONADA
   frecuenciaCombo: {
     [docId: string]: 'quincenal' | 'mensual'
   } = {};
@@ -49,120 +48,124 @@ export class CombosComponent implements OnInit, OnDestroy {
     private router: Router,
     private title: Title,
     private meta: Meta,
+    private pendingTasks: PendingTasks,
     @Inject(DOCUMENT) private document: Document
   ) {}
 
   // INICIALIZACIÓN
   ngOnInit(): void {
 
-    // CONFIGURAR SEO INICIAL
     this.actualizarSEO();
 
-    // CARGAR COMBOS
-    this.combos.obtenerCombo()
-      .then((combos: any[]) => {
+    // CARGAR COMBOS Y ESPERAR A QUE TERMINE LA CONSULTA
+    this.pendingTasks.run(() =>
+      this.combos.obtenerCombo()
+        .then((combos: any[]) => {
 
-        this.comboLista = combos.map((combo: any) => {
+          this.comboLista = combos.map((combo: any) => {
 
-          const vendeContado =
-            combo.vendeContado ??
-            (
-              combo.tipo === 'contado' ||
-              combo.tipo === 'ambos' ||
-              (!combo.tipo && combo.precio != null)
-            );
+            const vendeContado =
+              combo.vendeContado ??
+              (
+                combo.tipo === 'contado' ||
+                combo.tipo === 'ambos' ||
+                (!combo.tipo && combo.precio != null)
+              );
 
-          const vendeCredito =
-            combo.vendeCredito ??
-            (
-              combo.tipo === 'credito' ||
-              combo.tipo === 'ambos'
-            );
+            const vendeCredito =
+              combo.vendeCredito ??
+              (
+                combo.tipo === 'credito' ||
+                combo.tipo === 'ambos'
+              );
 
-          const precioContado =
-            combo.precioContado ??
-            (combo.tipo !== 'credito' ? combo.precio : null);
+            const precioContado =
+              combo.precioContado ??
+              (combo.tipo !== 'credito' ? combo.precio : null);
 
-          const precioCredito =
-            combo.precioCredito ??
-            (combo.tipo !== 'contado' ? combo.precio : null);
+            const precioCredito =
+              combo.precioCredito ??
+              (combo.tipo !== 'contado' ? combo.precio : null);
 
-          // COMPATIBILIDAD CON COMBOS ANTIGUOS
-          const vendeQuincenal =
-            combo.vendeQuincenal ??
-            (Number(combo.quincenal) > 0);
+            // COMPATIBILIDAD CON COMBOS ANTIGUOS
+            const vendeQuincenal =
+              combo.vendeQuincenal ??
+              (Number(combo.quincenal) > 0);
 
-          const vendeMensual =
-            combo.vendeMensual ??
-            (Number(combo.mensual) > 0);
+            const vendeMensual =
+              combo.vendeMensual ??
+              (Number(combo.mensual) > 0);
 
-          // ALMOHADAS
-          const incluyeAlmohadas =
-            combo.incluyeAlmohadas ?? false;
+            // ALMOHADAS
+            const incluyeAlmohadas =
+              combo.incluyeAlmohadas ?? false;
 
-          const cantidadAlmohadas =
-            incluyeAlmohadas
-              ? Math.max(
-                  0,
-                  Math.floor(Number(combo.cantidadAlmohadas) || 0)
-                )
-              : 0;
+            const cantidadAlmohadas =
+              incluyeAlmohadas
+                ? Math.max(
+                    0,
+                    Math.floor(Number(combo.cantidadAlmohadas) || 0)
+                  )
+                : 0;
 
-          const comboAdaptado = {
-            ...combo,
-            vendeContado,
-            vendeCredito,
-            precioContado,
-            precioCredito,
-            vendeQuincenal,
-            vendeMensual,
-            incluyeAlmohadas,
-            cantidadAlmohadas,
-            imagenActiva: combo.imagen
-          };
+            const comboAdaptado = {
+              ...combo,
+              vendeContado,
+              vendeCredito,
+              precioContado,
+              precioCredito,
+              vendeQuincenal,
+              vendeMensual,
+              incluyeAlmohadas,
+              cantidadAlmohadas,
+              imagenActiva: combo.imagen
+            };
 
-          const id = String(combo.docId ?? combo.id);
+            const id = String(combo.docId ?? combo.id);
 
-          // INICIAR EN CRÉDITO SI ESTÁ DISPONIBLE
-          if (vendeCredito) {
-            this.modalidadCombo[id] = 'credito';
-          } else if (vendeContado) {
-            this.modalidadCombo[id] = 'contado';
-          }
+            // INICIAR EN CRÉDITO SI ESTÁ DISPONIBLE
+            if (vendeCredito) {
+              this.modalidadCombo[id] = 'credito';
+            } else if (vendeContado) {
+              this.modalidadCombo[id] = 'contado';
+            }
 
-          // FRECUENCIA DISPONIBLE
-          if (vendeQuincenal) {
-            this.frecuenciaCombo[id] = 'quincenal';
-          } else if (vendeMensual) {
-            this.frecuenciaCombo[id] = 'mensual';
-          }
+            // FRECUENCIA DISPONIBLE
+            if (vendeQuincenal) {
+              this.frecuenciaCombo[id] = 'quincenal';
+            } else if (vendeMensual) {
+              this.frecuenciaCombo[id] = 'mensual';
+            }
 
-          return comboAdaptado;
-        });
+            return comboAdaptado;
+          });
 
-        // ACTUALIZAR DATOS ESTRUCTURADOS CON LOS COMBOS CARGADOS
-        this.actualizarDatosEstructurados();
+          this.actualizarDatosEstructurados();
 
-        this.cdr.detectChanges();
-        this.restaurarProducto();
+          this.cdr.detectChanges();
 
-      })
-      .catch((error: unknown) => {
-        console.error('Error cargando combos:', error);
-      });
+          this.restaurarProducto();
 
-    // CARGAR PRODUCTOS SIN ESPERAR A LOS COMBOS
-    this.productos.obtenerProductos()
-      .then((productos: any[]) => {
+        })
+        .catch((error: unknown) => {
+          console.error('Error cargando combos:', error);
+        })
+    );
 
-        this.productosLista = productos;
+    // CARGAR PRODUCTOS Y ESPERAR A QUE TERMINE LA CONSULTA
+    this.pendingTasks.run(() =>
+      this.productos.obtenerProductos()
+        .then((productos: any[]) => {
 
-        this.cdr.detectChanges();
+          this.productosLista = productos;
 
-      })
-      .catch((error: unknown) => {
-        console.error('Error cargando productos:', error);
-      });
+          this.cdr.detectChanges();
+
+        })
+        .catch((error: unknown) => {
+          console.error('Error cargando productos:', error);
+        })
+    );
   }
 
   // SEO DE LA PÁGINA DE COMBOS
@@ -284,7 +287,6 @@ export class CombosComponent implements OnInit, OnDestroy {
       }
     };
 
-    // CREAR O ACTUALIZAR SCRIPT JSON-LD
     let script = this.document.getElementById(
       'seo-combos-jsonld'
     ) as HTMLScriptElement | null;
@@ -484,7 +486,6 @@ export class CombosComponent implements OnInit, OnDestroy {
         }
       }
     }
-    
 
     return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
   }
@@ -497,3 +498,4 @@ export class CombosComponent implements OnInit, OnDestroy {
     }
   }
 }
+ 
