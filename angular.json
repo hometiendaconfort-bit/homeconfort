@@ -37,6 +37,11 @@
     "glob": "robots.txt",
     "input": "public",
     "output": "/"
+  },
+  {
+    "glob": "sitemap.xml",
+    "input": "public",
+    "output": "/"
   }
 ],
             "styles": [
