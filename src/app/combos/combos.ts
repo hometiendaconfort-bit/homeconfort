@@ -4,7 +4,7 @@ import {
   OnInit,
   OnDestroy,
   ChangeDetectorRef,
-  Inject,
+  inject,
   PendingTasks
 } from '@angular/core';
 
@@ -22,6 +22,8 @@ import { Title, Meta } from '@angular/platform-browser';
   styleUrl: './combos.css',
 })
 export class CombosComponent implements OnInit, OnDestroy {
+
+  private readonly document = inject(DOCUMENT);
 
   comboLista: any[] = [];
   productosLista: any[] = [];
@@ -48,8 +50,7 @@ export class CombosComponent implements OnInit, OnDestroy {
     private router: Router,
     private title: Title,
     private meta: Meta,
-    private pendingTasks: PendingTasks,
-    @Inject(DOCUMENT) private document: Document
+    private pendingTasks: PendingTasks
   ) {}
 
   // INICIALIZACIÓN
@@ -498,4 +499,3 @@ export class CombosComponent implements OnInit, OnDestroy {
     }
   }
 }
- 

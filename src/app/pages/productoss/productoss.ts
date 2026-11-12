@@ -4,7 +4,7 @@ import {
   OnInit,
   OnDestroy,
   ChangeDetectorRef,
-  Inject
+  inject
 } from '@angular/core';
 
 import {
@@ -55,6 +55,9 @@ interface VarianteColor {
 })
 export class Productoss implements OnInit, OnDestroy {
 
+  // DOCUMENTO DEL NAVEGADOR O DEL SERVIDOR.
+  private readonly document = inject(DOCUMENT);
+
   productos: any[] = [];
   colores: string[] = [];
   slug: string | null = null;
@@ -88,8 +91,7 @@ export class Productoss implements OnInit, OnDestroy {
     private carrito: Carrito,
     private cdr: ChangeDetectorRef,
     private title: Title,
-    private meta: Meta,
-    @Inject(DOCUMENT) private document: Document
+    private meta: Meta
   ) {}
 
   ngOnInit(): void {
@@ -249,7 +251,12 @@ export class Productoss implements OnInit, OnDestroy {
     });
 
     // ACTUALIZAR CANONICAL.
-    const canonicalUrl = `${this.dominio}${url}`;
+    const rutaCanonica =
+      url === '/' || url === '/home' || url === '/home/'
+        ? '/home/'
+        : url;
+
+    const canonicalUrl = `${this.dominio}${rutaCanonica}`;
 
     let canonical = this.document.querySelector(
       'link[rel="canonical"]'

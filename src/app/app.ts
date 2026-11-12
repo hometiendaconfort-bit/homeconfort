@@ -1,5 +1,11 @@
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  inject
+} from '@angular/core';
+
 import {
   RouterOutlet,
   Router,
@@ -9,17 +15,15 @@ import {
 
 import { Title, Meta } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
-import { Inject } from '@angular/core';
 import { filter, Subscription } from 'rxjs';
 
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
-import { Home } from './pages/home/home';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Navbar, Footer, Home],
+  imports: [RouterOutlet, Navbar, Footer],
 
   template: `
     <app-navbar></app-navbar>
@@ -33,12 +37,13 @@ export class App implements OnInit, OnDestroy {
 
   private readonly dominio = 'https://homeconfort.pages.dev';
 
+  private readonly document = inject(DOCUMENT);
+
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private title: Title,
-    private meta: Meta,
-    @Inject(DOCUMENT) private document: Document
+    private meta: Meta
   ) {}
 
   ngOnInit(): void {
@@ -71,17 +76,26 @@ export class App implements OnInit, OnDestroy {
 
     const url = this.router.url.split('?')[0].split('#')[0];
 
-    const robots = ruta.snapshot.data['robots'] || 'index, follow';
+    // Evitar indexación de administración
+    const esAdministracion =
+      url.startsWith('/login') ||
+      url.startsWith('/admin');
 
-    let titulo = 'Camas, colchones y muebles en Pereira y Dosquebradas | Home Confort';
+    const robots = esAdministracion
+      ? 'noindex, nofollow'
+      : ruta.snapshot.data['robots'] || 'index, follow';
+
+    let titulo =
+      'Camas, colchones y muebles en Pereira y Dosquebradas | Home Confort';
 
     let descripcion =
       'Encuentra camas, colchones, bases cama y muebles para tu hogar en Home Confort. Atención en Pereira y Dosquebradas, con envíos a Colombia.';
 
     // SEO según la ruta
-    if (url === '/home' || url === '/') {
+    if (url === '/home' || url === '/' || url === '/home/') {
 
-      titulo = 'Camas, colchones y muebles en Pereira y Dosquebradas | Home Confort';
+      titulo =
+        'Camas, colchones y muebles en Pereira y Dosquebradas | Home Confort';
 
       descripcion =
         'Compra camas, colchones, bases cama y muebles para tu hogar en Home Confort. Atención en Pereira y Dosquebradas, con envíos a Colombia.';
@@ -159,10 +173,7 @@ export class App implements OnInit, OnDestroy {
       descripcion =
         'Consulta las características y opciones de compra de este combo en Home Confort.';
 
-    } else if (
-      url.startsWith('/login') ||
-      url.startsWith('/admin')
-    ) {
+    } else if (esAdministracion) {
 
       titulo = 'Administración | Home Confort';
 
@@ -190,7 +201,12 @@ export class App implements OnInit, OnDestroy {
     });
 
     // Construir URL canónica
-    const canonicalUrl = `${this.dominio}${url}`;
+    const rutaCanonica =
+      url === '/' || url === '/home' || url === '/home/'
+        ? '/home/'
+        : url;
+
+    const canonicalUrl = `${this.dominio}${rutaCanonica}`;
 
     let canonical = this.document.querySelector(
       'link[rel="canonical"]'
@@ -262,4 +278,3 @@ export class App implements OnInit, OnDestroy {
     });
   }
 }
-
