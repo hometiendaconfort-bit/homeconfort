@@ -23,7 +23,6 @@ import { Home } from './pages/home/home';
 
   template: `
     <app-navbar></app-navbar>
-    <app-home><app-home>
     <router-outlet></router-outlet>
     <app-footer></app-footer>
   `
