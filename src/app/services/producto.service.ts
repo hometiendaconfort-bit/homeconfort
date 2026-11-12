@@ -6,7 +6,6 @@ import {
   Observable,
   of,
   from,
-  concat,
   throwError
 } from 'rxjs';
 
@@ -45,36 +44,35 @@ export class ProductosService {
 
   getProductos(): Observable<any[]> {
 
-    // 1. Entregar inmediatamente los productos en memoria.
+    // Si ya tenemos datos consultados correctamente en memoria,
+    // reutilizarlos.
     if (this.cache !== null) {
-      return of<any[]>(this.cache);
+      return of(this.cache);
     }
 
-    // 2. Recuperar los productos guardados en el navegador.
-    this.cargarCacheLocal();
-
-    // 3. Reutilizar una consulta que ya esté en ejecución.
+    // Evitar consultas duplicadas.
     if (this.solicitud$ !== null) {
       return this.solicitud$;
     }
 
-    // 4. Comprobar si Firebase está habilitado.
+    // Comprobar si Firebase está habilitado.
     if (!DataSource.firebase) {
 
-      if (this.cache !== null) {
-        return of<any[]>(this.cache);
+      const productosGuardados = this.cargarCacheLocal();
+
+      if (productosGuardados !== null) {
+        return of(productosGuardados);
       }
 
       return throwError(
-        () => new Error('La fuente de datos Firebase no está habilitada.')
+        () => new Error(
+          'La fuente de datos Firebase no está habilitada.'
+        )
       );
     }
 
-    // Productos disponibles antes de consultar Firebase.
-    const productosIniciales: any[] | null = this.cache;
-
-    // 5. Consultar Firebase.
-    const consultaFirebase$: Observable<any[]> = from(
+    // Consultar Firebase antes de entregar la caché local.
+    const consultaFirebase$ = from(
       getDocs(collection(db, 'productos'))
     ).pipe(
 
@@ -86,35 +84,44 @@ export class ProductosService {
       ),
 
       tap((productos: any[]) => {
+
+        // Guardar los datos actuales en memoria.
         this.cache = productos;
+
+        // Actualizar la caché del navegador.
         this.guardarCacheLocal(productos);
+
+        console.log(
+          'Productos recibidos de Firebase:',
+          productos
+        );
+
+        console.log(
+          'Total de productos:',
+          productos.length
+        );
       }),
 
-      catchError((error): Observable<any[]> => {
+      catchError((error) => {
 
         console.error(
           'Error al cargar productos desde Firebase:',
           error
         );
 
-        if (productosIniciales !== null) {
-          return of<any[]>(productosIniciales);
+        // Utilizar la caché únicamente si Firebase falla.
+        const productosGuardados = this.cargarCacheLocal();
+
+        if (productosGuardados !== null) {
+          return of(productosGuardados);
         }
 
         return throwError(() => error);
       })
     );
 
-    // 6. Mostrar primero la caché y después los datos de Firebase.
-    const fuente$: Observable<any[]> = productosIniciales !== null
-      ? concat<any[]>(
-          of<any[]>(productosIniciales),
-          consultaFirebase$
-        )
-      : consultaFirebase$;
-
-    // 7. Compartir la consulta entre los componentes.
-    const solicitud: Observable<any[]> = fuente$.pipe(
+    // Compartir una única consulta entre los componentes.
+    this.solicitud$ = consultaFirebase$.pipe(
 
       finalize(() => {
         this.solicitud$ = null;
@@ -126,16 +133,14 @@ export class ProductosService {
       })
     );
 
-    this.solicitud$ = solicitud;
-
-    return solicitud;
+    return this.solicitud$;
   }
 
   // Recuperar productos guardados en el navegador.
-  private cargarCacheLocal(): void {
+  private cargarCacheLocal(): any[] | null {
 
     if (!this.esNavegador) {
-      return;
+      return null;
     }
 
     try {
@@ -143,14 +148,16 @@ export class ProductosService {
       const datos = localStorage.getItem(this.STORAGE_KEY);
 
       if (!datos) {
-        return;
+        return null;
       }
 
       const productos: unknown = JSON.parse(datos);
 
       if (Array.isArray(productos)) {
-        this.cache = productos;
+        return productos;
       }
+
+      return null;
 
     } catch (error) {
 
@@ -159,7 +166,7 @@ export class ProductosService {
         error
       );
 
-      this.cache = null;
+      return null;
     }
   }
 

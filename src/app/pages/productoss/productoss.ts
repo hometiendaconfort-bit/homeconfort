@@ -21,7 +21,6 @@ import {
 
 import { Title, Meta } from '@angular/platform-browser';
 
-import { CarruselCategorias } from '../../components/carrusel-categorias/carrusel-categorias';
 import { ProductosService } from '../../services/producto.service';
 import { SearchService } from '../../services/search.service';
 import { Carrito, ProductoCarrito } from '../../services/carrito';
@@ -50,7 +49,7 @@ interface VarianteColor {
 @Component({
   selector: 'app-productoss',
   standalone: true,
-  imports: [CommonModule, RouterModule, CarruselCategorias],
+  imports: [CommonModule, RouterModule],
   templateUrl: './productoss.html',
   styleUrls: ['./productoss.css']
 })

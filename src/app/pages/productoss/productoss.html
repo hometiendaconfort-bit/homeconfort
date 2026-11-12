@@ -1,11 +1,9 @@
 
-<app-carrusel-categorias></app-carrusel-categorias>
-
 <div class="principal">
 
   <!-- ENCABEZADO SEO DEL CATÁLOGO -->
   <header class="encabezado-catalogo">
-    <h1>Camas, colchones y muebles en Pereira, santa rosa, cuba y Dosquebradas y a sus alrededores</h1>
+    <h1>Camas, colchones y muebles en Pereira, Santa Rosa, Cuba y Dosquebradas y sus alrededores</h1>
     <p>
       Explora nuestro catálogo de camas, colchones y muebles.
       Encuentra diferentes opciones de compra de contado o a crédito
@@ -210,12 +208,11 @@
 
             </div>
 
-            <!-- PRECIOS -->
+            <!-- PRECIOS: AMBAS MODALIDADES EN EL HTML INICIAL -->
             <div class="precios-producto">
 
-              <ng-container
-                *ngIf="obtenerModalidad(producto) === 'contado' && producto.vendeContado"
-              >
+              <!-- PRECIO DE CONTADO -->
+              <ng-container *ngIf="producto.vendeContado">
 
                 <p class="etiqueta-precio">
                   Precio de contado
@@ -234,9 +231,8 @@
 
               </ng-container>
 
-              <ng-container
-                *ngIf="obtenerModalidad(producto) === 'credito' && producto.vendeCredito"
-              >
+              <!-- PRECIO A CRÉDITO -->
+              <ng-container *ngIf="producto.vendeCredito">
 
                 <p class="etiqueta-precio">
                   Precio a crédito
@@ -246,56 +242,61 @@
                   {{ precioFinal(producto, 'credito') | currency:'COP':'symbol-narrow':'1.0-0' }}
                 </p>
 
-                <p
-                  class="dato-financiacion"
-                  *ngIf="producto.inicial > 0"
-                >
-                  Inicial:
-                  {{ producto.inicial | currency:'COP':'symbol-narrow':'1.0-0' }}
-                </p>
+                <!-- DETALLES DE FINANCIACIÓN -->
+                <ng-container *ngIf="obtenerModalidad(producto) === 'credito'">
 
-                <div
-                  class="frecuencias-pago"
-                  *ngIf="producto.quincenal > 0 || producto.mensual > 0"
-                >
-
-                  <button
-                    type="button"
-                    *ngIf="producto.quincenal > 0"
-                    [class.activo]="obtenerFrecuencia(producto) === 'quincenal'"
-                    [attr.aria-pressed]="obtenerFrecuencia(producto) === 'quincenal'"
-                    (click)="seleccionarFrecuencia(producto, 'quincenal')"
+                  <p
+                    class="dato-financiacion"
+                    *ngIf="producto.inicial > 0"
                   >
-                    Quincenal
-                  </button>
+                    Inicial:
+                    {{ producto.inicial | currency:'COP':'symbol-narrow':'1.0-0' }}
+                  </p>
 
-                  <button
-                    type="button"
-                    *ngIf="producto.mensual > 0"
-                    [class.activo]="obtenerFrecuencia(producto) === 'mensual'"
-                    [attr.aria-pressed]="obtenerFrecuencia(producto) === 'mensual'"
-                    (click)="seleccionarFrecuencia(producto, 'mensual')"
+                  <div
+                    class="frecuencias-pago"
+                    *ngIf="producto.quincenal > 0 || producto.mensual > 0"
                   >
-                    Mensual
-                  </button>
 
-                </div>
+                    <button
+                      type="button"
+                      *ngIf="producto.quincenal > 0"
+                      [class.activo]="obtenerFrecuencia(producto) === 'quincenal'"
+                      [attr.aria-pressed]="obtenerFrecuencia(producto) === 'quincenal'"
+                      (click)="seleccionarFrecuencia(producto, 'quincenal')"
+                    >
+                      Quincenal
+                    </button>
 
-                <p
-                  class="valor-cuota"
-                  *ngIf="obtenerValorCuota(producto) > 0"
-                >
-                  Cuota {{ obtenerFrecuencia(producto) }}:
-                  {{ obtenerValorCuota(producto) | currency:'COP':'symbol-narrow':'1.0-0' }}
-                </p>
+                    <button
+                      type="button"
+                      *ngIf="producto.mensual > 0"
+                      [class.activo]="obtenerFrecuencia(producto) === 'mensual'"
+                      [attr.aria-pressed]="obtenerFrecuencia(producto) === 'mensual'"
+                      (click)="seleccionarFrecuencia(producto, 'mensual')"
+                    >
+                      Mensual
+                    </button>
 
-                <p
-                  class="numero-cuotas"
-                  *ngIf="obtenerNumeroCuotas(producto) > 0"
-                >
-                  Número de cuotas:
-                  {{ obtenerNumeroCuotas(producto) }}
-                </p>
+                  </div>
+
+                  <p
+                    class="valor-cuota"
+                    *ngIf="obtenerValorCuota(producto) > 0"
+                  >
+                    Cuota {{ obtenerFrecuencia(producto) }}:
+                    {{ obtenerValorCuota(producto) | currency:'COP':'symbol-narrow':'1.0-0' }}
+                  </p>
+
+                  <p
+                    class="numero-cuotas"
+                    *ngIf="obtenerNumeroCuotas(producto) > 0"
+                  >
+                    Número de cuotas:
+                    {{ obtenerNumeroCuotas(producto) }}
+                  </p>
+
+                </ng-container>
 
               </ng-container>
 
