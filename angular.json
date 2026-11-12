@@ -20,10 +20,9 @@
             "browser": "src/main.ts",
             "server": "src/main.server.ts",
             "tsConfig": "tsconfig.app.json",
-     "assets": [
+"assets": [
   "src/favicon.ico",
   "src/assets",
-  
   {
     "glob": "favicon.ico",
     "input": "public",
@@ -31,6 +30,11 @@
   },
   {
     "glob": "logomuebleria.jpg",
+    "input": "public",
+    "output": "/"
+  },
+  {
+    "glob": "robots.txt",
     "input": "public",
     "output": "/"
   }
