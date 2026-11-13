@@ -155,7 +155,7 @@
 
     </div>
 
-    <!-- PRECIOS -->
+    <!-- PRECIOS Y FINANCIACIÓN -->
     <div
       class="precios"
       itemprop="offers"
@@ -201,7 +201,7 @@
 
       </div>
 
-      <!-- INFORMACIÓN A CRÉDITO -->
+      <!-- INFORMACIÓN A CRÉDITO SIN PRECIO TOTAL -->
       <div
         *ngIf="
           producto.vendeCredito &&
@@ -209,12 +209,7 @@
         "
       >
 
-        <h2>Precio a crédito</h2>
-
-        <p class="precio-final">
-          {{ precioFinal(producto, 'credito') | currency:'COP':'symbol':'1.0-0' }}
-        </p>
-
+        <!-- CUOTA INICIAL -->
         <p *ngIf="producto.inicial > 0">
 
           <strong>Cuota inicial:</strong>
@@ -304,6 +299,7 @@
 
         </p>
 
+        <!-- NÚMERO DE CUOTAS -->
         <p *ngIf="obtenerNumeroCuotas(producto) > 0">
 
           <strong>Número de cuotas:</strong>

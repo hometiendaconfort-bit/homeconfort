@@ -208,11 +208,16 @@
 
             </div>
 
-            <!-- PRECIOS: AMBAS MODALIDADES EN EL HTML INICIAL -->
+            <!-- PRECIOS Y FINANCIACIÓN -->
             <div class="precios-producto">
 
               <!-- PRECIO DE CONTADO -->
-              <ng-container *ngIf="producto.vendeContado">
+              <ng-container
+                *ngIf="
+                  obtenerModalidad(producto) === 'contado' &&
+                  producto.vendeContado
+                "
+              >
 
                 <p class="etiqueta-precio">
                   Precio de contado
@@ -231,72 +236,68 @@
 
               </ng-container>
 
-              <!-- PRECIO A CRÉDITO -->
-              <ng-container *ngIf="producto.vendeCredito">
+              <!-- INFORMACIÓN DE CRÉDITO SIN MOSTRAR EL PRECIO TOTAL -->
+              <ng-container
+                *ngIf="
+                  obtenerModalidad(producto) === 'credito' &&
+                  producto.vendeCredito
+                "
+              >
 
-                <p class="etiqueta-precio">
-                  Precio a crédito
+                <!-- INICIAL -->
+                <p
+                  class="dato-financiacion"
+                  *ngIf="producto.inicial > 0"
+                >
+                  Inicial:
+                  {{ producto.inicial | currency:'COP':'symbol-narrow':'1.0-0' }}
                 </p>
 
-                <p class="precio-actual">
-                  {{ precioFinal(producto, 'credito') | currency:'COP':'symbol-narrow':'1.0-0' }}
+                <!-- FRECUENCIAS DE PAGO -->
+                <div
+                  class="frecuencias-pago"
+                  *ngIf="producto.quincenal > 0 || producto.mensual > 0"
+                >
+
+                  <button
+                    type="button"
+                    *ngIf="producto.quincenal > 0"
+                    [class.activo]="obtenerFrecuencia(producto) === 'quincenal'"
+                    [attr.aria-pressed]="obtenerFrecuencia(producto) === 'quincenal'"
+                    (click)="seleccionarFrecuencia(producto, 'quincenal')"
+                  >
+                    Quincenal
+                  </button>
+
+                  <button
+                    type="button"
+                    *ngIf="producto.mensual > 0"
+                    [class.activo]="obtenerFrecuencia(producto) === 'mensual'"
+                    [attr.aria-pressed]="obtenerFrecuencia(producto) === 'mensual'"
+                    (click)="seleccionarFrecuencia(producto, 'mensual')"
+                  >
+                    Mensual
+                  </button>
+
+                </div>
+
+                <!-- VALOR DE LA CUOTA -->
+                <p
+                  class="valor-cuota"
+                  *ngIf="obtenerValorCuota(producto) > 0"
+                >
+                  Cuota {{ obtenerFrecuencia(producto) }}:
+                  {{ obtenerValorCuota(producto) | currency:'COP':'symbol-narrow':'1.0-0' }}
                 </p>
 
-                <!-- DETALLES DE FINANCIACIÓN -->
-                <ng-container *ngIf="obtenerModalidad(producto) === 'credito'">
-
-                  <p
-                    class="dato-financiacion"
-                    *ngIf="producto.inicial > 0"
-                  >
-                    Inicial:
-                    {{ producto.inicial | currency:'COP':'symbol-narrow':'1.0-0' }}
-                  </p>
-
-                  <div
-                    class="frecuencias-pago"
-                    *ngIf="producto.quincenal > 0 || producto.mensual > 0"
-                  >
-
-                    <button
-                      type="button"
-                      *ngIf="producto.quincenal > 0"
-                      [class.activo]="obtenerFrecuencia(producto) === 'quincenal'"
-                      [attr.aria-pressed]="obtenerFrecuencia(producto) === 'quincenal'"
-                      (click)="seleccionarFrecuencia(producto, 'quincenal')"
-                    >
-                      Quincenal
-                    </button>
-
-                    <button
-                      type="button"
-                      *ngIf="producto.mensual > 0"
-                      [class.activo]="obtenerFrecuencia(producto) === 'mensual'"
-                      [attr.aria-pressed]="obtenerFrecuencia(producto) === 'mensual'"
-                      (click)="seleccionarFrecuencia(producto, 'mensual')"
-                    >
-                      Mensual
-                    </button>
-
-                  </div>
-
-                  <p
-                    class="valor-cuota"
-                    *ngIf="obtenerValorCuota(producto) > 0"
-                  >
-                    Cuota {{ obtenerFrecuencia(producto) }}:
-                    {{ obtenerValorCuota(producto) | currency:'COP':'symbol-narrow':'1.0-0' }}
-                  </p>
-
-                  <p
-                    class="numero-cuotas"
-                    *ngIf="obtenerNumeroCuotas(producto) > 0"
-                  >
-                    Número de cuotas:
-                    {{ obtenerNumeroCuotas(producto) }}
-                  </p>
-
-                </ng-container>
+                <!-- NÚMERO DE CUOTAS -->
+                <p
+                  class="numero-cuotas"
+                  *ngIf="obtenerNumeroCuotas(producto) > 0"
+                >
+                  Número de cuotas:
+                  {{ obtenerNumeroCuotas(producto) }}
+                </p>
 
               </ng-container>
 
@@ -342,6 +343,7 @@
 
       </div>
 
+      <!-- MENSAJE CUANDO NO HAY RESULTADOS -->
       <div
         class="sin-productos"
         *ngIf="productosLista.length === 0"
