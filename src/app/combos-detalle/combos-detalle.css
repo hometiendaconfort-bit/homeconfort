@@ -391,6 +391,13 @@
   transform: translateY(-1px);
 }
 
+img {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  object-fit: contain;
+}
+
 /*TABLET*/
 
 @media (max-width: 900px) {
