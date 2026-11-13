@@ -4,7 +4,7 @@ import {
   OnInit,
   OnDestroy,
   ChangeDetectorRef,
-  Inject
+  inject
 } from '@angular/core';
 
 import {
@@ -21,7 +21,7 @@ import {
 import { Title, Meta } from '@angular/platform-browser';
 
 import { Combos } from '../services/combos';
-import { Productos } from '../services/productos';
+import { ProductosService } from '../services/producto.service';
 
 @Component({
   selector: 'app-combo-detalle',
@@ -41,15 +41,17 @@ export class ComboDetalleComponent implements OnInit, OnDestroy {
   private readonly urlBase = 'https://homeconfort.pages.dev';
   private seoScript?: HTMLScriptElement;
 
+  // Inyección de DOCUMENT sin utilizar @Inject
+  private document = inject(DOCUMENT);
+
   constructor(
     private route: ActivatedRoute,
     private combosService: Combos,
-    private productosService: Productos,
+    private productosService: ProductosService,
     private cd: ChangeDetectorRef,
     private location: Location,
     private title: Title,
-    private meta: Meta,
-    @Inject(DOCUMENT) private document: Document
+    private meta: Meta
   ) {}
 
   // ==================================================

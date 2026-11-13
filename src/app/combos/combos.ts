@@ -10,7 +10,7 @@ import {
 
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { Combos } from '../services/combos';
-import { Productos } from '../services/productos';
+import { ProductosService } from '../services/producto.service';
 import { Router } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 
@@ -45,7 +45,7 @@ export class CombosComponent implements OnInit, OnDestroy {
 
   constructor(
     private combos: Combos,
-    private productos: Productos,
+    private productos: ProductosService,
     private cdr: ChangeDetectorRef,
     private router: Router,
     private title: Title,

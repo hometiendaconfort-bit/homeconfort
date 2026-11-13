@@ -1,5 +1,5 @@
 
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 import {
@@ -26,19 +26,15 @@ export class Combos {
 
   private readonly STORAGE_KEY = 'homeconfort_combos_cache';
 
-  private esNavegador: boolean;
+  private platformId = inject(PLATFORM_ID);
+
+  private esNavegador: boolean = isPlatformBrowser(this.platformId);
 
   private cache: any[] | null = null;
 
   private solicitud: Promise<any[]> | null = null;
 
   productoParaVolver: string | null = null;
-
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    this.esNavegador = isPlatformBrowser(this.platformId);
-  }
 
   // =========================
   // AGREGAR COMBO
@@ -127,26 +123,21 @@ export class Combos {
 
   async obtenerCombo(): Promise<any[]> {
 
-    // Recuperar la caché del navegador si todavía no está en memoria.
     if (this.cache === null) {
       this.cargarCacheLocal();
     }
 
-    // Si hay una consulta en curso, reutilizarla.
     if (this.solicitud !== null) {
       return this.solicitud;
     }
 
-    // Si existe caché, devolverla inmediatamente.
     if (this.cache !== null) {
 
-      // Actualizar Firebase en segundo plano.
       this.actualizarCacheEnSegundoPlano();
 
       return this.cache;
     }
 
-    // Primera carga: consultar Firebase.
     return this.consultarFirebase();
   }
 

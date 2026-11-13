@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import { Productos } from '../../services/productos';
+import { ProductosService } from '../../services/producto.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -53,7 +53,7 @@ export class AdminProductos implements OnInit {
   guardando = false;
   mensajeError = '';
 
-  constructor(private productosService: Productos) {}
+  constructor(private productosService: ProductosService) {}
 
   ngOnInit(): void {
     this.agregarVarianteColor();

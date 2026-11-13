@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Productos } from '../services/productos';
+import { ProductosService } from '../services/producto.service';
 import { Combos } from '../services/combos';
 
 interface VarianteColor {
@@ -70,7 +70,7 @@ export class AdminCombos implements OnInit {
   }
 
   constructor(
-    private productos: Productos,
+    private productos: ProductosService,
     private combos: Combos
   ) {}
 

@@ -1,12 +1,13 @@
 
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 import {
   Observable,
   of,
   from,
-  throwError
+  throwError,
+  firstValueFrom
 } from 'rxjs';
 
 import {
@@ -17,7 +18,15 @@ import {
   catchError
 } from 'rxjs/operators';
 
-import { collection, getDocs } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  doc
+} from 'firebase/firestore';
+
 import { db } from '../config/firebase';
 import { DataSource } from '../config/data-source';
 
@@ -27,40 +36,31 @@ import { DataSource } from '../config/data-source';
 export class ProductosService {
 
   private cache: any[] | null = null;
-
   private solicitud$: Observable<any[]> | null = null;
 
   private readonly STORAGE_KEY = 'homeconfort_productos_cache';
 
-  private esNavegador: boolean;
+  private esNavegador = isPlatformBrowser(inject(PLATFORM_ID));
 
   productoParaVolver: number | null = null;
 
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    this.esNavegador = isPlatformBrowser(this.platformId);
-  }
-
+  // CONSULTAR PRODUCTOS CON CACHÉ
   getProductos(): Observable<any[]> {
 
-    // Si ya tenemos datos consultados correctamente en memoria,
-    // reutilizarlos.
     if (this.cache !== null) {
       return of(this.cache);
     }
 
-    // Evitar consultas duplicadas.
     if (this.solicitud$ !== null) {
       return this.solicitud$;
     }
 
-    // Comprobar si Firebase está habilitado.
     if (!DataSource.firebase) {
 
       const productosGuardados = this.cargarCacheLocal();
 
       if (productosGuardados !== null) {
+        this.cache = productosGuardados;
         return of(productosGuardados);
       }
 
@@ -71,7 +71,6 @@ export class ProductosService {
       );
     }
 
-    // Consultar Firebase antes de entregar la caché local.
     const consultaFirebase$ = from(
       getDocs(collection(db, 'productos'))
     ).pipe(
@@ -85,34 +84,24 @@ export class ProductosService {
 
       tap((productos: any[]) => {
 
-        // Guardar los datos actuales en memoria.
         this.cache = productos;
-
-        // Actualizar la caché del navegador.
         this.guardarCacheLocal(productos);
 
-        console.log(
-          'Productos recibidos de Firebase:',
-          productos
-        );
-
-        console.log(
-          'Total de productos:',
-          productos.length
-        );
+        console.log('Productos recibidos de Firebase:', productos);
+        console.log('Total de productos:', productos.length);
       }),
 
-      catchError((error) => {
+      catchError(error => {
 
         console.error(
           'Error al cargar productos desde Firebase:',
           error
         );
 
-        // Utilizar la caché únicamente si Firebase falla.
         const productosGuardados = this.cargarCacheLocal();
 
         if (productosGuardados !== null) {
+          this.cache = productosGuardados;
           return of(productosGuardados);
         }
 
@@ -120,7 +109,6 @@ export class ProductosService {
       })
     );
 
-    // Compartir una única consulta entre los componentes.
     this.solicitud$ = consultaFirebase$.pipe(
 
       finalize(() => {
@@ -136,7 +124,58 @@ export class ProductosService {
     return this.solicitud$;
   }
 
-  // Recuperar productos guardados en el navegador.
+  // CONSULTAR PRODUCTOS PARA ADMINISTRACIÓN Y COMBOS
+  async obtenerProductos(): Promise<any[]> {
+
+    return await firstValueFrom(this.getProductos());
+  }
+
+  // AGREGAR PRODUCTO
+  async agregarProducto(producto: any) {
+
+    const resultado = await addDoc(
+      collection(db, 'productos'),
+      producto
+    );
+
+    this.invalidarCache();
+
+    return resultado;
+  }
+
+  // EDITAR PRODUCTO
+  async editarProducto(
+    docId: string,
+    producto: any
+  ): Promise<void> {
+
+    if (!docId) {
+      throw new Error('No se recibió el ID del producto.');
+    }
+
+    await updateDoc(
+      doc(db, 'productos', docId),
+      producto
+    );
+
+    this.invalidarCache();
+  }
+
+  // ELIMINAR PRODUCTO
+  async eliminarProducto(docId: string): Promise<void> {
+
+    if (!docId) {
+      throw new Error('No se recibió el ID del producto.');
+    }
+
+    await deleteDoc(
+      doc(db, 'productos', docId)
+    );
+
+    this.invalidarCache();
+  }
+
+  // RECUPERAR CACHÉ LOCAL
   private cargarCacheLocal(): any[] | null {
 
     if (!this.esNavegador) {
@@ -153,11 +192,7 @@ export class ProductosService {
 
       const productos: unknown = JSON.parse(datos);
 
-      if (Array.isArray(productos)) {
-        return productos;
-      }
-
-      return null;
+      return Array.isArray(productos) ? productos : null;
 
     } catch (error) {
 
@@ -170,7 +205,7 @@ export class ProductosService {
     }
   }
 
-  // Guardar productos en el navegador.
+  // GUARDAR CACHÉ LOCAL
   private guardarCacheLocal(productos: any[]): void {
 
     if (!this.esNavegador) {
@@ -193,7 +228,7 @@ export class ProductosService {
     }
   }
 
-  // Limpiar caché después de crear, editar o eliminar productos.
+  // INVALIDAR CACHÉ
   invalidarCache(): void {
 
     this.cache = null;
@@ -203,6 +238,7 @@ export class ProductosService {
 
       try {
         localStorage.removeItem(this.STORAGE_KEY);
+
       } catch (error) {
 
         console.warn(
