@@ -1,4 +1,3 @@
-
 <div class="principal">
 
   <!-- ENCABEZADO SEO DEL CATÁLOGO -->
@@ -183,6 +182,53 @@
 
             </div>
 
+
+            <!-- SOLICITUD DE FINANCIACIÓN -->
+              <div
+                class="solicitud-credito"
+                *ngIf="
+                  obtenerModalidad(producto) === 'credito' &&
+                  producto.vendeCredito
+                "
+              >
+
+                <p class="titulo-solicitud-credito">
+                  Solicitar crédito con:
+                </p>
+
+                <div
+                  class="botones-financiacion"
+                  style="display: flex; gap: 8px; width: 100%;"
+                >
+
+                  <!-- ADDI -->
+                  <a
+                    class="btn-financiacion btn-addi"
+                    [href]="obtenerLinkSolicitudCredito(producto, 'Addi')"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Solicitar crédito con Addi"
+                    style="flex: 1; min-width: 0; text-align: center;"
+                  >
+                    Addi
+                  </a>
+
+                  <!-- SISTECRÉDITO -->
+                  <a
+                    class="btn-financiacion btn-sistecredito"
+                    [href]="obtenerLinkSolicitudCredito(producto, 'Sistecrédito')"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Solicitar crédito con Sistecrédito"
+                    style="flex: 1; min-width: 0; text-align: center;"
+                  >
+                    Sistecrédito
+                  </a>
+
+                </div>
+
+              </div>
+
             <!-- MODALIDADES DE PAGO -->
             <div class="modalidades-pago">
 
@@ -325,6 +371,7 @@
                 Agregar al carrito
               </button>
 
+              <!-- WHATSAPP HABITUAL -->
               <a
                 class="btn-whatsapp"
                 [href]="obtenerLinkWhatsApp(producto)"
@@ -334,6 +381,8 @@
               >
                 Comprar por WhatsApp
               </a>
+
+              
 
             </div>
 

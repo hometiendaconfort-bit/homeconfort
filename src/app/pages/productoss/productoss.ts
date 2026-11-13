@@ -1,4 +1,3 @@
-
 import {
   Component,
   OnInit,
@@ -970,6 +969,28 @@ export class Productoss implements OnInit, OnDestroy {
           ` Número de cuotas ${frecuencia}: ${numeroCuotas}.`;
       }
     }
+
+    return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
+  }
+
+  // SOLICITAR FINANCIACIÓN CON ADDI O SISTECRÉDITO.
+  obtenerLinkSolicitudCredito(
+    p: any,
+    entidad: 'Addi' | 'Sistecrédito'
+  ): string {
+
+    const variante = this.obtenerVarianteActiva(p);
+
+    let mensaje =
+      `Hola, estoy interesado en solicitar financiación con ${entidad} para el siguiente producto:\n\n` +
+      `Producto: ${p.nombre}`;
+
+    if (variante?.color) {
+      mensaje += `\nColor: ${variante.color}`;
+    }
+
+    mensaje +=
+      `\n\nQuisiera conocer los requisitos, cómo puedo solicitar el crédito y si puedo aplicar. ¿Me pueden asesorar? Gracias.`;
 
     return `https://wa.me/573137110232?text=${encodeURIComponent(mensaje)}`;
   }

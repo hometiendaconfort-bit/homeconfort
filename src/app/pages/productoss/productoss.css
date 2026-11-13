@@ -18,7 +18,6 @@
 .encabezado-catalogo {
   width: 100%;
   margin-bottom: 22px;
-
 }
 
 .encabezado-catalogo h1 {
@@ -46,7 +45,6 @@
   line-height: 1.4;
   font-weight: 700;
 }
-
 
 .filtros-productos {
   display: flex;
@@ -80,7 +78,7 @@
 .filtro-modalidad button:hover,
 .filtro-modalidad button.activo {
   background: #F9F5F0;
- color: #101010;
+  color: #101010;
   border-color: #f6f8f9;
 }
 
@@ -103,6 +101,8 @@
 .filtro-color select:focus {
   border-color: #f4f5f6;
 }
+
+/* GRID DE PRODUCTOS */
 
 .productos-grid {
   display: grid;
@@ -130,6 +130,8 @@
   transform: translateY(-3px);
   box-shadow: 0 7px 20px rgba(18,39,60,.12);
 }
+
+/* IMAGEN DEL PRODUCTO */
 
 .producto-imagen {
   position: relative;
@@ -169,6 +171,8 @@
   font-size: 12px;
   font-weight: 700;
 }
+
+/* INFORMACIÓN DEL PRODUCTO */
 
 .producto-info {
   display: flex;
@@ -212,6 +216,8 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
+
+/* SELECTOR DE COLORES */
 
 .selector-colores {
   display: flex;
@@ -273,6 +279,8 @@
   outline-offset: 3px;
 }
 
+/* MINIATURAS */
+
 .miniaturas-producto {
   display: flex;
   flex-wrap: wrap;
@@ -309,6 +317,8 @@
   border-color: #F9F5F0;
   box-shadow: 0 0 0 1px #3c3d3d;
 }
+
+/* MODALIDADES Y FRECUENCIAS DE PAGO */
 
 .modalidades-pago,
 .frecuencias-pago {
@@ -348,7 +358,7 @@
 .modalidades-pago button:hover,
 .modalidades-pago button.activo {
   background: #F9F5F0;
- color: #040404;
+  color: #040404;
 }
 
 .precios-producto {
@@ -397,7 +407,7 @@
 
 .frecuencias-pago {
   margin-top: 4px;
-  background: #fff
+  background: #fff;
 }
 
 .frecuencias-pago button {
@@ -433,6 +443,8 @@
   line-height: 1.4;
   overflow-wrap: anywhere;
 }
+
+/* BOTONES DE ACCIÓN */
 
 .acciones-producto {
   display: flex;
@@ -502,6 +514,89 @@
   background: #163e25;
 }
 
+/* SOLICITUD DE CRÉDITO: ADDI Y SISTECRÉDITO */
+
+.solicitud-credito {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 2px;
+  box-sizing: border-box;
+}
+
+.titulo-solicitud-credito {
+  margin: 0;
+  color: #202a35;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.botones-financiacion {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.btn-financiacion {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 5px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+
+.btn-financiacion:hover {
+  transform: translateY(-1px);
+}
+
+/* ADDI */
+
+.btn-addi {
+  border-color: #8d8d8f;
+   background: linear-gradient(90deg, #4641df, #0066CC);
+  color: #fff;
+}
+
+.btn-addi:hover {
+ background: linear-gradient(90deg, #4641df8b, #0066cc8d);
+}
+
+/* SISTECRÉDITO */
+
+.btn-sistecredito {
+  border-color: #656667;
+ background: linear-gradient(90deg, #00A86B, #0066CC);
+  color: #fff;
+}
+
+.btn-sistecredito:hover {
+    background: linear-gradient(90deg, #00a86a8d, #0066cc74);
+}
+
+/* SIN PRODUCTOS */
+
 .sin-productos {
   width: 100%;
   padding: 35px 15px;
@@ -516,6 +611,7 @@
 }
 
 /* TABLET */
+
 @media (max-width: 1100px) {
   .productos-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -534,19 +630,19 @@
 }
 
 /* TABLET PEQUEÑA */
+
 @media (max-width: 800px) {
   .principal {
     padding: 14px;
   }
 
-    .encabezado-catalogo h1 {
+  .encabezado-catalogo h1 {
     font-size: 22px;
   }
 
   #titulo-listado-productos {
     font-size: 18px;
   }
-
 
   .productos-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -569,6 +665,7 @@
 }
 
 /* CELULAR */
+
 @media (max-width: 480px) {
   .principal {
     margin-top: 0 !important;
@@ -749,9 +846,30 @@
     padding: 8px 5px;
     font-size: 11px;
   }
+
+  /* BOTONES ADDI Y SISTECRÉDITO EN CELULAR */
+
+  .solicitud-credito {
+    gap: 6px;
+  }
+
+  .titulo-solicitud-credito {
+    font-size: 10px;
+  }
+
+  .botones-financiacion {
+    gap: 5px;
+  }
+
+  .btn-financiacion {
+    min-height: 35px;
+    padding: 7px 3px;
+    font-size: 10px;
+  }
 }
 
 /* CELULARES MUY PEQUEÑOS */
+
 @media (max-width: 350px) {
   .productos-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -773,5 +891,10 @@
 
   .precio-actual {
     font-size: 20px;
+  }
+
+  .btn-financiacion {
+    font-size: 11px;
+    padding: 7px 2px;
   }
 }
