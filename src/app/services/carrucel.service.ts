@@ -1,5 +1,5 @@
 
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 import {
@@ -20,17 +20,13 @@ export class CarrucelService {
 
   private readonly STORAGE_KEY = 'homeconfort_carrucel_cache';
 
+  private readonly platformId = inject(PLATFORM_ID);
+
   private cache: any[] | null = null;
 
   private solicitud: Promise<any[]> | null = null;
 
-  private esNavegador: boolean;
-
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    this.esNavegador = isPlatformBrowser(this.platformId);
-  }
+  private esNavegador = isPlatformBrowser(this.platformId);
 
   // =========================
   // OBTENER CARRUSEL
